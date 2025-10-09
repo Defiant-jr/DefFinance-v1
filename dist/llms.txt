@@ -1,0 +1,11 @@
+## Pages
+- [Cadastros - SysFina](/cadastros): Tela para cadastro de clientes e fornecedores.
+- [Central de Relatórios - SysFina](/relatorios): Gere relatórios financeiros detalhados.
+- [Contas a Pagar - SysFina](/contaspagar): Gerencie suas contas a pagar com filtros e totalizadores
+- [Contas a Receber - SysFina](/contasreceber): Gerencie suas contas a receber com filtros e totalizadores
+- [Dashboard - SysFina](/dashboard): Dashboard principal com visão geral das finanças
+- [DRE Gerencial - SysFina](/dregerencial): No description available
+- [Fluxo de Caixa Previsto - SysFina](/fluxocaixa): Análise do fluxo de caixa previsto (valores a vencer).
+- [Novo Lançamento - SysFina](/lancamentos): Tela para adicionar novos lançamentos financeiros.
+- [Relatório de Contas - SysFina](/relatoriocontas): No description available
+- [Relatório de Fluxo de Caixa Previsto - SysFina](/fluxocaixadetalhado): No description available
