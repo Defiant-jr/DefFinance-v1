@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
     import { motion } from 'framer-motion';
     import { useNavigate } from 'react-router-dom';
     import { Helmet } from 'react-helmet';
-    import { TrendingUp, TrendingDown, DollarSign, Download, LayoutDashboard, PlusCircle, UserPlus, FileText, LogOut, ArrowRight, ArrowLeft, Wallet, CheckCircle } from 'lucide-react';
-    import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-    import { Button } from '@/components/ui/button';
+    import { TrendingUp, TrendingDown, DollarSign, Download, LayoutDashboard, PlusCircle, UserPlus, FileText, LogOut, ArrowRight, ArrowLeft, Wallet } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
     import { useToast } from '@/components/ui/use-toast';
     import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
     import { supabase } from '@/lib/customSupabaseClient';
@@ -18,6 +19,7 @@ import React, { useState, useEffect } from 'react';
       const [loading, setLoading] = useState(false);
       const [importLoading, setImportLoading] = useState(false);
       const [chartData, setChartData] = useState([]);
+      const [monthsSpan, setMonthsSpan] = useState(6);
     
       useEffect(() => {
         loadDataFromSupabase();
@@ -30,16 +32,15 @@ import React, { useState, useEffect } from 'react';
           toast({ title: "Erro ao carregar dados", description: error.message, variant: "destructive" });
         } else {
           setData({ lancamentos: lancamentos || [] });
-          generateChartData({ lancamentos: lancamentos || [] });
         }
         setLoading(false);
       };
     
-      const generateChartData = (financialData) => {
+      const generateChartData = (financialData, span = monthsSpan) => {
         const months = [];
         const currentDate = new Date();
         
-        for (let i = -1; i <= 4; i++) {
+        for (let i = 0; i < span; i++) {
           const date = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
           const monthName = date.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
           
@@ -70,6 +71,10 @@ import React, { useState, useEffect } from 'react';
         
         setChartData(months);
       };
+    
+      useEffect(() => {
+        generateChartData({ lancamentos: data.lancamentos }, monthsSpan);
+      }, [data.lancamentos, monthsSpan]);
     
       const handleImportData = async () => {
         setImportLoading(true);
@@ -160,7 +165,8 @@ import React, { useState, useEffect } from 'react';
           value: formatCurrency(resultadoOperacional),
           icon: DollarSign,
           color: resultadoOperacional >= 0 ? 'from-blue-500 to-blue-600' : 'from-orange-500 to-orange-600',
-          bgColor: resultadoOperacional >= 0 ? 'bg-blue-500/10' : 'bg-orange-500/10'
+          bgColor: resultadoOperacional >= 0 ? 'bg-blue-500/10' : 'bg-orange-500/10',
+          showSpanSelector: true,
         }
       ];
       
@@ -185,7 +191,7 @@ import React, { useState, useEffect } from 'react';
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex justify-between items-center"
+            className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
           >
             <div className="text-left">
                 <div className="flex flex-col">
@@ -259,6 +265,23 @@ import React, { useState, useEffect } from 'react';
                               <span className={`font-semibold ${detail.color ? detail.color : 'text-white'}`}>{detail.value}</span>
                             </div>
                           ))}
+                        </div>
+                      )}
+                      {card.showSpanSelector && (
+                        <div className="mt-4 space-y-2">
+                          <span className="text-sm text-gray-300">Período do gráfico</span>
+                          <Select value={String(monthsSpan)} onValueChange={(value) => setMonthsSpan(Number(value))}>
+                            <SelectTrigger className="w-full bg-white/10 border-white/20 text-white">
+                              <SelectValue placeholder="Meses" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {[1, 2, 3, 4, 5, 6].map((option) => (
+                                <SelectItem key={option} value={String(option)}>
+                                  {option} {option === 1 ? 'mês' : 'meses'}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
                         </div>
                       )}
                     </CardContent>
