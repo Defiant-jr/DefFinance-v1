@@ -1,0 +1,616 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/forms/LancamentoForm.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=b50a5041"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=b50a5041"; const React = __vite__cjsImport3_react.__esModule ? __vite__cjsImport3_react.default : __vite__cjsImport3_react; const useState = __vite__cjsImport3_react["useState"];
+import { format } from "/node_modules/.vite/deps/date-fns.js?v=b50a5041";
+import { ptBR } from "/node_modules/.vite/deps/date-fns_locale.js?v=b50a5041";
+import { Calendar as CalendarIcon } from "/node_modules/.vite/deps/lucide-react.js?v=b50a5041";
+import { cn } from "/src/lib/utils.js";
+import { Button } from "/src/components/ui/button.jsx";
+import { Calendar } from "/src/components/ui/calendar.jsx";
+import { Card, CardContent, CardHeader, CardTitle } from "/src/components/ui/card.jsx";
+import { Input } from "/src/components/ui/input.jsx";
+import { Label } from "/src/components/ui/label.jsx";
+import { Popover, PopoverContent, PopoverTrigger } from "/src/components/ui/popover.jsx";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "/src/components/ui/select.jsx";
+import { Textarea } from "/src/components/ui/textarea.jsx";
+import { useToast } from "/src/components/ui/use-toast.js";
+import { supabase } from "/src/lib/customSupabaseClient.js";
+const initialDate = /* @__PURE__ */ new Date();
+const LancamentoForm = ({ onCancel, onSuccess }) => {
+  _s();
+  const { toast } = useToast();
+  const [date, setDate] = useState(initialDate);
+  const [tipo, setTipo] = useState("");
+  const [unidade, setUnidade] = useState("");
+  const [clienteFornecedor, setClienteFornecedor] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [valor, setValor] = useState("");
+  const [aluno, setAluno] = useState("");
+  const [parcela, setParcela] = useState("");
+  const [descPontual, setDescPontual] = useState("");
+  const [status, setStatus] = useState("");
+  const [obs, setObs] = useState("");
+  const [loading, setLoading] = useState(false);
+  const resetForm = () => {
+    setDate(/* @__PURE__ */ new Date());
+    setTipo("");
+    setUnidade("");
+    setClienteFornecedor("");
+    setDescricao("");
+    setValor("");
+    setAluno("");
+    setParcela("");
+    setDescPontual("");
+    setStatus("");
+    setObs("");
+  };
+  const handleCancel = () => {
+    resetForm();
+    if (typeof onCancel === "function") {
+      onCancel();
+    }
+  };
+  const handleSave = async () => {
+    if (!date || !tipo || !unidade || !clienteFornecedor || !descricao || !valor || !status) {
+      toast({
+        title: "Erro de Validação",
+        description: "Por favor, preencha todos os campos obrigatórios.",
+        variant: "destructive"
+      });
+      return;
+    }
+    const descPontualValor = descPontual.trim();
+    const parsedDescPontual = descPontualValor !== "" ? parseFloat(descPontualValor) : null;
+    if (descPontualValor !== "" && Number.isNaN(parsedDescPontual)) {
+      toast({
+        title: "Valor inválido",
+        description: "Informe um valor numérico válido para Desconto Pontual.",
+        variant: "destructive"
+      });
+      return;
+    }
+    setLoading(true);
+    const newEntry = {
+      data: format(date, "yyyy-MM-dd"),
+      tipo,
+      unidade,
+      cliente_fornecedor: clienteFornecedor,
+      descricao,
+      valor: parseFloat(valor),
+      status,
+      obs,
+      aluno: aluno.trim() || null,
+      parcel: parcela.trim() || null,
+      desc_pontual: parsedDescPontual
+    };
+    const { error } = await supabase.from("lancamentos").insert([newEntry]);
+    setLoading(false);
+    if (error) {
+      toast({
+        title: "Erro ao salvar",
+        description: `Não foi possível salvar o lançamento. Erro: ${error.message}`,
+        variant: "destructive"
+      });
+      return;
+    }
+    toast({
+      title: "Sucesso!",
+      description: "Lançamento salvo com sucesso."
+    });
+    resetForm();
+    if (typeof onSuccess === "function") {
+      onSuccess();
+    }
+  };
+  return /* @__PURE__ */ jsxDEV(Card, { className: "glass-card", children: [
+    /* @__PURE__ */ jsxDEV(CardHeader, { children: /* @__PURE__ */ jsxDEV(CardTitle, { className: "text-white", children: "Adicionar Nova Transação" }, void 0, false, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+      lineNumber: 142,
+      columnNumber: 9
+    }, this) }, void 0, false, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+      lineNumber: 141,
+      columnNumber: 7
+    }, this),
+    /* @__PURE__ */ jsxDEV(CardContent, { className: "space-y-6", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxDEV(Label, { htmlFor: "data", className: "text-gray-300", children: "Data" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 147,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV(Popover, { children: [
+            /* @__PURE__ */ jsxDEV(PopoverTrigger, { asChild: true, children: /* @__PURE__ */ jsxDEV(
+              Button,
+              {
+                variant: "outline",
+                className: cn(
+                  "w-full justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                ),
+                children: [
+                  /* @__PURE__ */ jsxDEV(CalendarIcon, { className: "mr-2 h-4 w-4" }, void 0, false, {
+                    fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+                    lineNumber: 157,
+                    columnNumber: 19
+                  }, this),
+                  date ? format(date, "PPP", { locale: ptBR }) : /* @__PURE__ */ jsxDEV("span", { children: "Escolha uma data" }, void 0, false, {
+                    fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+                    lineNumber: 158,
+                    columnNumber: 67
+                  }, this)
+                ]
+              },
+              void 0,
+              true,
+              {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+                lineNumber: 150,
+                columnNumber: 17
+              },
+              this
+            ) }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 149,
+              columnNumber: 15
+            }, this),
+            /* @__PURE__ */ jsxDEV(PopoverContent, { className: "w-auto p-0", children: /* @__PURE__ */ jsxDEV(
+              Calendar,
+              {
+                mode: "single",
+                selected: date,
+                onSelect: (selectedDate) => selectedDate && setDate(selectedDate),
+                initialFocus: true,
+                locale: ptBR
+              },
+              void 0,
+              false,
+              {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+                lineNumber: 162,
+                columnNumber: 17
+              },
+              this
+            ) }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 161,
+              columnNumber: 15
+            }, this)
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 148,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 146,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxDEV(Label, { htmlFor: "tipo", className: "text-gray-300", children: "Tipo" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 173,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV(Select, { onValueChange: setTipo, value: tipo, children: [
+            /* @__PURE__ */ jsxDEV(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsxDEV(SelectValue, { placeholder: "Selecione o tipo" }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 176,
+              columnNumber: 17
+            }, this) }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 175,
+              columnNumber: 15
+            }, this),
+            /* @__PURE__ */ jsxDEV(SelectContent, { children: [
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "Entrada", children: "Entrada" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+                lineNumber: 179,
+                columnNumber: 17
+              }, this),
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "Saida", children: "Saída" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+                lineNumber: 180,
+                columnNumber: 17
+              }, this)
+            ] }, void 0, true, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 178,
+              columnNumber: 15
+            }, this)
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 174,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 172,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+        lineNumber: 145,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxDEV(Label, { htmlFor: "unidade", className: "text-gray-300", children: "Unidade" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 188,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV(Select, { onValueChange: setUnidade, value: unidade, children: [
+            /* @__PURE__ */ jsxDEV(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsxDEV(SelectValue, { placeholder: "Selecione a unidade" }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 191,
+              columnNumber: 17
+            }, this) }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 190,
+              columnNumber: 15
+            }, this),
+            /* @__PURE__ */ jsxDEV(SelectContent, { children: [
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "CNA Angra dos Reis", children: "CNA Angra dos Reis" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+                lineNumber: 194,
+                columnNumber: 17
+              }, this),
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "CNA Mangaratiba", children: "CNA Mangaratiba" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+                lineNumber: 195,
+                columnNumber: 17
+              }, this),
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "Casa", children: "Casa" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+                lineNumber: 196,
+                columnNumber: 17
+              }, this)
+            ] }, void 0, true, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 193,
+              columnNumber: 15
+            }, this)
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 189,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 187,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxDEV(Label, { htmlFor: "clienteFornecedor", className: "text-gray-300", children: "Cliente/Fornecedor" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 201,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            Input,
+            {
+              id: "clienteFornecedor",
+              placeholder: "Nome do cliente ou fornecedor",
+              value: clienteFornecedor,
+              onChange: (event) => setClienteFornecedor(event.target.value)
+            },
+            void 0,
+            false,
+            {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 202,
+              columnNumber: 13
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 200,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+        lineNumber: 186,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxDEV(Label, { htmlFor: "descricao", className: "text-gray-300", children: "Descrição" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 213,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            Input,
+            {
+              id: "descricao",
+              placeholder: "Ex: Venda de produto X",
+              value: descricao,
+              onChange: (event) => setDescricao(event.target.value)
+            },
+            void 0,
+            false,
+            {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 214,
+              columnNumber: 13
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 212,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxDEV(Label, { htmlFor: "valor", className: "text-gray-300", children: "Valor" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 222,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            Input,
+            {
+              id: "valor",
+              type: "number",
+              placeholder: "0,00",
+              value: valor,
+              onChange: (event) => setValor(event.target.value)
+            },
+            void 0,
+            false,
+            {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 223,
+              columnNumber: 13
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 221,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+        lineNumber: 211,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxDEV(Label, { htmlFor: "aluno", className: "text-gray-300", children: "Aluno" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 235,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            Input,
+            {
+              id: "aluno",
+              placeholder: "Nome do aluno",
+              value: aluno,
+              onChange: (event) => setAluno(event.target.value)
+            },
+            void 0,
+            false,
+            {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 236,
+              columnNumber: 13
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 234,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxDEV(Label, { htmlFor: "parcela", className: "text-gray-300", children: "Parcela" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 244,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            Input,
+            {
+              id: "parcela",
+              placeholder: "Ex: 1/12",
+              value: parcela,
+              onChange: (event) => setParcela(event.target.value)
+            },
+            void 0,
+            false,
+            {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 245,
+              columnNumber: 13
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 243,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+        lineNumber: 233,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxDEV(Label, { htmlFor: "status", className: "text-gray-300", children: "Status" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 256,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV(Select, { onValueChange: setStatus, value: status, children: [
+            /* @__PURE__ */ jsxDEV(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsxDEV(SelectValue, { placeholder: "Selecione o status" }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 259,
+              columnNumber: 17
+            }, this) }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 258,
+              columnNumber: 15
+            }, this),
+            /* @__PURE__ */ jsxDEV(SelectContent, { children: [
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "A Vencer", children: "A Vencer" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+                lineNumber: 262,
+                columnNumber: 17
+              }, this),
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "Pago", children: "Pago" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+                lineNumber: 263,
+                columnNumber: 17
+              }, this)
+            ] }, void 0, true, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 261,
+              columnNumber: 15
+            }, this)
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 257,
+            columnNumber: 13
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 255,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+          /* @__PURE__ */ jsxDEV(Label, { htmlFor: "descPontual", className: "text-gray-300", children: "Desc. Pontual" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 268,
+            columnNumber: 13
+          }, this),
+          /* @__PURE__ */ jsxDEV(
+            Input,
+            {
+              id: "descPontual",
+              type: "number",
+              inputMode: "decimal",
+              step: "0.01",
+              placeholder: "0,00",
+              value: descPontual,
+              onChange: (event) => setDescPontual(event.target.value)
+            },
+            void 0,
+            false,
+            {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+              lineNumber: 269,
+              columnNumber: 13
+            },
+            this
+          )
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 267,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+        lineNumber: 254,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+        /* @__PURE__ */ jsxDEV(Label, { htmlFor: "obs", className: "text-gray-300", children: "Observações" }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 282,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV(
+          Textarea,
+          {
+            id: "obs",
+            placeholder: "Detalhes adicionais sobre o lançamento (opcional)",
+            value: obs,
+            onChange: (event) => setObs(event.target.value)
+          },
+          void 0,
+          false,
+          {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+            lineNumber: 283,
+            columnNumber: 11
+          },
+          this
+        )
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+        lineNumber: 281,
+        columnNumber: 9
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "flex justify-end gap-4 pt-4", children: [
+        /* @__PURE__ */ jsxDEV(Button, { variant: "outline", onClick: handleCancel, disabled: loading, children: "Cancelar" }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 292,
+          columnNumber: 11
+        }, this),
+        /* @__PURE__ */ jsxDEV(Button, { onClick: handleSave, disabled: loading, children: loading ? "Salvando..." : "Salvar Lançamento" }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+          lineNumber: 295,
+          columnNumber: 11
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+        lineNumber: 291,
+        columnNumber: 9
+      }, this)
+    ] }, void 0, true, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+      lineNumber: 144,
+      columnNumber: 7
+    }, this)
+  ] }, void 0, true, {
+    fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx",
+    lineNumber: 140,
+    columnNumber: 5
+  }, this);
+};
+_s(LancamentoForm, "UnQAXC8joUX/rRfyRTbwBqXlFmc=", false, function() {
+  return [useToast];
+});
+_c = LancamentoForm;
+export default LancamentoForm;
+var _c;
+$RefreshReg$(_c, "LancamentoForm");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports)
+        return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/components/forms/LancamentoForm.jsx", currentExports, nextExports);
+      if (invalidateMessage)
+        import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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QSxVQUNBSixRQUFRO0FBQUE7QUFBQTJELEtBRHRCdkQ7QUF5UU4sZUFBZUE7QUFBZSxJQUFBdUQ7QUFBQUMsYUFBQUQsSUFBQSIsIm5hbWVzIjpbIlJlYWN0IiwidXNlU3RhdGUiLCJmb3JtYXQiLCJwdEJSIiwiQ2FsZW5kYXIiLCJDYWxlbmRhckljb24iLCJjbiIsIkJ1dHRvbiIsIkNhcmQiLCJDYXJkQ29udGVudCIsIkNhcmRIZWFkZXIiLCJDYXJkVGl0bGUiLCJJbnB1dCIsIkxhYmVsIiwiUG9wb3ZlciIsIlBvcG92ZXJDb250ZW50IiwiUG9wb3ZlclRyaWdnZXIiLCJTZWxlY3QiLCJTZWxlY3RDb250ZW50IiwiU2VsZWN0SXRlbSIsIlNlbGVjdFRyaWdnZXIiLCJTZWxlY3RWYWx1ZSIsIlRleHRhcmVhIiwidXNlVG9hc3QiLCJzdXBhYmFzZSIsImluaXRpYWxEYXRlIiwiRGF0ZSIsIkxhbmNhbWVudG9Gb3JtIiwib25DYW5jZWwiLCJvblN1Y2Nlc3MiLCJfcyIsInRvYXN0IiwiZGF0ZSIsInNldERhdGUiLCJ0aXBvIiwic2V0VGlwbyIsInVuaWRhZGUiLCJzZXRVbmlkYWRlIiwiY2xpZW50ZUZvcm5lY2Vkb3IiLCJzZXRDbGllbnRlRm9ybmVjZWRvciIsImRlc2NyaWNhbyIsInNldERlc2NyaWNhbyIsInZhbG9yIiwic2V0VmFsb3IiLCJhbHVubyIsInNldEFsdW5vIiwicGFyY2VsYSIsInNldFBhcmNlbGEiLCJkZXNjUG9udHVhbCIsInNldERlc2NQb250dWFsIiwic3RhdHVzIiwic2V0U3RhdHVzIiwib2JzIiwic2V0T2JzIiwibG9hZGluZyIsInNldExvYWRpbmciLCJyZXNldEZvcm0iLCJoYW5kbGVDYW5jZWwiLCJoYW5kbGVTYXZlIiwidGl0bGUiLCJkZXNjcmlwdGlvbiIsInZhcmlhbnQiLCJkZXNjUG9udHVhbFZhbG9yIiwidHJpbSIsInBhcnNlZERlc2NQb250dWFsIiwicGFyc2VGbG9hdCIsIk51bWJlciIsImlzTmFOIiwibmV3RW50cnkiLCJkYXRhIiwiY2xpZW50ZV9mb3JuZWNlZG9yIiwicGFyY2VsIiwiZGVzY19wb250dWFsIiwiZXJyb3IiLCJmcm9tIiwiaW5zZXJ0IiwibWVzc2FnZSIsImxvY2FsZSIsInNlbGVjdGVkRGF0ZSIsImV2ZW50IiwidGFyZ2V0IiwidmFsdWUiLCJfYyIsIiRSZWZyZXNoUmVnJCJdLCJzb3VyY2VzIjpbIkxhbmNhbWVudG9Gb3JtLmpzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgUmVhY3QsIHsgdXNlU3RhdGUgfSBmcm9tICdyZWFjdCc7XG5pbXBvcnQgeyBmb3JtYXQgfSBmcm9tICdkYXRlLWZucyc7XG5pbXBvcnQgeyBwdEJSIH0gZnJvbSAnZGF0ZS1mbnMvbG9jYWxlJztcbmltcG9ydCB7IENhbGVuZGFyIGFzIENhbGVuZGFySWNvbiB9IGZyb20gJ2x1Y2lkZS1yZWFjdCc7XG5cbmltcG9ydCB7IGNuIH0gZnJvbSAnQC9saWIvdXRpbHMnO1xuaW1wb3J0IHsgQnV0dG9uIH0gZnJvbSAnQC9jb21wb25lbnRzL3VpL2J1dHRvbic7XG5pbXBvcnQgeyBDYWxlbmRhciB9IGZyb20gJ0AvY29tcG9uZW50cy91aS9jYWxlbmRhcic7XG5pbXBvcnQgeyBDYXJkLCBDYXJkQ29udGVudCwgQ2FyZEhlYWRlciwgQ2FyZFRpdGxlIH0gZnJvbSAnQC9jb21wb25lbnRzL3VpL2NhcmQnO1xuaW1wb3J0IHsgSW5wdXQgfSBmcm9tICdAL2NvbXBvbmVudHMvdWkvaW5wdXQnO1xuaW1wb3J0IHsgTGFiZWwgfSBmcm9tICdAL2NvbXBvbmVudHMvdWkvbGFiZWwnO1xuaW1wb3J0IHsgUG9wb3ZlciwgUG9wb3ZlckNvbnRlbnQsIFBvcG92ZXJUcmlnZ2VyIH0gZnJvbSAnQC9jb21wb25lbnRzL3VpL3BvcG92ZXInO1xuaW1wb3J0IHsgU2VsZWN0LCBTZWxlY3RDb250ZW50LCBTZWxlY3RJdGVtLCBTZWxlY3RUcmlnZ2VyLCBTZWxlY3RWYWx1ZSB9IGZyb20gJ0AvY29tcG9uZW50cy91aS9zZWxlY3QnO1xuaW1wb3J0IHsgVGV4dGFyZWEgfSBmcm9tICdAL2NvbXBvbmVudHMvdWkvdGV4dGFyZWEnO1xuaW1wb3J0IHsgdXNlVG9hc3QgfSBmcm9tICdAL2NvbXBvbmVudHMvdWkvdXNlLXRvYXN0JztcbmltcG9ydCB7IHN1cGFiYXNlIH0gZnJvbSAnQC9saWIvY3VzdG9tU3VwYWJhc2VDbGllbnQnO1xuXG5jb25zdCBpbml0aWFsRGF0ZSA9IG5ldyBEYXRlKCk7XG5cbmNvbnN0IExhbmNhbWVudG9Gb3JtID0gKHsgb25DYW5jZWwsIG9uU3VjY2VzcyB9KSA9PiB7XG4gIGNvbnN0IHsgdG9hc3QgfSA9IHVzZVRvYXN0KCk7XG5cbiAgY29uc3QgW2RhdGUsIHNldERhdGVdID0gdXNlU3RhdGUoaW5pdGlhbERhdGUpO1xuICBjb25zdCBbdGlwbywgc2V0VGlwb10gPSB1c2VTdGF0ZSgnJyk7XG4gIGNvbnN0IFt1bmlkYWRlLCBzZXRVbmlkYWRlXSA9IHVzZVN0YXRlKCcnKTtcbiAgY29uc3QgW2NsaWVudGVGb3JuZWNlZG9yLCBzZXRDbGllbnRlRm9ybmVjZWRvcl0gPSB1c2VTdGF0ZSgnJyk7XG4gIGNvbnN0IFtkZXNjcmljYW8sIHNldERlc2NyaWNhb10gPSB1c2VTdGF0ZSgnJyk7XG4gIGNvbnN0IFt2YWxvciwgc2V0VmFsb3JdID0gdXNlU3RhdGUoJycpO1xuICBjb25zdCBbYWx1bm8sIHNldEFsdW5vXSA9IHVzZVN0YXRlKCcnKTtcbiAgY29uc3QgW3BhcmNlbGEsIHNldFBhcmNlbGFdID0gdXNlU3RhdGUoJycpO1xuICBjb25zdCBbZGVzY1BvbnR1YWwsIHNldERlc2NQb250dWFsXSA9IHVzZVN0YXRlKCcnKTtcbiAgY29uc3QgW3N0YXR1cywgc2V0U3RhdHVzXSA9IHVzZVN0YXRlKCcnKTtcbiAgY29uc3QgW29icywgc2V0T2JzXSA9IHVzZVN0YXRlKCcnKTtcbiAgY29uc3QgW2xvYWRpbmcsIHNldExvYWRpbmddID0gdXNlU3RhdGUoZmFsc2UpO1xuXG4gIGNvbnN0IHJlc2V0Rm9ybSA9ICgpID0+IHtcbiAgICBzZXREYXRlKG5ldyBEYXRlKCkpO1xuICAgIHNldFRpcG8oJycpO1xuICAgIHNldFVuaWRhZGUoJycpO1xuICAgIHNldENsaWVudGVGb3JuZWNlZG9yKCcnKTtcbiAgICBzZXREZXNjcmljYW8oJycpO1xuICAgIHNldFZhbG9yKCcnKTtcbiAgICBzZXRBbHVubygnJyk7XG4gICAgc2V0UGFyY2VsYSgnJyk7XG4gICAgc2V0RGVzY1BvbnR1YWwoJycpO1xuICAgIHNldFN0YXR1cygnJyk7XG4gICAgc2V0T2JzKCcnKTtcbiAgfTtcblxuICBjb25zdCBoYW5kbGVDYW5jZWwgPSAoKSA9PiB7XG4gICAgcmVzZXRGb3JtKCk7XG4gICAgaWYgKHR5cGVvZiBvbkNhbmNlbCA9PT0gJ2Z1bmN0aW9uJykge1xuICAgICAgb25DYW5jZWwoKTtcbiAgICB9XG4gIH07XG5cbiAgY29uc3QgaGFuZGxlU2F2ZSA9IGFzeW5jICgpID0+IHtcbiAgICBpZiAoIWRhdGUgfHwgIXRpcG8gfHwgIXVuaWRhZGUgfHwgIWNsaWVudGVGb3JuZWNlZG9yIHx8ICFkZXNjcmljYW8gfHwgIXZhbG9yIHx8ICFzdGF0dXMpIHtcbiAgICAgIHRvYXN0KHtcbiAgICAgICAgdGl0bGU6ICdFcnJvIGRlIFZhbGlkYcOnw6NvJyxcbiAgICAgICAgZGVzY3JpcHRpb246ICdQb3IgZmF2b3IsIHByZWVuY2hhIHRvZG9zIG9zIGNhbXBvcyBvYnJpZ2F0w7NyaW9zLicsXG4gICAgICAgIHZhcmlhbnQ6ICdkZXN0cnVjdGl2ZScsXG4gICAgICB9KTtcbiAgICAgIHJldHVybjtcbiAgICB9XG5cbiAgICBjb25zdCBkZXNjUG9udHVhbFZhbG9yID0gZGVzY1BvbnR1YWwudHJpbSgpO1xuICAgIGNvbnN0IHBhcnNlZERlc2NQb250dWFsID0gZGVzY1BvbnR1YWxWYWxvciAhPT0gJycgPyBwYXJzZUZsb2F0KGRlc2NQb250dWFsVmFsb3IpIDogbnVsbDtcblxuICAgIGlmIChkZXNjUG9udHVhbFZhbG9yICE9PSAnJyAmJiBOdW1iZXIuaXNOYU4ocGFyc2VkRGVzY1BvbnR1YWwpKSB7XG4gICAgICB0b2FzdCh7XG4gICAgICAgIHRpdGxlOiAnVmFsb3IgaW52w6FsaWRvJyxcbiAgICAgICAgZGVzY3JpcHRpb246ICdJbmZvcm1lIHVtIHZhbG9yIG51bcOpcmljbyB2w6FsaWRvIHBhcmEgRGVzY29udG8gUG9udHVhbC4nLFxuICAgICAgICB2YXJpYW50OiAnZGVzdHJ1Y3RpdmUnLFxuICAgICAgfSk7XG4gICAgICByZXR1cm47XG4gICAgfVxuXG4gICAgc2V0TG9hZGluZyh0cnVlKTtcblxuICAgIGNvbnN0IG5ld0VudHJ5ID0ge1xuICAgICAgZGF0YTogZm9ybWF0KGRhdGUsICd5eXl5LU1NLWRkJyksXG4gICAgICB0aXBvLFxuICAgICAgdW5pZGFkZSxcbiAgICAgIGNsaWVudGVfZm9ybmVjZWRvcjogY2xpZW50ZUZvcm5lY2Vkb3IsXG4gICAgICBkZXNjcmljYW8sXG4gICAgICB2YWxvcjogcGFyc2VGbG9hdCh2YWxvciksXG4gICAgICBzdGF0dXMsXG4gICAgICBvYnMsXG4gICAgICBhbHVubzogYWx1bm8udHJpbSgpIHx8IG51bGwsXG4gICAgICBwYXJjZWw6IHBhcmNlbGEudHJpbSgpIHx8IG51bGwsXG4gICAgICBkZXNjX3BvbnR1YWw6IHBhcnNlZERlc2NQb250dWFsLFxuICAgIH07XG5cbiAgICBjb25zdCB7IGVycm9yIH0gPSBhd2FpdCBzdXBhYmFzZS5mcm9tKCdsYW5jYW1lbnRvcycpLmluc2VydChbbmV3RW50cnldKTtcblxuICAgIHNldExvYWRpbmcoZmFsc2UpO1xuXG4gICAgaWYgKGVycm9yKSB7XG4gICAgICB0b2FzdCh7XG4gICAgICAgIHRpdGxlOiAnRXJybyBhbyBzYWx2YXInLFxuICAgICAgICBkZXNjcmlwdGlvbjogYE7Do28gZm9pIHBvc3PDrXZlbCBzYWx2YXIgbyBsYW7Dp2FtZW50by4gRXJybzogJHtlcnJvci5tZXNzYWdlfWAsXG4gICAgICAgIHZhcmlhbnQ6ICdkZXN0cnVjdGl2ZScsXG4gICAgICB9KTtcbiAgICAgIHJldHVybjtcbiAgICB9XG5cbiAgICB0b2FzdCh7XG4gICAgICB0aXRsZTogJ1N1Y2Vzc28hJyxcbiAgICAgIGRlc2NyaXB0aW9uOiAnTGFuw6dhbWVudG8gc2Fsdm8gY29tIHN1Y2Vzc28uJyxcbiAgICB9KTtcblxuICAgIHJlc2V0Rm9ybSgpO1xuXG4gICAgaWYgKHR5cGVvZiBvblN1Y2Nlc3MgPT09ICdmdW5jdGlvbicpIHtcbiAgICAgIG9uU3VjY2VzcygpO1xuICAgIH1cbiAgfTtcblxuICByZXR1cm4gKFxuICAgIDxDYXJkIGNsYXNzTmFtZT1cImdsYXNzLWNhcmRcIj5cbiAgICAgIDxDYXJkSGVhZGVyPlxuICAgICAgICA8Q2FyZFRpdGxlIGNsYXNzTmFtZT1cInRleHQtd2hpdGVcIj5BZGljaW9uYXIgTm92YSBUcmFuc2HDp8OjbzwvQ2FyZFRpdGxlPlxuICAgICAgPC9DYXJkSGVhZGVyPlxuICAgICAgPENhcmRDb250ZW50IGNsYXNzTmFtZT1cInNwYWNlLXktNlwiPlxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ3JpZC1jb2xzLTEgbWQ6Z3JpZC1jb2xzLTIgZ2FwLTZcIj5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktMlwiPlxuICAgICAgICAgICAgPExhYmVsIGh0bWxGb3I9XCJkYXRhXCIgY2xhc3NOYW1lPVwidGV4dC1ncmF5LTMwMFwiPkRhdGE8L0xhYmVsPlxuICAgICAgICAgICAgPFBvcG92ZXI+XG4gICAgICAgICAgICAgIDxQb3BvdmVyVHJpZ2dlciBhc0NoaWxkPlxuICAgICAgICAgICAgICAgIDxCdXR0b25cbiAgICAgICAgICAgICAgICAgIHZhcmlhbnQ9XCJvdXRsaW5lXCJcbiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT17Y24oXG4gICAgICAgICAgICAgICAgICAgICd3LWZ1bGwganVzdGlmeS1zdGFydCB0ZXh0LWxlZnQgZm9udC1ub3JtYWwnLFxuICAgICAgICAgICAgICAgICAgICAhZGF0ZSAmJiAndGV4dC1tdXRlZC1mb3JlZ3JvdW5kJ1xuICAgICAgICAgICAgICAgICAgKX1cbiAgICAgICAgICAgICAgICA+XG4gICAgICAgICAgICAgICAgICA8Q2FsZW5kYXJJY29uIGNsYXNzTmFtZT1cIm1yLTIgaC00IHctNFwiIC8+XG4gICAgICAgICAgICAgICAgICB7ZGF0ZSA/IGZvcm1hdChkYXRlLCAnUFBQJywgeyBsb2NhbGU6IHB0QlIgfSkgOiA8c3Bhbj5Fc2NvbGhhIHVtYSBkYXRhPC9zcGFuPn1cbiAgICAgICAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICAgICAgPC9Qb3BvdmVyVHJpZ2dlcj5cbiAgICAgICAgICAgICAgPFBvcG92ZXJDb250ZW50IGNsYXNzTmFtZT1cInctYXV0byBwLTBcIj5cbiAgICAgICAgICAgICAgICA8Q2FsZW5kYXJcbiAgICAgICAgICAgICAgICAgIG1vZGU9XCJzaW5nbGVcIlxuICAgICAgICAgICAgICAgICAgc2VsZWN0ZWQ9e2RhdGV9XG4gICAgICAgICAgICAgICAgICBvblNlbGVjdD17KHNlbGVjdGVkRGF0ZSkgPT4gc2VsZWN0ZWREYXRlICYmIHNldERhdGUoc2VsZWN0ZWREYXRlKX1cbiAgICAgICAgICAgICAgICAgIGluaXRpYWxGb2N1c1xuICAgICAgICAgICAgICAgICAgbG9jYWxlPXtwdEJSfVxuICAgICAgICAgICAgICAgIC8+XG4gICAgICAgICAgICAgIDwvUG9wb3ZlckNvbnRlbnQ+XG4gICAgICAgICAgICA8L1BvcG92ZXI+XG4gICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJzcGFjZS15LTJcIj5cbiAgICAgICAgICAgIDxMYWJlbCBodG1sRm9yPVwidGlwb1wiIGNsYXNzTmFtZT1cInRleHQtZ3JheS0zMDBcIj5UaXBvPC9MYWJlbD5cbiAgICAgICAgICAgIDxTZWxlY3Qgb25WYWx1ZUNoYW5nZT17c2V0VGlwb30gdmFsdWU9e3RpcG99PlxuICAgICAgICAgICAgICA8U2VsZWN0VHJpZ2dlciBjbGFzc05hbWU9XCJ3LWZ1bGxcIj5cbiAgICAgICAgICAgICAgICA8U2VsZWN0VmFsdWUgcGxhY2Vob2xkZXI9XCJTZWxlY2lvbmUgbyB0aXBvXCIgLz5cbiAgICAgICAgICAgICAgPC9TZWxlY3RUcmlnZ2VyPlxuICAgICAgICAgICAgICA8U2VsZWN0Q29udGVudD5cbiAgICAgICAgICAgICAgICA8U2VsZWN0SXRlbSB2YWx1ZT1cIkVudHJhZGFcIj5FbnRyYWRhPC9TZWxlY3RJdGVtPlxuICAgICAgICAgICAgICAgIDxTZWxlY3RJdGVtIHZhbHVlPVwiU2FpZGFcIj5TYcOtZGE8L1NlbGVjdEl0ZW0+XG4gICAgICAgICAgICAgIDwvU2VsZWN0Q29udGVudD5cbiAgICAgICAgICAgIDwvU2VsZWN0PlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICA8L2Rpdj5cblxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ3JpZC1jb2xzLTEgbWQ6Z3JpZC1jb2xzLTIgZ2FwLTZcIj5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktMlwiPlxuICAgICAgICAgICAgPExhYmVsIGh0bWxGb3I9XCJ1bmlkYWRlXCIgY2xhc3NOYW1lPVwidGV4dC1ncmF5LTMwMFwiPlVuaWRhZGU8L0xhYmVsPlxuICAgICAgICAgICAgPFNlbGVjdCBvblZhbHVlQ2hhbmdlPXtzZXRVbmlkYWRlfSB2YWx1ZT17dW5pZGFkZX0+XG4gICAgICAgICAgICAgIDxTZWxlY3RUcmlnZ2VyIGNsYXNzTmFtZT1cInctZnVsbFwiPlxuICAgICAgICAgICAgICAgIDxTZWxlY3RWYWx1ZSBwbGFjZWhvbGRlcj1cIlNlbGVjaW9uZSBhIHVuaWRhZGVcIiAvPlxuICAgICAgICAgICAgICA8L1NlbGVjdFRyaWdnZXI+XG4gICAgICAgICAgICAgIDxTZWxlY3RDb250ZW50PlxuICAgICAgICAgICAgICAgIDxTZWxlY3RJdGVtIHZhbHVlPVwiQ05BIEFuZ3JhIGRvcyBSZWlzXCI+Q05BIEFuZ3JhIGRvcyBSZWlzPC9TZWxlY3RJdGVtPlxuICAgICAgICAgICAgICAgIDxTZWxlY3RJdGVtIHZhbHVlPVwiQ05BIE1hbmdhcmF0aWJhXCI+Q05BIE1hbmdhcmF0aWJhPC9TZWxlY3RJdGVtPlxuICAgICAgICAgICAgICAgIDxTZWxlY3RJdGVtIHZhbHVlPVwiQ2FzYVwiPkNhc2E8L1NlbGVjdEl0ZW0+XG4gICAgICAgICAgICAgIDwvU2VsZWN0Q29udGVudD5cbiAgICAgICAgICAgIDwvU2VsZWN0PlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS0yXCI+XG4gICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cImNsaWVudGVGb3JuZWNlZG9yXCIgY2xhc3NOYW1lPVwidGV4dC1ncmF5LTMwMFwiPkNsaWVudGUvRm9ybmVjZWRvcjwvTGFiZWw+XG4gICAgICAgICAgICA8SW5wdXRcbiAgICAgICAgICAgICAgaWQ9XCJjbGllbnRlRm9ybmVjZWRvclwiXG4gICAgICAgICAgICAgIHBsYWNlaG9sZGVyPVwiTm9tZSBkbyBjbGllbnRlIG91IGZvcm5lY2Vkb3JcIlxuICAgICAgICAgICAgICB2YWx1ZT17Y2xpZW50ZUZvcm5lY2Vkb3J9XG4gICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZXZlbnQpID0+IHNldENsaWVudGVGb3JuZWNlZG9yKGV2ZW50LnRhcmdldC52YWx1ZSl9XG4gICAgICAgICAgICAvPlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICA8L2Rpdj5cblxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ3JpZC1jb2xzLTEgbWQ6Z3JpZC1jb2xzLTIgZ2FwLTZcIj5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktMlwiPlxuICAgICAgICAgICAgPExhYmVsIGh0bWxGb3I9XCJkZXNjcmljYW9cIiBjbGFzc05hbWU9XCJ0ZXh0LWdyYXktMzAwXCI+RGVzY3Jpw6fDo288L0xhYmVsPlxuICAgICAgICAgICAgPElucHV0XG4gICAgICAgICAgICAgIGlkPVwiZGVzY3JpY2FvXCJcbiAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCJFeDogVmVuZGEgZGUgcHJvZHV0byBYXCJcbiAgICAgICAgICAgICAgdmFsdWU9e2Rlc2NyaWNhb31cbiAgICAgICAgICAgICAgb25DaGFuZ2U9eyhldmVudCkgPT4gc2V0RGVzY3JpY2FvKGV2ZW50LnRhcmdldC52YWx1ZSl9XG4gICAgICAgICAgICAvPlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS0yXCI+XG4gICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cInZhbG9yXCIgY2xhc3NOYW1lPVwidGV4dC1ncmF5LTMwMFwiPlZhbG9yPC9MYWJlbD5cbiAgICAgICAgICAgIDxJbnB1dFxuICAgICAgICAgICAgICBpZD1cInZhbG9yXCJcbiAgICAgICAgICAgICAgdHlwZT1cIm51bWJlclwiXG4gICAgICAgICAgICAgIHBsYWNlaG9sZGVyPVwiMCwwMFwiXG4gICAgICAgICAgICAgIHZhbHVlPXt2YWxvcn1cbiAgICAgICAgICAgICAgb25DaGFuZ2U9eyhldmVudCkgPT4gc2V0VmFsb3IoZXZlbnQudGFyZ2V0LnZhbHVlKX1cbiAgICAgICAgICAgIC8+XG4gICAgICAgICAgPC9kaXY+XG4gICAgICAgIDwvZGl2PlxuXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZ3JpZCBncmlkLWNvbHMtMSBtZDpncmlkLWNvbHMtMiBnYXAtNlwiPlxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS0yXCI+XG4gICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cImFsdW5vXCIgY2xhc3NOYW1lPVwidGV4dC1ncmF5LTMwMFwiPkFsdW5vPC9MYWJlbD5cbiAgICAgICAgICAgIDxJbnB1dFxuICAgICAgICAgICAgICBpZD1cImFsdW5vXCJcbiAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCJOb21lIGRvIGFsdW5vXCJcbiAgICAgICAgICAgICAgdmFsdWU9e2FsdW5vfVxuICAgICAgICAgICAgICBvbkNoYW5nZT17KGV2ZW50KSA9PiBzZXRBbHVubyhldmVudC50YXJnZXQudmFsdWUpfVxuICAgICAgICAgICAgLz5cbiAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktMlwiPlxuICAgICAgICAgICAgPExhYmVsIGh0bWxGb3I9XCJwYXJjZWxhXCIgY2xhc3NOYW1lPVwidGV4dC1ncmF5LTMwMFwiPlBhcmNlbGE8L0xhYmVsPlxuICAgICAgICAgICAgPElucHV0XG4gICAgICAgICAgICAgIGlkPVwicGFyY2VsYVwiXG4gICAgICAgICAgICAgIHBsYWNlaG9sZGVyPVwiRXg6IDEvMTJcIlxuICAgICAgICAgICAgICB2YWx1ZT17cGFyY2VsYX1cbiAgICAgICAgICAgICAgb25DaGFuZ2U9eyhldmVudCkgPT4gc2V0UGFyY2VsYShldmVudC50YXJnZXQudmFsdWUpfVxuICAgICAgICAgICAgLz5cbiAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJncmlkIGdyaWQtY29scy0xIG1kOmdyaWQtY29scy0yIGdhcC02XCI+XG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJzcGFjZS15LTJcIj5cbiAgICAgICAgICAgIDxMYWJlbCBodG1sRm9yPVwic3RhdHVzXCIgY2xhc3NOYW1lPVwidGV4dC1ncmF5LTMwMFwiPlN0YXR1czwvTGFiZWw+XG4gICAgICAgICAgICA8U2VsZWN0IG9uVmFsdWVDaGFuZ2U9e3NldFN0YXR1c30gdmFsdWU9e3N0YXR1c30+XG4gICAgICAgICAgICAgIDxTZWxlY3RUcmlnZ2VyIGNsYXNzTmFtZT1cInctZnVsbFwiPlxuICAgICAgICAgICAgICAgIDxTZWxlY3RWYWx1ZSBwbGFjZWhvbGRlcj1cIlNlbGVjaW9uZSBvIHN0YXR1c1wiIC8+XG4gICAgICAgICAgICAgIDwvU2VsZWN0VHJpZ2dlcj5cbiAgICAgICAgICAgICAgPFNlbGVjdENvbnRlbnQ+XG4gICAgICAgICAgICAgICAgPFNlbGVjdEl0ZW0gdmFsdWU9XCJBIFZlbmNlclwiPkEgVmVuY2VyPC9TZWxlY3RJdGVtPlxuICAgICAgICAgICAgICAgIDxTZWxlY3RJdGVtIHZhbHVlPVwiUGFnb1wiPlBhZ288L1NlbGVjdEl0ZW0+XG4gICAgICAgICAgICAgIDwvU2VsZWN0Q29udGVudD5cbiAgICAgICAgICAgIDwvU2VsZWN0PlxuICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS0yXCI+XG4gICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cImRlc2NQb250dWFsXCIgY2xhc3NOYW1lPVwidGV4dC1ncmF5LTMwMFwiPkRlc2MuIFBvbnR1YWw8L0xhYmVsPlxuICAgICAgICAgICAgPElucHV0XG4gICAgICAgICAgICAgIGlkPVwiZGVzY1BvbnR1YWxcIlxuICAgICAgICAgICAgICB0eXBlPVwibnVtYmVyXCJcbiAgICAgICAgICAgICAgaW5wdXRNb2RlPVwiZGVjaW1hbFwiXG4gICAgICAgICAgICAgIHN0ZXA9XCIwLjAxXCJcbiAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCIwLDAwXCJcbiAgICAgICAgICAgICAgdmFsdWU9e2Rlc2NQb250dWFsfVxuICAgICAgICAgICAgICBvbkNoYW5nZT17KGV2ZW50KSA9PiBzZXREZXNjUG9udHVhbChldmVudC50YXJnZXQudmFsdWUpfVxuICAgICAgICAgICAgLz5cbiAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJzcGFjZS15LTJcIj5cbiAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cIm9ic1wiIGNsYXNzTmFtZT1cInRleHQtZ3JheS0zMDBcIj5PYnNlcnZhw6fDtWVzPC9MYWJlbD5cbiAgICAgICAgICA8VGV4dGFyZWFcbiAgICAgICAgICAgIGlkPVwib2JzXCJcbiAgICAgICAgICAgIHBsYWNlaG9sZGVyPVwiRGV0YWxoZXMgYWRpY2lvbmFpcyBzb2JyZSBvIGxhbsOnYW1lbnRvIChvcGNpb25hbClcIlxuICAgICAgICAgICAgdmFsdWU9e29ic31cbiAgICAgICAgICAgIG9uQ2hhbmdlPXsoZXZlbnQpID0+IHNldE9icyhldmVudC50YXJnZXQudmFsdWUpfVxuICAgICAgICAgIC8+XG4gICAgICAgIDwvZGl2PlxuXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBqdXN0aWZ5LWVuZCBnYXAtNCBwdC00XCI+XG4gICAgICAgICAgPEJ1dHRvbiB2YXJpYW50PVwib3V0bGluZVwiIG9uQ2xpY2s9e2hhbmRsZUNhbmNlbH0gZGlzYWJsZWQ9e2xvYWRpbmd9PlxuICAgICAgICAgICAgQ2FuY2VsYXJcbiAgICAgICAgICA8L0J1dHRvbj5cbiAgICAgICAgICA8QnV0dG9uIG9uQ2xpY2s9e2hhbmRsZVNhdmV9IGRpc2FibGVkPXtsb2FkaW5nfT5cbiAgICAgICAgICAgIHtsb2FkaW5nID8gJ1NhbHZhbmRvLi4uJyA6ICdTYWx2YXIgTGFuw6dhbWVudG8nfVxuICAgICAgICAgIDwvQnV0dG9uPlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvQ2FyZENvbnRlbnQ+XG4gICAgPC9DYXJkPlxuICApO1xufTtcblxuZXhwb3J0IGRlZmF1bHQgTGFuY2FtZW50b0Zvcm07XG4iXSwiZmlsZSI6IkQ6L1VzZXJzL2RlZmlhL0RvY3VtZW50cy9EZXNlbnZvbHZpbWVudG8vRGVmRmluYW5jZS12MS9zcmMvY29tcG9uZW50cy9mb3Jtcy9MYW5jYW1lbnRvRm9ybS5qc3gifQ==

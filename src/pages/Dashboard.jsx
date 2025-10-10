@@ -74,7 +74,7 @@ import React, { useState, useEffect } from 'react';
       const handleImportData = async () => {
         setImportLoading(true);
         try {
-          toast({ title: "Iniciando importação...", description: "Buscando dados das planilhas.", variant: "default" });
+          toast({ title: "Iniciando importaÃ§Ã£o...", description: "Buscando dados das planilhas.", variant: "default" });
           
           const { data: functionData, error: functionError } = await supabase.functions.invoke('import-google-sheets', {
             body: {},
@@ -90,16 +90,16 @@ import React, { useState, useEffect } from 'react';
           await loadDataFromSupabase();
     
         } catch (error) {
-          console.error("Erro na importação: ", error);
-          let description = "Ocorreu um erro durante a importação.";
+          console.error("Erro na importaÃ§Ã£o: ", error);
+          let description = "Ocorreu um erro durante a importaÃ§Ã£o.";
           if (error.message.includes("non-2xx")) {
-            description = "A função de importação falhou no servidor. Verifique os logs da função no Supabase.";
+            description = "A funÃ§Ã£o de importaÃ§Ã£o falhou no servidor. Verifique os logs da funÃ§Ã£o no Supabase.";
           } else if (error.message) {
             description = error.message;
           }
           
           toast({
-            title: "Erro na importação",
+            title: "Erro na importaÃ§Ã£o",
             description: description,
             variant: "destructive",
           });
@@ -169,17 +169,17 @@ import React, { useState, useEffect } from 'react';
         { label: "A Receber", path: "/contas-receber", icon: ArrowRight },
         { label: "A Pagar", path: "/contas-pagar", icon: ArrowLeft },
         { label: "Fluxo de Caixa", path: "/fluxo-caixa", icon: Wallet },
-        { label: "Lançamentos", path: "/lancamentos", icon: PlusCircle },
+        { label: "Financeiro", path: "/financeiro", icon: PlusCircle },
         { label: "Cadastro", path: "/cadastros", icon: UserPlus },
-        { label: "Relatórios", path: "/relatorios", icon: FileText },
-        { label: "Importar", action: handleImportData, icon: Download, loadingLabel: "Importando..." },
+        { label: "Relat\u00f3rios", path: "/relatorios", icon: FileText },
+        { label: "Integra\u00e7\u00e3o", action: handleImportData, icon: Download, loadingLabel: "Integrando..." },
       ];
     
       return (
         <div className="space-y-8">
           <Helmet>
             <title>Dashboard - SysFina</title>
-            <meta name="description" content="Dashboard principal com visão geral das finanças" />
+            <meta name="description" content="Dashboard principal com visÃ£o geral das finanÃ§as" />
           </Helmet>
     
           <motion.div
@@ -188,7 +188,10 @@ import React, { useState, useEffect } from 'react';
             className="flex justify-between items-center"
           >
             <div className="text-left">
-                <h1 className="text-3xl font-bold gradient-text">Dashboard Financeiro</h1>
+                <div className="flex flex-col">
+                    <h1 className="text-3xl font-bold gradient-text">Sistema Financeiro</h1>
+                    <span className="text-sm italic text-gray-300">CAEDcj v1.1.0 by Defiant</span>
+                </div>
                 <p className="text-gray-400 mt-1">Bem-vindo, {user?.email}!</p>
             </div>
             <Button onClick={signOut} variant="outline" size="sm">
@@ -207,7 +210,7 @@ import React, { useState, useEffect } from 'react';
                     {navButtons.map((item, index) => {
                         const Icon = item.icon;
                         const action = item.path ? () => navigate(item.path) : item.action;
-                        const isDisabled = item.label === "Importar" && importLoading;
+                        const isDisabled = item.label === "Integra\u00e7\u00e3o" && importLoading;
                         return (
                             <Button 
                                 key={index} 

@@ -3,7 +3,7 @@ import React from 'react';
     import { useNavigate } from 'react-router-dom';
     import { Helmet } from 'react-helmet';
     import { motion } from 'framer-motion';
-    import { BarChart3, PieChart, TrendingUp, ArrowLeft, FileClock } from 'lucide-react';
+import { BarChart3, PieChart, TrendingUp, ArrowLeft, FileClock, Printer } from 'lucide-react';
     
     import { Button } from '@/components/ui/button';
     import { Card, CardContent } from '@/components/ui/card';
@@ -52,6 +52,13 @@ import React from 'react';
                 description: "Acompanhe o saldo mensal com entradas e saidas abertas.",
                 action: () => handleNavigation('/relatorios/fechamento'),
                 implemented: true,
+            },
+            {
+                title: "Impressão de DOC",
+                icon: Printer,
+                description: "Gere documentos DOC formatados para impressão.",
+                action: () => handleNavigation('#', false),
+                implemented: false,
             }
         ];
     

@@ -7,6 +7,7 @@ import React from 'react';
     import ContasReceber from '@/pages/ContasReceber';
     import ContasPagar from '@/pages/ContasPagar';
     import FluxoCaixa from '@/pages/FluxoCaixa';
+    import Financeiro from '@/pages/Financeiro';
     import Lancamentos from '@/pages/Lancamentos';
     import Relatorios from '@/pages/Relatorios';
     import Cadastros from '@/pages/Cadastros';
@@ -48,6 +49,7 @@ import React from 'react';
                 <Route path="/contas-receber" element={<PrivateRoute><ContasReceber /></PrivateRoute>} />
                 <Route path="/contas-pagar" element={<PrivateRoute><ContasPagar /></PrivateRoute>} />
                 <Route path="/fluxo-caixa" element={<PrivateRoute><FluxoCaixa /></PrivateRoute>} />
+                <Route path="/financeiro" element={<PrivateRoute><Financeiro /></PrivateRoute>} />
                 <Route path="/lancamentos" element={<PrivateRoute><Lancamentos /></PrivateRoute>} />
                 <Route path="/relatorios" element={<PrivateRoute><Relatorios /></PrivateRoute>} />
                 <Route path="/cadastros" element={<PrivateRoute><Cadastros /></PrivateRoute>} />

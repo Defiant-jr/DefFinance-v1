@@ -1,0 +1,691 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/ContasReceber.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=b50a5041"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=b50a5041"; const React = __vite__cjsImport3_react.__esModule ? __vite__cjsImport3_react.default : __vite__cjsImport3_react; const useState = __vite__cjsImport3_react["useState"]; const useEffect = __vite__cjsImport3_react["useEffect"]; const useMemo = __vite__cjsImport3_react["useMemo"];
+import { motion } from "/node_modules/.vite/deps/framer-motion.js?v=b50a5041";
+import { Helmet } from "/node_modules/.vite/deps/react-helmet.js?v=b50a5041";
+import { useNavigate } from "/node_modules/.vite/deps/react-router-dom.js?v=b50a5041";
+import { Calendar, Filter, User, DollarSign, AlertTriangle, ArrowLeft, CheckCircle } from "/node_modules/.vite/deps/lucide-react.js?v=b50a5041";
+import { Card, CardContent, CardHeader, CardTitle } from "/src/components/ui/card.jsx";
+import { Button } from "/src/components/ui/button.jsx";
+import { Input } from "/src/components/ui/input.jsx";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "/src/components/ui/select.jsx";
+import { supabase } from "/src/lib/customSupabaseClient.js";
+import { useToast } from "/src/components/ui/use-toast.js";
+import { format as formatDateFns } from "/node_modules/.vite/deps/date-fns.js?v=b50a5041";
+const ContasReceber = () => {
+  _s();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const [contas, setContas] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [filters, setFilters] = useState({
+    cliente: "",
+    status: "todos",
+    unidade: "todas",
+    dataInicio: "",
+    dataFim: ""
+  });
+  useEffect(() => {
+    loadData();
+  }, []);
+  const loadData = async () => {
+    setLoading(true);
+    const { data, error } = await supabase.from("lancamentos").select("*").eq("tipo", "Entrada");
+    if (error) {
+      toast({ title: "Erro ao carregar dados", description: error.message, variant: "destructive" });
+    } else {
+      setContas(data || []);
+    }
+    setLoading(false);
+  };
+  const getStatus = (conta) => {
+    if (conta.status === "Pago")
+      return "pago";
+    const hoje = /* @__PURE__ */ new Date();
+    hoje.setHours(0, 0, 0, 0);
+    const vencimento = /* @__PURE__ */ new Date(conta.data + "T00:00:00");
+    return vencimento < hoje ? "atrasado" : "aberto";
+  };
+  const filteredContas = useMemo(() => {
+    let filtered = [...contas];
+    if (filters.cliente) {
+      filtered = filtered.filter(
+        (conta) => conta.cliente_fornecedor?.toLowerCase().includes(filters.cliente.toLowerCase())
+      );
+    }
+    if (filters.status !== "todos") {
+      filtered = filtered.filter((conta) => getStatus(conta) === filters.status);
+    }
+    if (filters.unidade !== "todas") {
+      filtered = filtered.filter((conta) => conta.unidade === filters.unidade);
+    }
+    if (filters.dataInicio) {
+      const startDate = /* @__PURE__ */ new Date(filters.dataInicio + "T00:00:00");
+      filtered = filtered.filter((conta) => /* @__PURE__ */ new Date(conta.data + "T00:00:00") >= startDate);
+    }
+    if (filters.dataFim) {
+      const endDate = /* @__PURE__ */ new Date(filters.dataFim + "T00:00:00");
+      filtered = filtered.filter((conta) => /* @__PURE__ */ new Date(conta.data + "T00:00:00") <= endDate);
+    }
+    return filtered.sort((a, b) => new Date(a.data) - new Date(b.data));
+  }, [contas, filters]);
+  const formatCurrency = (value) => (value || 0).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  const formatDate = (dateString) => (/* @__PURE__ */ new Date(dateString + "T00:00:00")).toLocaleDateString("pt-BR", { timeZone: "UTC" });
+  const getStatusColor = (status) => ({
+    "atrasado": "bg-red-500/20 text-red-400 border-red-500/30",
+    "aberto": "bg-yellow-500/20 text-yellow-400 border-yellow-500/30",
+    "pago": "bg-green-500/20 text-green-400 border-green-500/30"
+  })[status] || "bg-gray-500/20 text-gray-400 border-gray-500/30";
+  const getStatusLabel = (status) => ({
+    "atrasado": "Atrasado",
+    "aberto": "Em Aberto",
+    "pago": "Pago"
+  })[status] || status;
+  const groupedContas = useMemo(() => {
+    return filteredContas.reduce((acc, conta) => {
+      (acc[conta.data] = acc[conta.data] || []).push(conta);
+      return acc;
+    }, {});
+  }, [filteredContas]);
+  const calculateTotalsByUnit = (contas2) => {
+    const totals = {
+      "CNA Angra dos Reis": 0,
+      "CNA Mangaratiba": 0,
+      "Casa": 0
+    };
+    contas2.forEach((conta) => {
+      if (totals.hasOwnProperty(conta.unidade)) {
+        totals[conta.unidade] += conta.valor;
+      }
+    });
+    return totals;
+  };
+  const totalGeral = filteredContas.reduce((sum, conta) => sum + conta.valor, 0);
+  const totalAberto = filteredContas.filter((c) => getStatus(c) === "aberto");
+  const totalAtrasado = filteredContas.filter((c) => getStatus(c) === "atrasado");
+  const totalAbertoPorUnidade = calculateTotalsByUnit(totalAberto);
+  const totalAtrasadoPorUnidade = calculateTotalsByUnit(totalAtrasado);
+  const handleMarkAsPaid = async (id) => {
+    const today = formatDateFns(/* @__PURE__ */ new Date(), "yyyy-MM-dd");
+    const { error } = await supabase.from("lancamentos").update({ status: "Pago", datapag: today }).eq("id", id);
+    if (error) {
+      toast({ title: "Erro", description: "Não foi possível atualizar o status.", variant: "destructive" });
+    } else {
+      toast({ title: "Sucesso!", description: "Lançamento marcado como recebido." });
+      loadData();
+    }
+  };
+  return /* @__PURE__ */ jsxDEV("div", { className: "space-y-8", children: [
+    /* @__PURE__ */ jsxDEV(Helmet, { children: [
+      /* @__PURE__ */ jsxDEV("title", { children: "Contas a Receber - SysFina" }, void 0, false, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 152,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV("meta", { name: "description", content: "Gerencie suas contas a receber com filtros e totalizadores" }, void 0, false, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 153,
+        columnNumber: 13
+      }, this)
+    ] }, void 0, true, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+      lineNumber: 151,
+      columnNumber: 11
+    }, this),
+    /* @__PURE__ */ jsxDEV(motion.div, { initial: { opacity: 0, y: -20 }, animate: { opacity: 1, y: 0 }, className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4", children: /* @__PURE__ */ jsxDEV("div", { className: "flex items-center gap-4", children: [
+      /* @__PURE__ */ jsxDEV(Button, { variant: "ghost", size: "icon", onClick: () => navigate("/"), className: "text-white hover:bg-white/10", children: /* @__PURE__ */ jsxDEV(ArrowLeft, { className: "w-6 h-6" }, void 0, false, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 158,
+        columnNumber: 122
+      }, this) }, void 0, false, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 158,
+        columnNumber: 15
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { children: [
+        /* @__PURE__ */ jsxDEV("h1", { className: "text-3xl font-bold gradient-text", children: "Contas a Receber" }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 160,
+          columnNumber: 17
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "text-gray-400 mt-2", children: "Gerencie seus recebimentos" }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 161,
+          columnNumber: 17
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 159,
+        columnNumber: 15
+      }, this)
+    ] }, void 0, true, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+      lineNumber: 157,
+      columnNumber: 13
+    }, this) }, void 0, false, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+      lineNumber: 156,
+      columnNumber: 11
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-6", children: [
+      /* @__PURE__ */ jsxDEV(Card, { className: "glass-card", children: [
+        /* @__PURE__ */ jsxDEV(CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+          /* @__PURE__ */ jsxDEV(CardTitle, { className: "text-sm font-medium text-gray-300", children: "Total Filtrado" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 167,
+            columnNumber: 124
+          }, this),
+          /* @__PURE__ */ jsxDEV(DollarSign, { className: "w-4 h-4 text-blue-400" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 167,
+            columnNumber: 207
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 167,
+          columnNumber: 42
+        }, this),
+        /* @__PURE__ */ jsxDEV(CardContent, { children: /* @__PURE__ */ jsxDEV("div", { className: "text-2xl font-bold text-blue-400", children: formatCurrency(totalGeral) }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 167,
+          columnNumber: 281
+        }, this) }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 167,
+          columnNumber: 268
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 167,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV(Card, { className: "glass-card", children: [
+        /* @__PURE__ */ jsxDEV(CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+          /* @__PURE__ */ jsxDEV(CardTitle, { className: "text-sm font-medium text-gray-300", children: "Em Aberto" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 168,
+            columnNumber: 124
+          }, this),
+          /* @__PURE__ */ jsxDEV(Calendar, { className: "w-4 h-4 text-yellow-400" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 168,
+            columnNumber: 202
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 168,
+          columnNumber: 42
+        }, this),
+        /* @__PURE__ */ jsxDEV(CardContent, { children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "text-2xl font-bold text-yellow-400", children: formatCurrency(totalAberto.reduce((s, c) => s + c.valor, 0)) }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 168,
+            columnNumber: 276
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "mt-2 space-y-1 text-xs text-gray-400", children: Object.entries(totalAbertoPorUnidade).map(([unit, val]) => /* @__PURE__ */ jsxDEV("div", { className: "flex justify-between", children: [
+            /* @__PURE__ */ jsxDEV("span", { children: [
+              unit,
+              ":"
+            ] }, void 0, true, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 168,
+              columnNumber: 559
+            }, this),
+            /* @__PURE__ */ jsxDEV("span", { className: "font-semibold", children: formatCurrency(val) }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 168,
+              columnNumber: 579
+            }, this)
+          ] }, unit, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 168,
+            columnNumber: 510
+          }, this)) }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 168,
+            columnNumber: 396
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 168,
+          columnNumber: 263
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 168,
+        columnNumber: 13
+      }, this),
+      /* @__PURE__ */ jsxDEV(Card, { className: "glass-card", children: [
+        /* @__PURE__ */ jsxDEV(CardHeader, { className: "flex flex-row items-center justify-between space-y-0 pb-2", children: [
+          /* @__PURE__ */ jsxDEV(CardTitle, { className: "text-sm font-medium text-gray-300", children: "Atrasado" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 169,
+            columnNumber: 124
+          }, this),
+          /* @__PURE__ */ jsxDEV(AlertTriangle, { className: "w-4 h-4 text-red-400" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 169,
+            columnNumber: 201
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 169,
+          columnNumber: 42
+        }, this),
+        /* @__PURE__ */ jsxDEV(CardContent, { children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "text-2xl font-bold text-red-400", children: formatCurrency(totalAtrasado.reduce((s, c) => s + c.valor, 0)) }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 169,
+            columnNumber: 277
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "mt-2 space-y-1 text-xs text-gray-400", children: Object.entries(totalAtrasadoPorUnidade).map(([unit, val]) => /* @__PURE__ */ jsxDEV("div", { className: "flex justify-between", children: [
+            /* @__PURE__ */ jsxDEV("span", { children: [
+              unit,
+              ":"
+            ] }, void 0, true, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 169,
+              columnNumber: 561
+            }, this),
+            /* @__PURE__ */ jsxDEV("span", { className: "font-semibold", children: formatCurrency(val) }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 169,
+              columnNumber: 581
+            }, this)
+          ] }, unit, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 169,
+            columnNumber: 512
+          }, this)) }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 169,
+            columnNumber: 396
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 169,
+          columnNumber: 264
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 169,
+        columnNumber: 13
+      }, this)
+    ] }, void 0, true, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+      lineNumber: 166,
+      columnNumber: 11
+    }, this),
+    /* @__PURE__ */ jsxDEV(motion.div, { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { delay: 0.3 }, children: /* @__PURE__ */ jsxDEV(Card, { className: "glass-card", children: [
+      /* @__PURE__ */ jsxDEV(CardHeader, { children: /* @__PURE__ */ jsxDEV(CardTitle, { className: "text-white flex items-center gap-2", children: [
+        /* @__PURE__ */ jsxDEV(Filter, { className: "w-5 h-5" }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 174,
+          columnNumber: 85
+        }, this),
+        "Filtros"
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 174,
+        columnNumber: 27
+      }, this) }, void 0, false, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 174,
+        columnNumber: 15
+      }, this),
+      /* @__PURE__ */ jsxDEV(CardContent, { children: /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 md:grid-cols-5 gap-4", children: [
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("label", { className: "text-sm text-gray-300 mb-2 block", children: "Cliente" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 177,
+            columnNumber: 24
+          }, this),
+          /* @__PURE__ */ jsxDEV(Input, { placeholder: "Buscar cliente...", value: filters.cliente, onChange: (e) => setFilters({ ...filters, cliente: e.target.value }), className: "bg-white/10 border-white/20 text-white" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 177,
+            columnNumber: 91
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 177,
+          columnNumber: 19
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("label", { className: "text-sm text-gray-300 mb-2 block", children: "Status" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 178,
+            columnNumber: 24
+          }, this),
+          /* @__PURE__ */ jsxDEV(Select, { value: filters.status, onValueChange: (value) => setFilters({ ...filters, status: value }), children: [
+            /* @__PURE__ */ jsxDEV(SelectTrigger, { className: "bg-white/10 border-white/20 text-white", children: /* @__PURE__ */ jsxDEV(SelectValue, {}, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 178,
+              columnNumber: 256
+            }, this) }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 178,
+              columnNumber: 190
+            }, this),
+            /* @__PURE__ */ jsxDEV(SelectContent, { children: [
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "todos", children: "Todos" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 178,
+                columnNumber: 302
+              }, this),
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "aberto", children: "Em Aberto" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 178,
+                columnNumber: 346
+              }, this),
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "atrasado", children: "Atrasado" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 178,
+                columnNumber: 395
+              }, this),
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "pago", children: "Pago" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 178,
+                columnNumber: 445
+              }, this)
+            ] }, void 0, true, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 178,
+              columnNumber: 287
+            }, this)
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 178,
+            columnNumber: 90
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 178,
+          columnNumber: 19
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("label", { className: "text-sm text-gray-300 mb-2 block", children: "Unidade" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 179,
+            columnNumber: 24
+          }, this),
+          /* @__PURE__ */ jsxDEV(Select, { value: filters.unidade, onValueChange: (value) => setFilters({ ...filters, unidade: value }), children: [
+            /* @__PURE__ */ jsxDEV(SelectTrigger, { className: "bg-white/10 border-white/20 text-white", children: /* @__PURE__ */ jsxDEV(SelectValue, {}, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 179,
+              columnNumber: 259
+            }, this) }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 179,
+              columnNumber: 193
+            }, this),
+            /* @__PURE__ */ jsxDEV(SelectContent, { children: [
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "todas", children: "Todas" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 179,
+                columnNumber: 305
+              }, this),
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "CNA Angra dos Reis", children: "CNA Angra dos Reis" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 179,
+                columnNumber: 349
+              }, this),
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "CNA Mangaratiba", children: "CNA Mangaratiba" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 179,
+                columnNumber: 419
+              }, this),
+              /* @__PURE__ */ jsxDEV(SelectItem, { value: "Casa", children: "Casa" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 179,
+                columnNumber: 483
+              }, this)
+            ] }, void 0, true, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 179,
+              columnNumber: 290
+            }, this)
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 179,
+            columnNumber: 91
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 179,
+          columnNumber: 19
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("label", { className: "text-sm text-gray-300 mb-2 block", children: "Data Início" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 180,
+            columnNumber: 24
+          }, this),
+          /* @__PURE__ */ jsxDEV(Input, { type: "date", value: filters.dataInicio, onChange: (e) => setFilters({ ...filters, dataInicio: e.target.value }), className: "bg-white/10 border-white/20 text-white" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 180,
+            columnNumber: 95
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 180,
+          columnNumber: 19
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { children: [
+          /* @__PURE__ */ jsxDEV("label", { className: "text-sm text-gray-300 mb-2 block", children: "Data Fim" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 181,
+            columnNumber: 24
+          }, this),
+          /* @__PURE__ */ jsxDEV(Input, { type: "date", value: filters.dataFim, onChange: (e) => setFilters({ ...filters, dataFim: e.target.value }), className: "bg-white/10 border-white/20 text-white" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 181,
+            columnNumber: 92
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 181,
+          columnNumber: 19
+        }, this)
+      ] }, void 0, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 176,
+        columnNumber: 17
+      }, this) }, void 0, false, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 175,
+        columnNumber: 15
+      }, this)
+    ] }, void 0, true, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+      lineNumber: 173,
+      columnNumber: 13
+    }, this) }, void 0, false, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+      lineNumber: 172,
+      columnNumber: 11
+    }, this),
+    /* @__PURE__ */ jsxDEV(motion.div, { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, transition: { delay: 0.4 }, className: "space-y-6", children: loading ? /* @__PURE__ */ jsxDEV("div", { className: "flex justify-center items-center h-64", children: /* @__PURE__ */ jsxDEV("div", { className: "animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500" }, void 0, false, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+      lineNumber: 188,
+      columnNumber: 79
+    }, this) }, void 0, false, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+      lineNumber: 188,
+      columnNumber: 24
+    }, this) : Object.entries(groupedContas).map(
+      ([date, contasData], index) => /* @__PURE__ */ jsxDEV(Card, { className: "glass-card", children: [
+        /* @__PURE__ */ jsxDEV(CardHeader, { children: /* @__PURE__ */ jsxDEV("div", { className: "flex justify-between items-center", children: [
+          /* @__PURE__ */ jsxDEV(CardTitle, { className: "text-white flex items-center gap-2", children: [
+            /* @__PURE__ */ jsxDEV(Calendar, { className: "w-5 h-5" }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 191,
+              columnNumber: 140
+            }, this),
+            formatDate(date)
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 191,
+            columnNumber: 82
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "text-lg font-bold text-green-400", children: formatCurrency(contasData.reduce((s, c) => s + c.valor, 0)) }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 191,
+            columnNumber: 202
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 191,
+          columnNumber: 31
+        }, this) }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 191,
+          columnNumber: 19
+        }, this),
+        /* @__PURE__ */ jsxDEV(CardContent, { children: /* @__PURE__ */ jsxDEV("div", { className: "space-y-3", children: contasData.map((conta) => {
+          const status = getStatus(conta);
+          return /* @__PURE__ */ jsxDEV(motion.div, { initial: { opacity: 0, x: -20 }, animate: { opacity: 1, x: 0 }, transition: { delay: index * 0.1 }, className: "flex flex-col md:flex-row justify-between items-start md:items-center p-4 rounded-lg bg-white/5 border border-white/10", children: [
+            /* @__PURE__ */ jsxDEV("div", { className: "flex items-center gap-3 mb-2 md:mb-0", children: [
+              /* @__PURE__ */ jsxDEV("div", { className: "p-2 rounded-lg bg-green-500/20", children: /* @__PURE__ */ jsxDEV(User, { className: "w-4 h-4 text-green-400" }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 198,
+                columnNumber: 131
+              }, this) }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 198,
+                columnNumber: 83
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { children: [
+                /* @__PURE__ */ jsxDEV("h3", { className: "font-medium text-white", children: conta.cliente_fornecedor }, void 0, false, {
+                  fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                  lineNumber: 198,
+                  columnNumber: 185
+                }, this),
+                /* @__PURE__ */ jsxDEV("p", { className: "text-sm text-gray-400", children: conta.descricao }, void 0, false, {
+                  fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                  lineNumber: 198,
+                  columnNumber: 255
+                }, this)
+              ] }, void 0, true, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 198,
+                columnNumber: 180
+              }, this)
+            ] }, void 0, true, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 198,
+              columnNumber: 29
+            }, this),
+            /* @__PURE__ */ jsxDEV("div", { className: "flex items-center gap-4", children: [
+              /* @__PURE__ */ jsxDEV("span", { className: `px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(status)}`, children: getStatusLabel(status) }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 200,
+                columnNumber: 31
+              }, this),
+              /* @__PURE__ */ jsxDEV("div", { className: "text-lg font-bold text-green-400", children: formatCurrency(conta.valor) }, void 0, false, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 201,
+                columnNumber: 31
+              }, this),
+              status !== "pago" && /* @__PURE__ */ jsxDEV(Button, { size: "sm", variant: "outline", className: "text-green-400 border-green-400 hover:bg-green-400 hover:text-black", onClick: () => handleMarkAsPaid(conta.id), children: [
+                /* @__PURE__ */ jsxDEV(CheckCircle, { className: "w-4 h-4 mr-2" }, void 0, false, {
+                  fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                  lineNumber: 202,
+                  columnNumber: 212
+                }, this),
+                "Recebido"
+              ] }, void 0, true, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+                lineNumber: 202,
+                columnNumber: 53
+              }, this)
+            ] }, void 0, true, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+              lineNumber: 199,
+              columnNumber: 29
+            }, this)
+          ] }, conta.id, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+            lineNumber: 197,
+            columnNumber: 19
+          }, this);
+        }) }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 193,
+          columnNumber: 21
+        }, this) }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+          lineNumber: 192,
+          columnNumber: 19
+        }, this)
+      ] }, date, true, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 190,
+        columnNumber: 9
+      }, this)
+    ) }, void 0, false, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+      lineNumber: 187,
+      columnNumber: 11
+    }, this),
+    !loading && filteredContas.length === 0 && /* @__PURE__ */ jsxDEV(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, className: "text-center py-12", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "text-gray-400 text-lg", children: "Nenhuma conta encontrada" }, void 0, false, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 213,
+        columnNumber: 147
+      }, this),
+      /* @__PURE__ */ jsxDEV("p", { className: "text-gray-500 mt-2", children: "Ajuste os filtros ou importe novos dados." }, void 0, false, {
+        fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+        lineNumber: 213,
+        columnNumber: 216
+      }, this)
+    ] }, void 0, true, {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+      lineNumber: 213,
+      columnNumber: 55
+    }, this)
+  ] }, void 0, true, {
+    fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx",
+    lineNumber: 150,
+    columnNumber: 5
+  }, this);
+};
+_s(ContasReceber, "8Tn+ADuc8mvCUlaUa5/iug7qmB8=", false, function() {
+  return [useNavigate, useToast];
+});
+_c = ContasReceber;
+export default ContasReceber;
+var _c;
+$RefreshReg$(_c, "ContasReceber");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports)
+        return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/ContasReceber.jsx", currentExports, nextExports);
+      if (invalidateMessage)
+        import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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dCIsInVzZU5hdmlnYXRlIiwiQ2FsZW5kYXIiLCJGaWx0ZXIiLCJVc2VyIiwiRG9sbGFyU2lnbiIsIkFsZXJ0VHJpYW5nbGUiLCJBcnJvd0xlZnQiLCJDaGVja0NpcmNsZSIsIkNhcmQiLCJDYXJkQ29udGVudCIsIkNhcmRIZWFkZXIiLCJDYXJkVGl0bGUiLCJCdXR0b24iLCJJbnB1dCIsIlNlbGVjdCIsIlNlbGVjdENvbnRlbnQiLCJTZWxlY3RJdGVtIiwiU2VsZWN0VHJpZ2dlciIsIlNlbGVjdFZhbHVlIiwic3VwYWJhc2UiLCJ1c2VUb2FzdCIsImZvcm1hdCIsImZvcm1hdERhdGVGbnMiLCJDb250YXNSZWNlYmVyIiwiX3MiLCJuYXZpZ2F0ZSIsInRvYXN0IiwiY29udGFzIiwic2V0Q29udGFzIiwibG9hZGluZyIsInNldExvYWRpbmciLCJmaWx0ZXJzIiwic2V0RmlsdGVycyIsImNsaWVudGUiLCJzdGF0dXMiLCJ1bmlkYWRlIiwiZGF0YUluaWNpbyIsImRhdGFGaW0iLCJsb2FkRGF0YSIsImRhdGEiLCJlcnJvciIsImZyb20iLCJzZWxlY3QiLCJlcSIsInRpdGxlIiwiZGVzY3JpcHRpb24iLCJtZXNzYWdlIiwidmFyaWFudCIsImdldFN0YXR1cyIsImNvbnRhIiwiaG9qZSIsIkRhdGUiLCJzZXRIb3VycyIsInZlbmNpbWVudG8iLCJmaWx0ZXJlZENvbnRhcyIsImZpbHRlcmVkIiwiZmlsdGVyIiwiY2xpZW50ZV9mb3JuZWNlZG9yIiwidG9Mb3dlckNhc2UiLCJpbmNsdWRlcyIsInN0YXJ0RGF0ZSIsImVuZERhdGUiLCJzb3J0IiwiYSIsImIiLCJmb3JtYXRDdXJyZW5jeSIsInZhbHVlIiwidG9Mb2NhbGVTdHJpbmciLCJzdHlsZSIsImN1cnJlbmN5IiwiZm9ybWF0RGF0ZSIsImRhdGVTdHJpbmciLCJ0b0xvY2FsZURhdGVTdHJpbmciLCJ0aW1lWm9uZSIsImdldFN0YXR1c0NvbG9yIiwiZ2V0U3RhdHVzTGFiZWwiLCJncm91cGVkQ29udGFzIiwicmVkdWNlIiwiYWNjIiwicHVzaCIsImNhbGN1bGF0ZVRvdGFsc0J5VW5pdCIsInRvdGFscyIsImZvckVhY2giLCJoYXNPd25Qcm9wZXJ0eSIsInZhbG9yIiwidG90YWxHZXJhbCIsInN1bSIsInRvdGFsQWJlcnRvIiwiYyIsInRvdGFsQXRyYXNhZG8iLCJ0b3RhbEFiZXJ0b1BvclVuaWRhZGUiLCJ0b3RhbEF0cmFzYWRvUG9yVW5pZGFkZSIsImhhbmRsZU1hcmtBc1BhaWQiLCJpZCIsInRvZGF5IiwidXBkYXRlIiwiZGF0YXBhZyIsIm9wYWNpdHkiLCJ5IiwicyIsIk9iamVjdCIsImVudHJpZXMiLCJtYXAiLCJ1bml0IiwidmFsIiwiZGVsYXkiLCJlIiwidGFyZ2V0IiwiZGF0ZSIsImNvbnRhc0RhdGEiLCJpbmRleCIsIngiLCJkZXNjcmljYW8iLCJsZW5ndGgiLCJfYyIsIiRSZWZyZXNoUmVnJCJdLCJzb3VyY2VzIjpbIkNvbnRhc1JlY2ViZXIuanN4Il0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBSZWFjdCwgeyB1c2VTdGF0ZSwgdXNlRWZmZWN0LCB1c2VNZW1vIH0gZnJvbSAncmVhY3QnO1xyXG4gICAgaW1wb3J0IHsgbW90aW9uIH0gZnJvbSAnZnJhbWVyLW1vdGlvbic7XHJcbiAgICBpbXBvcnQgeyBIZWxtZXQgfSBmcm9tICdyZWFjdC1oZWxtZXQnO1xyXG4gICAgaW1wb3J0IHsgdXNlTmF2aWdhdGUgfSBmcm9tICdyZWFjdC1yb3V0ZXItZG9tJztcclxuICAgIGltcG9ydCB7IENhbGVuZGFyLCBGaWx0ZXIsIFVzZXIsIERvbGxhclNpZ24sIEFsZXJ0VHJpYW5nbGUsIEFycm93TGVmdCwgQ2hlY2tDaXJjbGUgfSBmcm9tICdsdWNpZGUtcmVhY3QnO1xyXG4gICAgaW1wb3J0IHsgQ2FyZCwgQ2FyZENvbnRlbnQsIENhcmRIZWFkZXIsIENhcmRUaXRsZSB9IGZyb20gJ0AvY29tcG9uZW50cy91aS9jYXJkJztcclxuICAgIGltcG9ydCB7IEJ1dHRvbiB9IGZyb20gJ0AvY29tcG9uZW50cy91aS9idXR0b24nO1xyXG4gICAgaW1wb3J0IHsgSW5wdXQgfSBmcm9tICdAL2NvbXBvbmVudHMvdWkvaW5wdXQnO1xyXG4gICAgaW1wb3J0IHsgU2VsZWN0LCBTZWxlY3RDb250ZW50LCBTZWxlY3RJdGVtLCBTZWxlY3RUcmlnZ2VyLCBTZWxlY3RWYWx1ZSB9IGZyb20gJ0AvY29tcG9uZW50cy91aS9zZWxlY3QnO1xyXG4gICAgaW1wb3J0IHsgc3VwYWJhc2UgfSBmcm9tICdAL2xpYi9jdXN0b21TdXBhYmFzZUNsaWVudCc7XHJcbiAgICBpbXBvcnQgeyB1c2VUb2FzdCB9IGZyb20gJ0AvY29tcG9uZW50cy91aS91c2UtdG9hc3QnO1xyXG4gICAgaW1wb3J0IHsgZm9ybWF0IGFzIGZvcm1hdERhdGVGbnMgfSBmcm9tICdkYXRlLWZucyc7XHJcbiAgICBcclxuICAgIGNvbnN0IENvbnRhc1JlY2ViZXIgPSAoKSA9PiB7XHJcbiAgICAgIGNvbnN0IG5hdmlnYXRlID0gdXNlTmF2aWdhdGUoKTtcclxuICAgICAgY29uc3QgeyB0b2FzdCB9ID0gdXNlVG9hc3QoKTtcclxuICAgICAgY29uc3QgW2NvbnRhcywgc2V0Q29udGFzXSA9IHVzZVN0YXRlKFtdKTtcclxuICAgICAgY29uc3QgW2xvYWRpbmcsIHNldExvYWRpbmddID0gdXNlU3RhdGUoZmFsc2UpO1xyXG4gICAgICBjb25zdCBbZmlsdGVycywgc2V0RmlsdGVyc10gPSB1c2VTdGF0ZSh7XHJcbiAgICAgICAgY2xpZW50ZTogJycsXHJcbiAgICAgICAgc3RhdHVzOiAndG9kb3MnLFxyXG4gICAgICAgIHVuaWRhZGU6ICd0b2RhcycsXHJcbiAgICAgICAgZGF0YUluaWNpbzogJycsXHJcbiAgICAgICAgZGF0YUZpbTogJydcclxuICAgICAgfSk7XHJcbiAgICBcclxuICAgICAgdXNlRWZmZWN0KCgpID0+IHtcclxuICAgICAgICBsb2FkRGF0YSgpO1xyXG4gICAgICB9LCBbXSk7XHJcbiAgICBcclxuICAgICAgY29uc3QgbG9hZERhdGEgPSBhc3luYyAoKSA9PiB7XHJcbiAgICAgICAgc2V0TG9hZGluZyh0cnVlKTtcclxuICAgICAgICBjb25zdCB7IGRhdGEsIGVycm9yIH0gPSBhd2FpdCBzdXBhYmFzZVxyXG4gICAgICAgICAgLmZyb20oJ2xhbmNhbWVudG9zJylcclxuICAgICAgICAgIC5zZWxlY3QoJyonKVxyXG4gICAgICAgICAgLmVxKCd0aXBvJywgJ0VudHJhZGEnKTtcclxuICAgIFxyXG4gICAgICAgIGlmIChlcnJvcikge1xyXG4gICAgICAgICAgdG9hc3QoeyB0aXRsZTogJ0Vycm8gYW8gY2FycmVnYXIgZGFkb3MnLCBkZXNjcmlwdGlvbjogZXJyb3IubWVzc2FnZSwgdmFyaWFudDogJ2Rlc3RydWN0aXZlJyB9KTtcclxuICAgICAgICB9IGVsc2Uge1xyXG4gICAgICAgICAgc2V0Q29udGFzKGRhdGEgfHwgW10pO1xyXG4gICAgICAgIH1cclxuICAgICAgICBzZXRMb2FkaW5nKGZhbHNlKTtcclxuICAgICAgfTtcclxuICAgIFxyXG4gICAgICBjb25zdCBnZXRTdGF0dXMgPSAoY29udGEpID0+IHtcclxuICAgICAgICBpZiAoY29udGEuc3RhdHVzID09PSAnUGFnbycpIHJldHVybiAncGFnbyc7XHJcbiAgICAgICAgY29uc3QgaG9qZSA9IG5ldyBEYXRlKCk7XHJcbiAgICAgICAgaG9qZS5zZXRIb3VycygwLCAwLCAwLCAwKTtcclxuICAgICAgICBjb25zdCB2ZW5jaW1lbnRvID0gbmV3IERhdGUoY29udGEuZGF0YSArICdUMDA6MDA6MDAnKTtcclxuICAgICAgICByZXR1cm4gdmVuY2ltZW50byA8IGhvamUgPyAnYXRyYXNhZG8nIDogJ2FiZXJ0byc7XHJcbiAgICAgIH07XHJcbiAgICBcclxuICAgICAgY29uc3QgZmlsdGVyZWRDb250YXMgPSB1c2VNZW1vKCgpID0+IHtcclxuICAgICAgICBsZXQgZmlsdGVyZWQgPSBbLi4uY29udGFzXTtcclxuICAgICAgICBpZiAoZmlsdGVycy5jbGllbnRlKSB7XHJcbiAgICAgICAgICBmaWx0ZXJlZCA9IGZpbHRlcmVkLmZpbHRlcihjb250YSA9PiBcclxuICAgICAgICAgICAgY29udGEuY2xpZW50ZV9mb3JuZWNlZG9yPy50b0xvd2VyQ2FzZSgpLmluY2x1ZGVzKGZpbHRlcnMuY2xpZW50ZS50b0xvd2VyQ2FzZSgpKVxyXG4gICAgICAgICAgKTtcclxuICAgICAgICB9XHJcbiAgICAgICAgaWYgKGZpbHRlcnMuc3RhdHVzICE9PSAndG9kb3MnKSB7XHJcbiAgICAgICAgICBmaWx0ZXJlZCA9IGZpbHRlcmVkLmZpbHRlcihjb250YSA9PiBnZXRTdGF0dXMoY29udGEpID09PSBmaWx0ZXJzLnN0YXR1cyk7XHJcbiAgICAgICAgfVxyXG4gICAgICAgIGlmIChmaWx0ZXJzLnVuaWRhZGUgIT09ICd0b2RhcycpIHtcclxuICAgICAgICAgIGZpbHRlcmVkID0gZmlsdGVyZWQuZmlsdGVyKGNvbnRhID0+IGNvbnRhLnVuaWRhZGUgPT09IGZpbHRlcnMudW5pZGFkZSk7XHJcbiAgICAgICAgfVxyXG4gICAgICAgIGlmIChmaWx0ZXJzLmRhdGFJbmljaW8pIHtcclxuICAgICAgICAgIGNvbnN0IHN0YXJ0RGF0ZSA9IG5ldyBEYXRlKGZpbHRlcnMuZGF0YUluaWNpbyArICdUMDA6MDA6MDAnKTtcclxuICAgICAgICAgIGZpbHRlcmVkID0gZmlsdGVyZWQuZmlsdGVyKGNvbnRhID0+IG5ldyBEYXRlKGNvbnRhLmRhdGEgKyAnVDAwOjAwOjAwJykgPj0gc3RhcnREYXRlKTtcclxuICAgICAgICB9XHJcbiAgICAgICAgaWYgKGZpbHRlcnMuZGF0YUZpbSkge1xyXG4gICAgICAgICAgY29uc3QgZW5kRGF0ZSA9IG5ldyBEYXRlKGZpbHRlcnMuZGF0YUZpbSArICdUMDA6MDA6MDAnKTtcclxuICAgICAgICAgIGZpbHRlcmVkID0gZmlsdGVyZWQuZmlsdGVyKGNvbnRhID0+IG5ldyBEYXRlKGNvbnRhLmRhdGEgKyAnVDAwOjAwOjAwJykgPD0gZW5kRGF0ZSk7XHJcbiAgICAgICAgfVxyXG4gICAgICAgIHJldHVybiBmaWx0ZXJlZC5zb3J0KChhLCBiKSA9PiBuZXcgRGF0ZShhLmRhdGEpIC0gbmV3IERhdGUoYi5kYXRhKSk7XHJcbiAgICAgIH0sIFtjb250YXMsIGZpbHRlcnNdKTtcclxuICAgIFxyXG4gICAgICBjb25zdCBmb3JtYXRDdXJyZW5jeSA9ICh2YWx1ZSkgPT4gKHZhbHVlIHx8IDApLnRvTG9jYWxlU3RyaW5nKCdwdC1CUicsIHsgc3R5bGU6ICdjdXJyZW5jeScsIGN1cnJlbmN5OiAnQlJMJyB9KTtcclxuICAgICAgY29uc3QgZm9ybWF0RGF0ZSA9IChkYXRlU3RyaW5nKSA9PiBuZXcgRGF0ZShkYXRlU3RyaW5nICsgJ1QwMDowMDowMCcpLnRvTG9jYWxlRGF0ZVN0cmluZygncHQtQlInLCB7IHRpbWVab25lOiAnVVRDJyB9KTtcclxuICAgIFxyXG4gICAgICBjb25zdCBnZXRTdGF0dXNDb2xvciA9IChzdGF0dXMpID0+ICh7XHJcbiAgICAgICAgJ2F0cmFzYWRvJzogJ2JnLXJlZC01MDAvMjAgdGV4dC1yZWQtNDAwIGJvcmRlci1yZWQtNTAwLzMwJyxcclxuICAgICAgICAnYWJlcnRvJzogJ2JnLXllbGxvdy01MDAvMjAgdGV4dC15ZWxsb3ctNDAwIGJvcmRlci15ZWxsb3ctNTAwLzMwJyxcclxuICAgICAgICAncGFnbyc6ICdiZy1ncmVlbi01MDAvMjAgdGV4dC1ncmVlbi00MDAgYm9yZGVyLWdyZWVuLTUwMC8zMCcsXHJcbiAgICAgIH1bc3RhdHVzXSB8fCAnYmctZ3JheS01MDAvMjAgdGV4dC1ncmF5LTQwMCBib3JkZXItZ3JheS01MDAvMzAnKTtcclxuICAgIFxyXG4gICAgICBjb25zdCBnZXRTdGF0dXNMYWJlbCA9IChzdGF0dXMpID0+ICh7XHJcbiAgICAgICAgJ2F0cmFzYWRvJzogJ0F0cmFzYWRvJywgJ2FiZXJ0byc6ICdFbSBBYmVydG8nLCAncGFnbyc6ICdQYWdvJ1xyXG4gICAgICB9W3N0YXR1c10gfHwgc3RhdHVzKTtcclxuICAgIFxyXG4gICAgICBjb25zdCBncm91cGVkQ29udGFzID0gdXNlTWVtbygoKSA9PiB7XHJcbiAgICAgICAgcmV0dXJuIGZpbHRlcmVkQ29udGFzLnJlZHVjZSgoYWNjLCBjb250YSkgPT4ge1xyXG4gICAgICAgICAgKGFjY1tjb250YS5kYXRhXSA9IGFjY1tjb250YS5kYXRhXSB8fCBbXSkucHVzaChjb250YSk7XHJcbiAgICAgICAgICByZXR1cm4gYWNjO1xyXG4gICAgICAgIH0sIHt9KTtcclxuICAgICAgfSwgW2ZpbHRlcmVkQ29udGFzXSk7XHJcbiAgICBcclxuICAgICAgY29uc3QgY2FsY3VsYXRlVG90YWxzQnlVbml0ID0gKGNvbnRhcykgPT4ge1xyXG4gICAgICAgIGNvbnN0IHRvdGFscyA9IHtcclxuICAgICAgICAgICdDTkEgQW5ncmEgZG9zIFJlaXMnOiAwLFxyXG4gICAgICAgICAgJ0NOQSBNYW5nYXJhdGliYSc6IDAsXHJcbiAgICAgICAgICAnQ2FzYSc6IDAsXHJcbiAgICAgICAgfTtcclxuICAgICAgICBjb250YXMuZm9yRWFjaChjb250YSA9PiB7XHJcbiAgICAgICAgICBpZiAodG90YWxzLmhhc093blByb3BlcnR5KGNvbnRhLnVuaWRhZGUpKSB7XHJcbiAgICAgICAgICAgIHRvdGFsc1tjb250YS51bmlkYWRlXSArPSBjb250YS52YWxvcjtcclxuICAgICAgICAgIH1cclxuICAgICAgICB9KTtcclxuICAgICAgICByZXR1cm4gdG90YWxzO1xyXG4gICAgICB9O1xyXG4gICAgXHJcbiAgICAgIGNvbnN0IHRvdGFsR2VyYWwgPSBmaWx0ZXJlZENvbnRhcy5yZWR1Y2UoKHN1bSwgY29udGEpID0+IHN1bSArIGNvbnRhLnZhbG9yLCAwKTtcclxuICAgICAgY29uc3QgdG90YWxBYmVydG8gPSBmaWx0ZXJlZENvbnRhcy5maWx0ZXIoYyA9PiBnZXRTdGF0dXMoYykgPT09ICdhYmVydG8nKTtcclxuICAgICAgY29uc3QgdG90YWxBdHJhc2FkbyA9IGZpbHRlcmVkQ29udGFzLmZpbHRlcihjID0+IGdldFN0YXR1cyhjKSA9PT0gJ2F0cmFzYWRvJyk7XHJcbiAgICBcclxuICAgICAgY29uc3QgdG90YWxBYmVydG9Qb3JVbmlkYWRlID0gY2FsY3VsYXRlVG90YWxzQnlVbml0KHRvdGFsQWJlcnRvKTtcclxuICAgICAgY29uc3QgdG90YWxBdHJhc2Fkb1BvclVuaWRhZGUgPSBjYWxjdWxhdGVUb3RhbHNCeVVuaXQodG90YWxBdHJhc2Fkbyk7XHJcbiAgICBcclxuICAgICAgY29uc3QgaGFuZGxlTWFya0FzUGFpZCA9IGFzeW5jIChpZCkgPT4ge1xyXG4gICAgICAgIGNvbnN0IHRvZGF5ID0gZm9ybWF0RGF0ZUZucyhuZXcgRGF0ZSgpLCAneXl5eS1NTS1kZCcpO1xyXG4gICAgICAgIGNvbnN0IHsgZXJyb3IgfSA9IGF3YWl0IHN1cGFiYXNlLmZyb20oJ2xhbmNhbWVudG9zJykudXBkYXRlKHsgc3RhdHVzOiAnUGFnbycsIGRhdGFwYWc6IHRvZGF5IH0pLmVxKCdpZCcsIGlkKTtcclxuICAgICAgICBpZiAoZXJyb3IpIHtcclxuICAgICAgICAgIHRvYXN0KHsgdGl0bGU6ICdFcnJvJywgZGVzY3JpcHRpb246ICdOw6NvIGZvaSBwb3Nzw612ZWwgYXR1YWxpemFyIG8gc3RhdHVzLicsIHZhcmlhbnQ6ICdkZXN0cnVjdGl2ZScgfSk7XHJcbiAgICAgICAgfSBlbHNlIHtcclxuICAgICAgICAgIHRvYXN0KHsgdGl0bGU6ICdTdWNlc3NvIScsIGRlc2NyaXB0aW9uOiAnTGFuw6dhbWVudG8gbWFyY2FkbyBjb21vIHJlY2ViaWRvLicgfSk7XHJcbiAgICAgICAgICBsb2FkRGF0YSgpO1xyXG4gICAgICAgIH1cclxuICAgICAgfTtcclxuICAgIFxyXG4gICAgICByZXR1cm4gKFxyXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS04XCI+XHJcbiAgICAgICAgICA8SGVsbWV0PlxyXG4gICAgICAgICAgICA8dGl0bGU+Q29udGFzIGEgUmVjZWJlciAtIFN5c0ZpbmE8L3RpdGxlPlxyXG4gICAgICAgICAgICA8bWV0YSBuYW1lPVwiZGVzY3JpcHRpb25cIiBjb250ZW50PVwiR2VyZW5jaWUgc3VhcyBjb250YXMgYSByZWNlYmVyIGNvbSBmaWx0cm9zIGUgdG90YWxpemFkb3Jlc1wiIC8+XHJcbiAgICAgICAgICA8L0hlbG1ldD5cclxuICAgIFxyXG4gICAgICAgICAgPG1vdGlvbi5kaXYgaW5pdGlhbD17eyBvcGFjaXR5OiAwLCB5OiAtMjAgfX0gYW5pbWF0ZT17eyBvcGFjaXR5OiAxLCB5OiAwIH19IGNsYXNzTmFtZT1cImZsZXggZmxleC1jb2wgbWQ6ZmxleC1yb3cganVzdGlmeS1iZXR3ZWVuIGl0ZW1zLXN0YXJ0IG1kOml0ZW1zLWNlbnRlciBnYXAtNFwiPlxyXG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIGdhcC00XCI+XHJcbiAgICAgICAgICAgICAgPEJ1dHRvbiB2YXJpYW50PVwiZ2hvc3RcIiBzaXplPVwiaWNvblwiIG9uQ2xpY2s9eygpID0+IG5hdmlnYXRlKCcvJyl9IGNsYXNzTmFtZT1cInRleHQtd2hpdGUgaG92ZXI6Ymctd2hpdGUvMTBcIj48QXJyb3dMZWZ0IGNsYXNzTmFtZT1cInctNiBoLTZcIiAvPjwvQnV0dG9uPlxyXG4gICAgICAgICAgICAgIDxkaXY+XHJcbiAgICAgICAgICAgICAgICA8aDEgY2xhc3NOYW1lPVwidGV4dC0zeGwgZm9udC1ib2xkIGdyYWRpZW50LXRleHRcIj5Db250YXMgYSBSZWNlYmVyPC9oMT5cclxuICAgICAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQtZ3JheS00MDAgbXQtMlwiPkdlcmVuY2llIHNldXMgcmVjZWJpbWVudG9zPC9wPlxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgIDwvbW90aW9uLmRpdj5cclxuICAgIFxyXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJncmlkIGdyaWQtY29scy0xIG1kOmdyaWQtY29scy0zIGdhcC02XCI+XHJcbiAgICAgICAgICAgIDxDYXJkIGNsYXNzTmFtZT1cImdsYXNzLWNhcmRcIj48Q2FyZEhlYWRlciBjbGFzc05hbWU9XCJmbGV4IGZsZXgtcm93IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWJldHdlZW4gc3BhY2UteS0wIHBiLTJcIj48Q2FyZFRpdGxlIGNsYXNzTmFtZT1cInRleHQtc20gZm9udC1tZWRpdW0gdGV4dC1ncmF5LTMwMFwiPlRvdGFsIEZpbHRyYWRvPC9DYXJkVGl0bGU+PERvbGxhclNpZ24gY2xhc3NOYW1lPVwidy00IGgtNCB0ZXh0LWJsdWUtNDAwXCIgLz48L0NhcmRIZWFkZXI+PENhcmRDb250ZW50PjxkaXYgY2xhc3NOYW1lPVwidGV4dC0yeGwgZm9udC1ib2xkIHRleHQtYmx1ZS00MDBcIj57Zm9ybWF0Q3VycmVuY3kodG90YWxHZXJhbCl9PC9kaXY+PC9DYXJkQ29udGVudD48L0NhcmQ+XHJcbiAgICAgICAgICAgIDxDYXJkIGNsYXNzTmFtZT1cImdsYXNzLWNhcmRcIj48Q2FyZEhlYWRlciBjbGFzc05hbWU9XCJmbGV4IGZsZXgtcm93IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWJldHdlZW4gc3BhY2UteS0wIHBiLTJcIj48Q2FyZFRpdGxlIGNsYXNzTmFtZT1cInRleHQtc20gZm9udC1tZWRpdW0gdGV4dC1ncmF5LTMwMFwiPkVtIEFiZXJ0bzwvQ2FyZFRpdGxlPjxDYWxlbmRhciBjbGFzc05hbWU9XCJ3LTQgaC00IHRleHQteWVsbG93LTQwMFwiIC8+PC9DYXJkSGVhZGVyPjxDYXJkQ29udGVudD48ZGl2IGNsYXNzTmFtZT1cInRleHQtMnhsIGZvbnQtYm9sZCB0ZXh0LXllbGxvdy00MDBcIj57Zm9ybWF0Q3VycmVuY3kodG90YWxBYmVydG8ucmVkdWNlKChzLCBjKSA9PiBzICsgYy52YWxvciwgMCkpfTwvZGl2PjxkaXYgY2xhc3NOYW1lPVwibXQtMiBzcGFjZS15LTEgdGV4dC14cyB0ZXh0LWdyYXktNDAwXCI+e09iamVjdC5lbnRyaWVzKHRvdGFsQWJlcnRvUG9yVW5pZGFkZSkubWFwKChbdW5pdCwgdmFsXSkgPT4gPGRpdiBrZXk9e3VuaXR9IGNsYXNzTmFtZT1cImZsZXgganVzdGlmeS1iZXR3ZWVuXCI+PHNwYW4+e3VuaXR9Ojwvc3Bhbj48c3BhbiBjbGFzc05hbWU9XCJmb250LXNlbWlib2xkXCI+e2Zvcm1hdEN1cnJlbmN5KHZhbCl9PC9zcGFuPjwvZGl2Pil9PC9kaXY+PC9DYXJkQ29udGVudD48L0NhcmQ+XHJcbiAgICAgICAgICAgIDxDYXJkIGNsYXNzTmFtZT1cImdsYXNzLWNhcmRcIj48Q2FyZEhlYWRlciBjbGFzc05hbWU9XCJmbGV4IGZsZXgtcm93IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWJldHdlZW4gc3BhY2UteS0wIHBiLTJcIj48Q2FyZFRpdGxlIGNsYXNzTmFtZT1cInRleHQtc20gZm9udC1tZWRpdW0gdGV4dC1ncmF5LTMwMFwiPkF0cmFzYWRvPC9DYXJkVGl0bGU+PEFsZXJ0VHJpYW5nbGUgY2xhc3NOYW1lPVwidy00IGgtNCB0ZXh0LXJlZC00MDBcIiAvPjwvQ2FyZEhlYWRlcj48Q2FyZENvbnRlbnQ+PGRpdiBjbGFzc05hbWU9XCJ0ZXh0LTJ4bCBmb250LWJvbGQgdGV4dC1yZWQtNDAwXCI+e2Zvcm1hdEN1cnJlbmN5KHRvdGFsQXRyYXNhZG8ucmVkdWNlKChzLCBjKSA9PiBzICsgYy52YWxvciwgMCkpfTwvZGl2PjxkaXYgY2xhc3NOYW1lPVwibXQtMiBzcGFjZS15LTEgdGV4dC14cyB0ZXh0LWdyYXktNDAwXCI+e09iamVjdC5lbnRyaWVzKHRvdGFsQXRyYXNhZG9Qb3JVbmlkYWRlKS5tYXAoKFt1bml0LCB2YWxdKSA9PiA8ZGl2IGtleT17dW5pdH0gY2xhc3NOYW1lPVwiZmxleCBqdXN0aWZ5LWJldHdlZW5cIj48c3Bhbj57dW5pdH06PC9zcGFuPjxzcGFuIGNsYXNzTmFtZT1cImZvbnQtc2VtaWJvbGRcIj57Zm9ybWF0Q3VycmVuY3kodmFsKX08L3NwYW4+PC9kaXY+KX08L2Rpdj48L0NhcmRDb250ZW50PjwvQ2FyZD5cclxuICAgICAgICAgIDwvZGl2PlxyXG4gICAgXHJcbiAgICAgICAgICA8bW90aW9uLmRpdiBpbml0aWFsPXt7IG9wYWNpdHk6IDAsIHk6IDIwIH19IGFuaW1hdGU9e3sgb3BhY2l0eTogMSwgeTogMCB9fSB0cmFuc2l0aW9uPXt7IGRlbGF5OiAwLjMgfX0+XHJcbiAgICAgICAgICAgIDxDYXJkIGNsYXNzTmFtZT1cImdsYXNzLWNhcmRcIj5cclxuICAgICAgICAgICAgICA8Q2FyZEhlYWRlcj48Q2FyZFRpdGxlIGNsYXNzTmFtZT1cInRleHQtd2hpdGUgZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTJcIj48RmlsdGVyIGNsYXNzTmFtZT1cInctNSBoLTVcIiAvPkZpbHRyb3M8L0NhcmRUaXRsZT48L0NhcmRIZWFkZXI+XHJcbiAgICAgICAgICAgICAgPENhcmRDb250ZW50PlxyXG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJncmlkIGdyaWQtY29scy0xIG1kOmdyaWQtY29scy01IGdhcC00XCI+XHJcbiAgICAgICAgICAgICAgICAgIDxkaXY+PGxhYmVsIGNsYXNzTmFtZT1cInRleHQtc20gdGV4dC1ncmF5LTMwMCBtYi0yIGJsb2NrXCI+Q2xpZW50ZTwvbGFiZWw+PElucHV0IHBsYWNlaG9sZGVyPVwiQnVzY2FyIGNsaWVudGUuLi5cIiB2YWx1ZT17ZmlsdGVycy5jbGllbnRlfSBvbkNoYW5nZT17KGUpID0+IHNldEZpbHRlcnMoeyAuLi5maWx0ZXJzLCBjbGllbnRlOiBlLnRhcmdldC52YWx1ZSB9KX0gY2xhc3NOYW1lPVwiYmctd2hpdGUvMTAgYm9yZGVyLXdoaXRlLzIwIHRleHQtd2hpdGVcIiAvPjwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2PjxsYWJlbCBjbGFzc05hbWU9XCJ0ZXh0LXNtIHRleHQtZ3JheS0zMDAgbWItMiBibG9ja1wiPlN0YXR1czwvbGFiZWw+PFNlbGVjdCB2YWx1ZT17ZmlsdGVycy5zdGF0dXN9IG9uVmFsdWVDaGFuZ2U9eyh2YWx1ZSkgPT4gc2V0RmlsdGVycyh7IC4uLmZpbHRlcnMsIHN0YXR1czogdmFsdWUgfSl9PjxTZWxlY3RUcmlnZ2VyIGNsYXNzTmFtZT1cImJnLXdoaXRlLzEwIGJvcmRlci13aGl0ZS8yMCB0ZXh0LXdoaXRlXCI+PFNlbGVjdFZhbHVlIC8+PC9TZWxlY3RUcmlnZ2VyPjxTZWxlY3RDb250ZW50PjxTZWxlY3RJdGVtIHZhbHVlPVwidG9kb3NcIj5Ub2RvczwvU2VsZWN0SXRlbT48U2VsZWN0SXRlbSB2YWx1ZT1cImFiZXJ0b1wiPkVtIEFiZXJ0bzwvU2VsZWN0SXRlbT48U2VsZWN0SXRlbSB2YWx1ZT1cImF0cmFzYWRvXCI+QXRyYXNhZG88L1NlbGVjdEl0ZW0+PFNlbGVjdEl0ZW0gdmFsdWU9XCJwYWdvXCI+UGFnbzwvU2VsZWN0SXRlbT48L1NlbGVjdENvbnRlbnQ+PC9TZWxlY3Q+PC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgIDxkaXY+PGxhYmVsIGNsYXNzTmFtZT1cInRleHQtc20gdGV4dC1ncmF5LTMwMCBtYi0yIGJsb2NrXCI+VW5pZGFkZTwvbGFiZWw+PFNlbGVjdCB2YWx1ZT17ZmlsdGVycy51bmlkYWRlfSBvblZhbHVlQ2hhbmdlPXsodmFsdWUpID0+IHNldEZpbHRlcnMoeyAuLi5maWx0ZXJzLCB1bmlkYWRlOiB2YWx1ZSB9KX0+PFNlbGVjdFRyaWdnZXIgY2xhc3NOYW1lPVwiYmctd2hpdGUvMTAgYm9yZGVyLXdoaXRlLzIwIHRleHQtd2hpdGVcIj48U2VsZWN0VmFsdWUgLz48L1NlbGVjdFRyaWdnZXI+PFNlbGVjdENvbnRlbnQ+PFNlbGVjdEl0ZW0gdmFsdWU9XCJ0b2Rhc1wiPlRvZGFzPC9TZWxlY3RJdGVtPjxTZWxlY3RJdGVtIHZhbHVlPVwiQ05BIEFuZ3JhIGRvcyBSZWlzXCI+Q05BIEFuZ3JhIGRvcyBSZWlzPC9TZWxlY3RJdGVtPjxTZWxlY3RJdGVtIHZhbHVlPVwiQ05BIE1hbmdhcmF0aWJhXCI+Q05BIE1hbmdhcmF0aWJhPC9TZWxlY3RJdGVtPjxTZWxlY3RJdGVtIHZhbHVlPVwiQ2FzYVwiPkNhc2E8L1NlbGVjdEl0ZW0+PC9TZWxlY3RDb250ZW50PjwvU2VsZWN0PjwvZGl2PlxyXG4gICAgICAgICAgICAgICAgICA8ZGl2PjxsYWJlbCBjbGFzc05hbWU9XCJ0ZXh0LXNtIHRleHQtZ3JheS0zMDAgbWItMiBibG9ja1wiPkRhdGEgSW7DrWNpbzwvbGFiZWw+PElucHV0IHR5cGU9XCJkYXRlXCIgdmFsdWU9e2ZpbHRlcnMuZGF0YUluaWNpb30gb25DaGFuZ2U9eyhlKSA9PiBzZXRGaWx0ZXJzKHsgLi4uZmlsdGVycywgZGF0YUluaWNpbzogZS50YXJnZXQudmFsdWUgfSl9IGNsYXNzTmFtZT1cImJnLXdoaXRlLzEwIGJvcmRlci13aGl0ZS8yMCB0ZXh0LXdoaXRlXCIgLz48L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgPGRpdj48bGFiZWwgY2xhc3NOYW1lPVwidGV4dC1zbSB0ZXh0LWdyYXktMzAwIG1iLTIgYmxvY2tcIj5EYXRhIEZpbTwvbGFiZWw+PElucHV0IHR5cGU9XCJkYXRlXCIgdmFsdWU9e2ZpbHRlcnMuZGF0YUZpbX0gb25DaGFuZ2U9eyhlKSA9PiBzZXRGaWx0ZXJzKHsgLi4uZmlsdGVycywgZGF0YUZpbTogZS50YXJnZXQudmFsdWUgfSl9IGNsYXNzTmFtZT1cImJnLXdoaXRlLzEwIGJvcmRlci13aGl0ZS8yMCB0ZXh0LXdoaXRlXCIgLz48L2Rpdj5cclxuICAgICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDwvQ2FyZENvbnRlbnQ+XHJcbiAgICAgICAgICAgIDwvQ2FyZD5cclxuICAgICAgICAgIDwvbW90aW9uLmRpdj5cclxuICAgIFxyXG4gICAgICAgICAgPG1vdGlvbi5kaXYgaW5pdGlhbD17eyBvcGFjaXR5OiAwLCB5OiAyMCB9fSBhbmltYXRlPXt7IG9wYWNpdHk6IDEsIHk6IDAgfX0gdHJhbnNpdGlvbj17eyBkZWxheTogMC40IH19IGNsYXNzTmFtZT1cInNwYWNlLXktNlwiPlxyXG4gICAgICAgICAgICB7bG9hZGluZyA/IDxkaXYgY2xhc3NOYW1lPVwiZmxleCBqdXN0aWZ5LWNlbnRlciBpdGVtcy1jZW50ZXIgaC02NFwiPjxkaXYgY2xhc3NOYW1lPVwiYW5pbWF0ZS1zcGluIHJvdW5kZWQtZnVsbCBoLTE2IHctMTYgYm9yZGVyLXQtMiBib3JkZXItYi0yIGJvcmRlci1ibHVlLTUwMFwiPjwvZGl2PjwvZGl2PlxyXG4gICAgICAgICAgICAgIDogT2JqZWN0LmVudHJpZXMoZ3JvdXBlZENvbnRhcykubWFwKChbZGF0ZSwgY29udGFzRGF0YV0sIGluZGV4KSA9PiAoXHJcbiAgICAgICAgICAgICAgICA8Q2FyZCBrZXk9e2RhdGV9IGNsYXNzTmFtZT1cImdsYXNzLWNhcmRcIj5cclxuICAgICAgICAgICAgICAgICAgPENhcmRIZWFkZXI+PGRpdiBjbGFzc05hbWU9XCJmbGV4IGp1c3RpZnktYmV0d2VlbiBpdGVtcy1jZW50ZXJcIj48Q2FyZFRpdGxlIGNsYXNzTmFtZT1cInRleHQtd2hpdGUgZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTJcIj48Q2FsZW5kYXIgY2xhc3NOYW1lPVwidy01IGgtNVwiIC8+e2Zvcm1hdERhdGUoZGF0ZSl9PC9DYXJkVGl0bGU+PGRpdiBjbGFzc05hbWU9XCJ0ZXh0LWxnIGZvbnQtYm9sZCB0ZXh0LWdyZWVuLTQwMFwiPntmb3JtYXRDdXJyZW5jeShjb250YXNEYXRhLnJlZHVjZSgocywgYykgPT4gcyArIGMudmFsb3IsIDApKX08L2Rpdj48L2Rpdj48L0NhcmRIZWFkZXI+XHJcbiAgICAgICAgICAgICAgICAgIDxDYXJkQ29udGVudD5cclxuICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktM1wiPlxyXG4gICAgICAgICAgICAgICAgICAgICAge2NvbnRhc0RhdGEubWFwKChjb250YSkgPT4ge1xyXG4gICAgICAgICAgICAgICAgICAgICAgICBjb25zdCBzdGF0dXMgPSBnZXRTdGF0dXMoY29udGEpO1xyXG4gICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gKFxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgIDxtb3Rpb24uZGl2IGtleT17Y29udGEuaWR9IGluaXRpYWw9e3sgb3BhY2l0eTogMCwgeDogLTIwIH19IGFuaW1hdGU9e3sgb3BhY2l0eTogMSwgeDogMCB9fSB0cmFuc2l0aW9uPXt7IGRlbGF5OiBpbmRleCAqIDAuMSB9fSBjbGFzc05hbWU9XCJmbGV4IGZsZXgtY29sIG1kOmZsZXgtcm93IGp1c3RpZnktYmV0d2VlbiBpdGVtcy1zdGFydCBtZDppdGVtcy1jZW50ZXIgcC00IHJvdW5kZWQtbGcgYmctd2hpdGUvNSBib3JkZXIgYm9yZGVyLXdoaXRlLzEwXCI+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIGdhcC0zIG1iLTIgbWQ6bWItMFwiPjxkaXYgY2xhc3NOYW1lPVwicC0yIHJvdW5kZWQtbGcgYmctZ3JlZW4tNTAwLzIwXCI+PFVzZXIgY2xhc3NOYW1lPVwidy00IGgtNCB0ZXh0LWdyZWVuLTQwMFwiIC8+PC9kaXY+PGRpdj48aDMgY2xhc3NOYW1lPVwiZm9udC1tZWRpdW0gdGV4dC13aGl0ZVwiPntjb250YS5jbGllbnRlX2Zvcm5lY2Vkb3J9PC9oMz48cCBjbGFzc05hbWU9XCJ0ZXh0LXNtIHRleHQtZ3JheS00MDBcIj57Y29udGEuZGVzY3JpY2FvfTwvcD48L2Rpdj48L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTRcIj5cclxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPXtgcHgtMyBweS0xIHJvdW5kZWQtZnVsbCB0ZXh0LXhzIGZvbnQtbWVkaXVtIGJvcmRlciAke2dldFN0YXR1c0NvbG9yKHN0YXR1cyl9YH0+e2dldFN0YXR1c0xhYmVsKHN0YXR1cyl9PC9zcGFuPlxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInRleHQtbGcgZm9udC1ib2xkIHRleHQtZ3JlZW4tNDAwXCI+e2Zvcm1hdEN1cnJlbmN5KGNvbnRhLnZhbG9yKX08L2Rpdj5cclxuICAgICAgICAgICAgICAgICAgICAgICAgICAgICAge3N0YXR1cyAhPT0gJ3BhZ28nICYmIDxCdXR0b24gc2l6ZT1cInNtXCIgdmFyaWFudD1cIm91dGxpbmVcIiBjbGFzc05hbWU9XCJ0ZXh0LWdyZWVuLTQwMCBib3JkZXItZ3JlZW4tNDAwIGhvdmVyOmJnLWdyZWVuLTQwMCBob3Zlcjp0ZXh0LWJsYWNrXCIgb25DbGljaz17KCkgPT4gaGFuZGxlTWFya0FzUGFpZChjb250YS5pZCl9PjxDaGVja0NpcmNsZSBjbGFzc05hbWU9XCJ3LTQgaC00IG1yLTJcIiAvPlJlY2ViaWRvPC9CdXR0b24+fVxyXG4gICAgICAgICAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgICAgICAgICAgPC9tb3Rpb24uZGl2PlxyXG4gICAgICAgICAgICAgICAgICAgICAgICApO1xyXG4gICAgICAgICAgICAgICAgICAgICAgfSl9XHJcbiAgICAgICAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgICAgIDwvQ2FyZENvbnRlbnQ+XHJcbiAgICAgICAgICAgICAgICA8L0NhcmQ+XHJcbiAgICAgICAgICAgICAgKSl9XHJcbiAgICAgICAgICA8L21vdGlvbi5kaXY+XHJcbiAgICBcclxuICAgICAgICAgIHshbG9hZGluZyAmJiBmaWx0ZXJlZENvbnRhcy5sZW5ndGggPT09IDAgJiYgPG1vdGlvbi5kaXYgaW5pdGlhbD17eyBvcGFjaXR5OiAwIH19IGFuaW1hdGU9e3sgb3BhY2l0eTogMSB9fSBjbGFzc05hbWU9XCJ0ZXh0LWNlbnRlciBweS0xMlwiPjxkaXYgY2xhc3NOYW1lPVwidGV4dC1ncmF5LTQwMCB0ZXh0LWxnXCI+TmVuaHVtYSBjb250YSBlbmNvbnRyYWRhPC9kaXY+PHAgY2xhc3NOYW1lPVwidGV4dC1ncmF5LTUwMCBtdC0yXCI+QWp1c3RlIG9zIGZpbHRyb3Mgb3UgaW1wb3J0ZSBub3ZvcyBkYWRvcy48L3A+PC9tb3Rpb24uZGl2Pn1cclxuICAgICAgICA8L2Rpdj5cclxuICAgICAgKTtcclxuICAgIH07XHJcbiAgICBcclxuICAgIGV4cG9ydCBkZWZhdWx0IENvbnRhc1JlY2ViZXI7Il0sImZpbGUiOiJEOi9Vc2Vycy9kZWZpYS9Eb2N1bWVudHMvRGVzZW52b2x2aW1lbnRvL0RlZkZpbmFuY2UtdjEvc3JjL3BhZ2VzL0NvbnRhc1JlY2ViZXIuanN4In0=

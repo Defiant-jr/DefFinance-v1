@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
     import { motion } from 'framer-motion';
     import { Helmet } from 'react-helmet';
     import { useNavigate } from 'react-router-dom';
-    import { Calendar, Filter, Building, DollarSign, AlertTriangle, ArrowLeft, CheckCircle } from 'lucide-react';
+import { Calendar, Filter, Building, DollarSign, AlertTriangle, ArrowLeft, CheckCircle, Settings } from 'lucide-react';
     import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
@@ -164,11 +164,30 @@ import React, { useState, useEffect, useMemo } from 'react';
                         const status = getStatus(conta);
                         return (
                           <motion.div key={conta.id} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.1 }} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 rounded-lg bg-white/5 border border-white/10">
-                            <div className="flex items-center gap-3 mb-2 md:mb-0"><div className="p-2 rounded-lg bg-red-500/20"><Building className="w-4 h-4 text-red-400" /></div><div><h3 className="font-medium text-white">{conta.cliente_fornecedor}</h3><p className="text-sm text-gray-400">{conta.descricao}</p></div></div>
+                            <div className="flex items-center gap-3 mb-2 md:mb-0">
+                              <div className="p-2 rounded-lg bg-red-500/20">
+                                <Building className="w-4 h-4 text-red-400" />
+                              </div>
+                              <div>
+                                <h3 className="font-medium text-white">{conta.cliente_fornecedor}</h3>
+                                <p className="text-sm text-gray-400">{conta.descricao}</p>
+                              </div>
+                            </div>
                             <div className="flex items-center gap-4">
                               <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(status)}`}>{getStatusLabel(status)}</span>
                               <div className="text-lg font-bold text-red-400">{formatCurrency(conta.valor)}</div>
-                              {status !== 'pago' && <Button size="sm" variant="outline" className="text-green-400 border-green-400 hover:bg-green-400 hover:text-black" onClick={() => handleMarkAsPaid(conta.id)}><CheckCircle className="w-4 h-4 mr-2" />Pagar</Button>}
+                              <Settings className="w-4 h-4 text-gray-400" />
+                              {status !== 'pago' && (
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  className="text-green-400 border-green-400 hover:bg-green-400 hover:text-black"
+                                  onClick={() => handleMarkAsPaid(conta.id)}
+                                >
+                                  <CheckCircle className="w-4 h-4 mr-2" />
+                                  Pagar
+                                </Button>
+                              )}
                             </div>
                           </motion.div>
                         );

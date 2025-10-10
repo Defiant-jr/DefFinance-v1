@@ -1,0 +1,312 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/SignUp.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=b50a5041"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=b50a5041"; const React = __vite__cjsImport3_react.__esModule ? __vite__cjsImport3_react.default : __vite__cjsImport3_react; const useState = __vite__cjsImport3_react["useState"];
+import { useNavigate, Link } from "/node_modules/.vite/deps/react-router-dom.js?v=b50a5041";
+import { useAuth } from "/src/contexts/SupabaseAuthContext.jsx";
+import { Button } from "/src/components/ui/button.jsx";
+import { Input } from "/src/components/ui/input.jsx";
+import { Label } from "/src/components/ui/label.jsx";
+import { useToast } from "/src/components/ui/use-toast.js";
+import { motion } from "/node_modules/.vite/deps/framer-motion.js?v=b50a5041";
+const SignUp = () => {
+  _s();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [companyName, setCompanyName] = useState("");
+  const [loading, setLoading] = useState(false);
+  const { signUp } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      toast({
+        variant: "destructive",
+        title: "Erro no Cadastro",
+        description: "As senhas não coincidem."
+      });
+      return;
+    }
+    setLoading(true);
+    const { error } = await signUp(email, password, {
+      data: {
+        name: fullName,
+        company_name: companyName
+      }
+    });
+    if (error) {
+      toast({
+        variant: "destructive",
+        title: "Falha no Cadastro",
+        description: error.message || "Não foi possível criar sua conta."
+      });
+    } else {
+      toast({
+        title: "Cadastro realizado com sucesso!",
+        description: "Verifique seu e-mail para confirmar sua conta."
+      });
+      navigate("/login");
+    }
+    setLoading(false);
+  };
+  return /* @__PURE__ */ jsxDEV("div", { className: "flex items-center justify-center min-h-screen", children: /* @__PURE__ */ jsxDEV(
+    motion.div,
+    {
+      initial: { opacity: 0, y: -50 },
+      animate: { opacity: 1, y: 0 },
+      transition: { duration: 0.5 },
+      className: "w-full max-w-md p-8 space-y-8 glass-card",
+      children: [
+        /* @__PURE__ */ jsxDEV("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsxDEV("h1", { className: "text-4xl font-bold gradient-text", children: "Criar Conta" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+            lineNumber: 82,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("p", { className: "text-muted-foreground", children: "Junte-se ao SysFina e organize suas finanças." }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+            lineNumber: 83,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+          lineNumber: 81,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("form", { onSubmit: handleSignUp, className: "space-y-6", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxDEV(Label, { htmlFor: "fullName", children: "Nome Completo" }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+              lineNumber: 87,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV(
+              Input,
+              {
+                id: "fullName",
+                type: "text",
+                placeholder: "Seu nome completo",
+                value: fullName,
+                onChange: (e) => setFullName(e.target.value),
+                required: true,
+                className: "bg-slate-800/50 border-slate-700"
+              },
+              void 0,
+              false,
+              {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+                lineNumber: 88,
+                columnNumber: 17
+              },
+              this
+            )
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+            lineNumber: 86,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxDEV(Label, { htmlFor: "companyName", children: "Nome da Empresa" }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+              lineNumber: 99,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV(
+              Input,
+              {
+                id: "companyName",
+                type: "text",
+                placeholder: "Nome da sua empresa",
+                value: companyName,
+                onChange: (e) => setCompanyName(e.target.value),
+                required: true,
+                className: "bg-slate-800/50 border-slate-700"
+              },
+              void 0,
+              false,
+              {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+                lineNumber: 100,
+                columnNumber: 17
+              },
+              this
+            )
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+            lineNumber: 98,
+            columnNumber: 16
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxDEV(Label, { htmlFor: "email", children: "E-mail" }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+              lineNumber: 111,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV(
+              Input,
+              {
+                id: "email",
+                type: "email",
+                placeholder: "seu@email.com",
+                value: email,
+                onChange: (e) => setEmail(e.target.value),
+                required: true,
+                className: "bg-slate-800/50 border-slate-700"
+              },
+              void 0,
+              false,
+              {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+                lineNumber: 112,
+                columnNumber: 17
+              },
+              this
+            )
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+            lineNumber: 110,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxDEV(Label, { htmlFor: "password", children: "Senha" }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+              lineNumber: 123,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV(
+              Input,
+              {
+                id: "password",
+                type: "password",
+                placeholder: "********",
+                value: password,
+                onChange: (e) => setPassword(e.target.value),
+                required: true,
+                className: "bg-slate-800/50 border-slate-700"
+              },
+              void 0,
+              false,
+              {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+                lineNumber: 124,
+                columnNumber: 17
+              },
+              this
+            )
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+            lineNumber: 122,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "space-y-2", children: [
+            /* @__PURE__ */ jsxDEV(Label, { htmlFor: "confirm-password", children: "Confirmar Senha" }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+              lineNumber: 135,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV(
+              Input,
+              {
+                id: "confirm-password",
+                type: "password",
+                placeholder: "********",
+                value: confirmPassword,
+                onChange: (e) => setConfirmPassword(e.target.value),
+                required: true,
+                className: "bg-slate-800/50 border-slate-700"
+              },
+              void 0,
+              false,
+              {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+                lineNumber: 136,
+                columnNumber: 17
+              },
+              this
+            )
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+            lineNumber: 134,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV(Button, { type: "submit", className: "w-full", disabled: loading, children: loading ? "Criando conta..." : "Cadastrar" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+            lineNumber: 146,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+          lineNumber: 85,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("p", { className: "text-center text-sm text-muted-foreground", children: [
+          "Já tem uma conta?",
+          " ",
+          /* @__PURE__ */ jsxDEV(Link, { to: "/login", className: "font-medium text-primary hover:underline", children: "Faça login" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+            lineNumber: 152,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+          lineNumber: 150,
+          columnNumber: 13
+        }, this)
+      ]
+    },
+    void 0,
+    true,
+    {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+      lineNumber: 75,
+      columnNumber: 11
+    },
+    this
+  ) }, void 0, false, {
+    fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx",
+    lineNumber: 74,
+    columnNumber: 5
+  }, this);
+};
+_s(SignUp, "Xz2ApcPUZ9A6hMupXNZGrJEtXaI=", false, function() {
+  return [useAuth, useNavigate, useToast];
+});
+_c = SignUp;
+export default SignUp;
+var _c;
+$RefreshReg$(_c, "SignUp");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports)
+        return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/SignUp.jsx", currentExports, nextExports);
+      if (invalidateMessage)
+        import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJtYXBwaW5ncyI6IkFBOERjOzs7Ozs7Ozs7Ozs7Ozs7OztBQTlEZCxPQUFPQSxTQUFTQyxnQkFBZ0I7QUFDNUIsU0FBU0MsYUFBYUMsWUFBWTtBQUNsQyxTQUFTQyxlQUFlO0FBQ3hCLFNBQVNDLGNBQWM7QUFDdkIsU0FBU0MsYUFBYTtBQUN0QixTQUFTQyxhQUFhO0FBQ3RCLFNBQVNDLGdCQUFnQjtBQUN6QixTQUFTQyxjQUFjO0FBRXZCLE1BQU1DLFNBQVNBLE1BQU07QUFBQUMsS0FBQTtBQUNuQixRQUFNLENBQUNDLE9BQU9DLFFBQVEsSUFBSVosU0FBUyxFQUFFO0FBQ3JDLFFBQU0sQ0FBQ2EsVUFBVUMsV0FBVyxJQUFJZCxTQUFTLEVBQUU7QUFDM0MsUUFBTSxDQUFDZSxpQkFBaUJDLGtCQUFrQixJQUFJaEIsU0FBUyxFQUFFO0FBQ3pELFFBQU0sQ0FBQ2lCLFVBQVVDLFdBQVcsSUFBSWxCLFNBQVMsRUFBRTtBQUMzQyxRQUFNLENBQUNtQixhQUFhQyxjQUFjLElBQUlwQixTQUFTLEVBQUU7QUFDakQsUUFBTSxDQUFDcUIsU0FBU0MsVUFBVSxJQUFJdEIsU0FBUyxLQUFLO0FBQzVDLFFBQU0sRUFBRXVCLE9BQU8sSUFBSXBCLFFBQVE7QUFDM0IsUUFBTXFCLFdBQVd2QixZQUFZO0FBQzdCLFFBQU0sRUFBRXdCLE1BQU0sSUFBSWxCLFNBQVM7QUFFM0IsUUFBTW1CLGVBQWUsT0FBT0MsTUFBTTtBQUNoQ0EsTUFBRUMsZUFBZTtBQUNqQixRQUFJZixhQUFhRSxpQkFBaUI7QUFDaENVLFlBQU07QUFBQSxRQUNKSSxTQUFTO0FBQUEsUUFDVEMsT0FBTztBQUFBLFFBQ1BDLGFBQWE7QUFBQSxNQUNmLENBQUM7QUFDRDtBQUFBLElBQ0Y7QUFDQVQsZUFBVyxJQUFJO0FBQ2YsVUFBTSxFQUFFVSxNQUFNLElBQUksTUFBTVQsT0FBT1osT0FBT0UsVUFBVTtBQUFBLE1BQzlDb0IsTUFBTTtBQUFBLFFBQ0pDLE1BQU1qQjtBQUFBQSxRQUNOa0IsY0FBY2hCO0FBQUFBLE1BQ2hCO0FBQUEsSUFDRixDQUFDO0FBQ0QsUUFBSWEsT0FBTztBQUNUUCxZQUFNO0FBQUEsUUFDSkksU0FBUztBQUFBLFFBQ1RDLE9BQU87QUFBQSxRQUNQQyxhQUFhQyxNQUFNSSxXQUFXO0FBQUEsTUFDaEMsQ0FBQztBQUFBLElBQ0gsT0FBTztBQUNMWCxZQUFNO0FBQUEsUUFDSkssT0FBTztBQUFBLFFBQ1BDLGFBQWE7QUFBQSxNQUNmLENBQUM7QUFDRFAsZUFBUyxRQUFRO0FBQUEsSUFDbkI7QUFDQUYsZUFBVyxLQUFLO0FBQUEsRUFDbEI7QUFFQSxTQUNFLHVCQUFDLFNBQUksV0FBVSxpREFDYjtBQUFBLElBQUMsT0FBTztBQUFBLElBQVA7QUFBQSxNQUNDLFNBQVMsRUFBRWUsU0FBUyxHQUFHQyxHQUFHLElBQUk7QUFBQSxNQUM5QixTQUFTLEVBQUVELFNBQVMsR0FBR0MsR0FBRyxFQUFFO0FBQUEsTUFDNUIsWUFBWSxFQUFFQyxVQUFVLElBQUk7QUFBQSxNQUM1QixXQUFVO0FBQUEsTUFFVjtBQUFBLCtCQUFDLFNBQUksV0FBVSxlQUNiO0FBQUEsaUNBQUMsUUFBRyxXQUFVLG9DQUFtQywyQkFBakQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFBNEQ7QUFBQSxVQUM1RCx1QkFBQyxPQUFFLFdBQVUseUJBQXdCLDZEQUFyQztBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQUFrRjtBQUFBLGFBRnBGO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFHQTtBQUFBLFFBQ0EsdUJBQUMsVUFBSyxVQUFVYixjQUFjLFdBQVUsYUFDdEM7QUFBQSxpQ0FBQyxTQUFJLFdBQVUsYUFDYjtBQUFBLG1DQUFDLFNBQU0sU0FBUSxZQUFXLDZCQUExQjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUF1QztBQUFBLFlBQ3ZDO0FBQUEsY0FBQztBQUFBO0FBQUEsZ0JBQ0MsSUFBRztBQUFBLGdCQUNILE1BQUs7QUFBQSxnQkFDTCxhQUFZO0FBQUEsZ0JBQ1osT0FBT1Q7QUFBQUEsZ0JBQ1AsVUFBVSxDQUFDVSxNQUFNVCxZQUFZUyxFQUFFYSxPQUFPQyxLQUFLO0FBQUEsZ0JBQzNDO0FBQUEsZ0JBQ0EsV0FBVTtBQUFBO0FBQUEsY0FQWjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsWUFPOEM7QUFBQSxlQVRoRDtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQVdBO0FBQUEsVUFDQyx1QkFBQyxTQUFJLFdBQVUsYUFDZDtBQUFBLG1DQUFDLFNBQU0sU0FBUSxlQUFjLCtCQUE3QjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUE0QztBQUFBLFlBQzVDO0FBQUEsY0FBQztBQUFBO0FBQUEsZ0JBQ0MsSUFBRztBQUFBLGdCQUNILE1BQUs7QUFBQSxnQkFDTCxhQUFZO0FBQUEsZ0JBQ1osT0FBT3RCO0FBQUFBLGdCQUNQLFVBQVUsQ0FBQ1EsTUFBTVAsZUFBZU8sRUFBRWEsT0FBT0MsS0FBSztBQUFBLGdCQUM5QztBQUFBLGdCQUNBLFdBQVU7QUFBQTtBQUFBLGNBUFo7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLFlBTzhDO0FBQUEsZUFUL0M7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFXRDtBQUFBLFVBQ0EsdUJBQUMsU0FBSSxXQUFVLGFBQ2I7QUFBQSxtQ0FBQyxTQUFNLFNBQVEsU0FBUSxzQkFBdkI7QUFBQTtBQUFBO0FBQUE7QUFBQSxtQkFBNkI7QUFBQSxZQUM3QjtBQUFBLGNBQUM7QUFBQTtBQUFBLGdCQUNDLElBQUc7QUFBQSxnQkFDSCxNQUFLO0FBQUEsZ0JBQ0wsYUFBWTtBQUFBLGdCQUNaLE9BQU85QjtBQUFBQSxnQkFDUCxVQUFVLENBQUNnQixNQUFNZixTQUFTZSxFQUFFYSxPQUFPQyxLQUFLO0FBQUEsZ0JBQ3hDO0FBQUEsZ0JBQ0EsV0FBVTtBQUFBO0FBQUEsY0FQWjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsWUFPOEM7QUFBQSxlQVRoRDtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQVdBO0FBQUEsVUFDQSx1QkFBQyxTQUFJLFdBQVUsYUFDYjtBQUFBLG1DQUFDLFNBQU0sU0FBUSxZQUFXLHFCQUExQjtBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUErQjtBQUFBLFlBQy9CO0FBQUEsY0FBQztBQUFBO0FBQUEsZ0JBQ0MsSUFBRztBQUFBLGdCQUNILE1BQUs7QUFBQSxnQkFDTCxhQUFZO0FBQUEsZ0JBQ1osT0FBTzVCO0FBQUFBLGdCQUNQLFVBQVUsQ0FBQ2MsTUFBTWIsWUFBWWEsRUFBRWEsT0FBT0MsS0FBSztBQUFBLGdCQUMzQztBQUFBLGdCQUNBLFdBQVU7QUFBQTtBQUFBLGNBUFo7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBLFlBTzhDO0FBQUEsZUFUaEQ7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFXQTtBQUFBLFVBQ0EsdUJBQUMsU0FBSSxXQUFVLGFBQ2I7QUFBQSxtQ0FBQyxTQUFNLFNBQVEsb0JBQW1CLCtCQUFsQztBQUFBO0FBQUE7QUFBQTtBQUFBLG1CQUFpRDtBQUFBLFlBQ2pEO0FBQUEsY0FBQztBQUFBO0FBQUEsZ0JBQ0MsSUFBRztBQUFBLGdCQUNILE1BQUs7QUFBQSxnQkFDTCxhQUFZO0FBQUEsZ0JBQ1osT0FBTzFCO0FBQUFBLGdCQUNQLFVBQVUsQ0FBQ1ksTUFBTVgsbUJBQW1CVyxFQUFFYSxPQUFPQyxLQUFLO0FBQUEsZ0JBQ2xEO0FBQUEsZ0JBQ0EsV0FBVTtBQUFBO0FBQUEsY0FQWjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsWUFPOEM7QUFBQSxlQVRoRDtBQUFBO0FBQUE7QUFBQTtBQUFBLGlCQVdBO0FBQUEsVUFDQSx1QkFBQyxVQUFPLE1BQUssVUFBUyxXQUFVLFVBQVMsVUFBVXBCLFNBQ2hEQSxvQkFBVSxxQkFBcUIsZUFEbEM7QUFBQTtBQUFBO0FBQUE7QUFBQSxpQkFFQTtBQUFBLGFBL0RGO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFnRUE7QUFBQSxRQUNBLHVCQUFDLE9BQUUsV0FBVSw2Q0FBNEM7QUFBQTtBQUFBLFVBQ3JDO0FBQUEsVUFDbEIsdUJBQUMsUUFBSyxJQUFHLFVBQVMsV0FBVSw0Q0FBMkMsMEJBQXZFO0FBQUE7QUFBQTtBQUFBO0FBQUEsaUJBRUE7QUFBQSxhQUpGO0FBQUE7QUFBQTtBQUFBO0FBQUEsZUFLQTtBQUFBO0FBQUE7QUFBQSxJQWhGRjtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUEsRUFpRkEsS0FsRkY7QUFBQTtBQUFBO0FBQUE7QUFBQSxTQW1GQTtBQUVKO0FBQUVYLEdBbElJRCxRQUFNO0FBQUEsVUFPU04sU0FDRkYsYUFDQ00sUUFBUTtBQUFBO0FBQUFtQyxLQVR0QmpDO0FBb0lOLGVBQWVBO0FBQU8sSUFBQWlDO0FBQUFDLGFBQUFELElBQUEiLCJuYW1lcyI6WyJSZWFjdCIsInVzZVN0YXRlIiwidXNlTmF2aWdhdGUiLCJMaW5rIiwidXNlQXV0aCIsIkJ1dHRvbiIsIklucHV0IiwiTGFiZWwiLCJ1c2VUb2FzdCIsIm1vdGlvbiIsIlNpZ25VcCIsIl9zIiwiZW1haWwiLCJzZXRFbWFpbCIsInBhc3N3b3JkIiwic2V0UGFzc3dvcmQiLCJjb25maXJtUGFzc3dvcmQiLCJzZXRDb25maXJtUGFzc3dvcmQiLCJmdWxsTmFtZSIsInNldEZ1bGxOYW1lIiwiY29tcGFueU5hbWUiLCJzZXRDb21wYW55TmFtZSIsImxvYWRpbmciLCJzZXRMb2FkaW5nIiwic2lnblVwIiwibmF2aWdhdGUiLCJ0b2FzdCIsImhhbmRsZVNpZ25VcCIsImUiLCJwcmV2ZW50RGVmYXVsdCIsInZhcmlhbnQiLCJ0aXRsZSIsImRlc2NyaXB0aW9uIiwiZXJyb3IiLCJkYXRhIiwibmFtZSIsImNvbXBhbnlfbmFtZSIsIm1lc3NhZ2UiLCJvcGFjaXR5IiwieSIsImR1cmF0aW9uIiwidGFyZ2V0IiwidmFsdWUiLCJfYyIsIiRSZWZyZXNoUmVnJCJdLCJzb3VyY2VzIjpbIlNpZ25VcC5qc3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0LCB7IHVzZVN0YXRlIH0gZnJvbSAncmVhY3QnO1xyXG4gICAgaW1wb3J0IHsgdXNlTmF2aWdhdGUsIExpbmsgfSBmcm9tICdyZWFjdC1yb3V0ZXItZG9tJztcclxuICAgIGltcG9ydCB7IHVzZUF1dGggfSBmcm9tICdAL2NvbnRleHRzL1N1cGFiYXNlQXV0aENvbnRleHQnO1xyXG4gICAgaW1wb3J0IHsgQnV0dG9uIH0gZnJvbSAnQC9jb21wb25lbnRzL3VpL2J1dHRvbic7XHJcbiAgICBpbXBvcnQgeyBJbnB1dCB9IGZyb20gJ0AvY29tcG9uZW50cy91aS9pbnB1dCc7XHJcbiAgICBpbXBvcnQgeyBMYWJlbCB9IGZyb20gJ0AvY29tcG9uZW50cy91aS9sYWJlbCc7XHJcbiAgICBpbXBvcnQgeyB1c2VUb2FzdCB9IGZyb20gJ0AvY29tcG9uZW50cy91aS91c2UtdG9hc3QnO1xyXG4gICAgaW1wb3J0IHsgbW90aW9uIH0gZnJvbSAnZnJhbWVyLW1vdGlvbic7XHJcbiAgICBcclxuICAgIGNvbnN0IFNpZ25VcCA9ICgpID0+IHtcclxuICAgICAgY29uc3QgW2VtYWlsLCBzZXRFbWFpbF0gPSB1c2VTdGF0ZSgnJyk7XHJcbiAgICAgIGNvbnN0IFtwYXNzd29yZCwgc2V0UGFzc3dvcmRdID0gdXNlU3RhdGUoJycpO1xyXG4gICAgICBjb25zdCBbY29uZmlybVBhc3N3b3JkLCBzZXRDb25maXJtUGFzc3dvcmRdID0gdXNlU3RhdGUoJycpO1xyXG4gICAgICBjb25zdCBbZnVsbE5hbWUsIHNldEZ1bGxOYW1lXSA9IHVzZVN0YXRlKCcnKTtcclxuICAgICAgY29uc3QgW2NvbXBhbnlOYW1lLCBzZXRDb21wYW55TmFtZV0gPSB1c2VTdGF0ZSgnJyk7XHJcbiAgICAgIGNvbnN0IFtsb2FkaW5nLCBzZXRMb2FkaW5nXSA9IHVzZVN0YXRlKGZhbHNlKTtcclxuICAgICAgY29uc3QgeyBzaWduVXAgfSA9IHVzZUF1dGgoKTtcclxuICAgICAgY29uc3QgbmF2aWdhdGUgPSB1c2VOYXZpZ2F0ZSgpO1xyXG4gICAgICBjb25zdCB7IHRvYXN0IH0gPSB1c2VUb2FzdCgpO1xyXG4gICAgXHJcbiAgICAgIGNvbnN0IGhhbmRsZVNpZ25VcCA9IGFzeW5jIChlKSA9PiB7XHJcbiAgICAgICAgZS5wcmV2ZW50RGVmYXVsdCgpO1xyXG4gICAgICAgIGlmIChwYXNzd29yZCAhPT0gY29uZmlybVBhc3N3b3JkKSB7XHJcbiAgICAgICAgICB0b2FzdCh7XHJcbiAgICAgICAgICAgIHZhcmlhbnQ6IFwiZGVzdHJ1Y3RpdmVcIixcclxuICAgICAgICAgICAgdGl0bGU6IFwiRXJybyBubyBDYWRhc3Ryb1wiLFxyXG4gICAgICAgICAgICBkZXNjcmlwdGlvbjogXCJBcyBzZW5oYXMgbsOjbyBjb2luY2lkZW0uXCIsXHJcbiAgICAgICAgICB9KTtcclxuICAgICAgICAgIHJldHVybjtcclxuICAgICAgICB9XHJcbiAgICAgICAgc2V0TG9hZGluZyh0cnVlKTtcclxuICAgICAgICBjb25zdCB7IGVycm9yIH0gPSBhd2FpdCBzaWduVXAoZW1haWwsIHBhc3N3b3JkLCB7XHJcbiAgICAgICAgICBkYXRhOiB7XHJcbiAgICAgICAgICAgIG5hbWU6IGZ1bGxOYW1lLFxyXG4gICAgICAgICAgICBjb21wYW55X25hbWU6IGNvbXBhbnlOYW1lLFxyXG4gICAgICAgICAgfVxyXG4gICAgICAgIH0pO1xyXG4gICAgICAgIGlmIChlcnJvcikge1xyXG4gICAgICAgICAgdG9hc3Qoe1xyXG4gICAgICAgICAgICB2YXJpYW50OiBcImRlc3RydWN0aXZlXCIsXHJcbiAgICAgICAgICAgIHRpdGxlOiBcIkZhbGhhIG5vIENhZGFzdHJvXCIsXHJcbiAgICAgICAgICAgIGRlc2NyaXB0aW9uOiBlcnJvci5tZXNzYWdlIHx8IFwiTsOjbyBmb2kgcG9zc8OtdmVsIGNyaWFyIHN1YSBjb250YS5cIixcclxuICAgICAgICAgIH0pO1xyXG4gICAgICAgIH0gZWxzZSB7XHJcbiAgICAgICAgICB0b2FzdCh7XHJcbiAgICAgICAgICAgIHRpdGxlOiBcIkNhZGFzdHJvIHJlYWxpemFkbyBjb20gc3VjZXNzbyFcIixcclxuICAgICAgICAgICAgZGVzY3JpcHRpb246IFwiVmVyaWZpcXVlIHNldSBlLW1haWwgcGFyYSBjb25maXJtYXIgc3VhIGNvbnRhLlwiLFxyXG4gICAgICAgICAgfSk7XHJcbiAgICAgICAgICBuYXZpZ2F0ZSgnL2xvZ2luJyk7XHJcbiAgICAgICAgfVxyXG4gICAgICAgIHNldExvYWRpbmcoZmFsc2UpO1xyXG4gICAgICB9O1xyXG4gICAgXHJcbiAgICAgIHJldHVybiAoXHJcbiAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciBtaW4taC1zY3JlZW5cIj5cclxuICAgICAgICAgIDxtb3Rpb24uZGl2XHJcbiAgICAgICAgICAgIGluaXRpYWw9e3sgb3BhY2l0eTogMCwgeTogLTUwIH19XHJcbiAgICAgICAgICAgIGFuaW1hdGU9e3sgb3BhY2l0eTogMSwgeTogMCB9fVxyXG4gICAgICAgICAgICB0cmFuc2l0aW9uPXt7IGR1cmF0aW9uOiAwLjUgfX1cclxuICAgICAgICAgICAgY2xhc3NOYW1lPVwidy1mdWxsIG1heC13LW1kIHAtOCBzcGFjZS15LTggZ2xhc3MtY2FyZFwiXHJcbiAgICAgICAgICA+XHJcbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwidGV4dC1jZW50ZXJcIj5cclxuICAgICAgICAgICAgICA8aDEgY2xhc3NOYW1lPVwidGV4dC00eGwgZm9udC1ib2xkIGdyYWRpZW50LXRleHRcIj5DcmlhciBDb250YTwvaDE+XHJcbiAgICAgICAgICAgICAgPHAgY2xhc3NOYW1lPVwidGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+SnVudGUtc2UgYW8gU3lzRmluYSBlIG9yZ2FuaXplIHN1YXMgZmluYW7Dp2FzLjwvcD5cclxuICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgIDxmb3JtIG9uU3VibWl0PXtoYW5kbGVTaWduVXB9IGNsYXNzTmFtZT1cInNwYWNlLXktNlwiPlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS0yXCI+XHJcbiAgICAgICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cImZ1bGxOYW1lXCI+Tm9tZSBDb21wbGV0bzwvTGFiZWw+XHJcbiAgICAgICAgICAgICAgICA8SW5wdXRcclxuICAgICAgICAgICAgICAgICAgaWQ9XCJmdWxsTmFtZVwiXHJcbiAgICAgICAgICAgICAgICAgIHR5cGU9XCJ0ZXh0XCJcclxuICAgICAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCJTZXUgbm9tZSBjb21wbGV0b1wiXHJcbiAgICAgICAgICAgICAgICAgIHZhbHVlPXtmdWxsTmFtZX1cclxuICAgICAgICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBzZXRGdWxsTmFtZShlLnRhcmdldC52YWx1ZSl9XHJcbiAgICAgICAgICAgICAgICAgIHJlcXVpcmVkXHJcbiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cImJnLXNsYXRlLTgwMC81MCBib3JkZXItc2xhdGUtNzAwXCJcclxuICAgICAgICAgICAgICAgIC8+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS0yXCI+XHJcbiAgICAgICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cImNvbXBhbnlOYW1lXCI+Tm9tZSBkYSBFbXByZXNhPC9MYWJlbD5cclxuICAgICAgICAgICAgICAgIDxJbnB1dFxyXG4gICAgICAgICAgICAgICAgICBpZD1cImNvbXBhbnlOYW1lXCJcclxuICAgICAgICAgICAgICAgICAgdHlwZT1cInRleHRcIlxyXG4gICAgICAgICAgICAgICAgICBwbGFjZWhvbGRlcj1cIk5vbWUgZGEgc3VhIGVtcHJlc2FcIlxyXG4gICAgICAgICAgICAgICAgICB2YWx1ZT17Y29tcGFueU5hbWV9XHJcbiAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gc2V0Q29tcGFueU5hbWUoZS50YXJnZXQudmFsdWUpfVxyXG4gICAgICAgICAgICAgICAgICByZXF1aXJlZFxyXG4gICAgICAgICAgICAgICAgICBjbGFzc05hbWU9XCJiZy1zbGF0ZS04MDAvNTAgYm9yZGVyLXNsYXRlLTcwMFwiXHJcbiAgICAgICAgICAgICAgICAvPlxyXG4gICAgICAgICAgICAgIDwvZGl2PlxyXG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwic3BhY2UteS0yXCI+XHJcbiAgICAgICAgICAgICAgICA8TGFiZWwgaHRtbEZvcj1cImVtYWlsXCI+RS1tYWlsPC9MYWJlbD5cclxuICAgICAgICAgICAgICAgIDxJbnB1dFxyXG4gICAgICAgICAgICAgICAgICBpZD1cImVtYWlsXCJcclxuICAgICAgICAgICAgICAgICAgdHlwZT1cImVtYWlsXCJcclxuICAgICAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCJzZXVAZW1haWwuY29tXCJcclxuICAgICAgICAgICAgICAgICAgdmFsdWU9e2VtYWlsfVxyXG4gICAgICAgICAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IHNldEVtYWlsKGUudGFyZ2V0LnZhbHVlKX1cclxuICAgICAgICAgICAgICAgICAgcmVxdWlyZWRcclxuICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiYmctc2xhdGUtODAwLzUwIGJvcmRlci1zbGF0ZS03MDBcIlxyXG4gICAgICAgICAgICAgICAgLz5cclxuICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cInNwYWNlLXktMlwiPlxyXG4gICAgICAgICAgICAgICAgPExhYmVsIGh0bWxGb3I9XCJwYXNzd29yZFwiPlNlbmhhPC9MYWJlbD5cclxuICAgICAgICAgICAgICAgIDxJbnB1dFxyXG4gICAgICAgICAgICAgICAgICBpZD1cInBhc3N3b3JkXCJcclxuICAgICAgICAgICAgICAgICAgdHlwZT1cInBhc3N3b3JkXCJcclxuICAgICAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCIqKioqKioqKlwiXHJcbiAgICAgICAgICAgICAgICAgIHZhbHVlPXtwYXNzd29yZH1cclxuICAgICAgICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBzZXRQYXNzd29yZChlLnRhcmdldC52YWx1ZSl9XHJcbiAgICAgICAgICAgICAgICAgIHJlcXVpcmVkXHJcbiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT1cImJnLXNsYXRlLTgwMC81MCBib3JkZXItc2xhdGUtNzAwXCJcclxuICAgICAgICAgICAgICAgIC8+XHJcbiAgICAgICAgICAgICAgPC9kaXY+XHJcbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJzcGFjZS15LTJcIj5cclxuICAgICAgICAgICAgICAgIDxMYWJlbCBodG1sRm9yPVwiY29uZmlybS1wYXNzd29yZFwiPkNvbmZpcm1hciBTZW5oYTwvTGFiZWw+XHJcbiAgICAgICAgICAgICAgICA8SW5wdXRcclxuICAgICAgICAgICAgICAgICAgaWQ9XCJjb25maXJtLXBhc3N3b3JkXCJcclxuICAgICAgICAgICAgICAgICAgdHlwZT1cInBhc3N3b3JkXCJcclxuICAgICAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9XCIqKioqKioqKlwiXHJcbiAgICAgICAgICAgICAgICAgIHZhbHVlPXtjb25maXJtUGFzc3dvcmR9XHJcbiAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gc2V0Q29uZmlybVBhc3N3b3JkKGUudGFyZ2V0LnZhbHVlKX1cclxuICAgICAgICAgICAgICAgICAgcmVxdWlyZWRcclxuICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPVwiYmctc2xhdGUtODAwLzUwIGJvcmRlci1zbGF0ZS03MDBcIlxyXG4gICAgICAgICAgICAgICAgLz5cclxuICAgICAgICAgICAgICA8L2Rpdj5cclxuICAgICAgICAgICAgICA8QnV0dG9uIHR5cGU9XCJzdWJtaXRcIiBjbGFzc05hbWU9XCJ3LWZ1bGxcIiBkaXNhYmxlZD17bG9hZGluZ30+XHJcbiAgICAgICAgICAgICAgICB7bG9hZGluZyA/ICdDcmlhbmRvIGNvbnRhLi4uJyA6ICdDYWRhc3RyYXInfVxyXG4gICAgICAgICAgICAgIDwvQnV0dG9uPlxyXG4gICAgICAgICAgICA8L2Zvcm0+XHJcbiAgICAgICAgICAgIDxwIGNsYXNzTmFtZT1cInRleHQtY2VudGVyIHRleHQtc20gdGV4dC1tdXRlZC1mb3JlZ3JvdW5kXCI+XHJcbiAgICAgICAgICAgICAgSsOhIHRlbSB1bWEgY29udGE/eycgJ31cclxuICAgICAgICAgICAgICA8TGluayB0bz1cIi9sb2dpblwiIGNsYXNzTmFtZT1cImZvbnQtbWVkaXVtIHRleHQtcHJpbWFyeSBob3Zlcjp1bmRlcmxpbmVcIj5cclxuICAgICAgICAgICAgICAgIEZhw6dhIGxvZ2luXHJcbiAgICAgICAgICAgICAgPC9MaW5rPlxyXG4gICAgICAgICAgICA8L3A+XHJcbiAgICAgICAgICA8L21vdGlvbi5kaXY+XHJcbiAgICAgICAgPC9kaXY+XHJcbiAgICAgICk7XHJcbiAgICB9O1xyXG4gICAgXHJcbiAgICBleHBvcnQgZGVmYXVsdCBTaWduVXA7Il0sImZpbGUiOiJEOi9Vc2Vycy9kZWZpYS9Eb2N1bWVudHMvRGVzZW52b2x2aW1lbnRvL0RlZkZpbmFuY2UtdjEvc3JjL3BhZ2VzL1NpZ25VcC5qc3gifQ==

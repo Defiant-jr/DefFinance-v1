@@ -1,0 +1,206 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/pages/Financeiro.jsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=b50a5041"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+var _s = $RefreshSig$();
+import __vite__cjsImport3_react from "/node_modules/.vite/deps/react.js?v=b50a5041"; const React = __vite__cjsImport3_react.__esModule ? __vite__cjsImport3_react.default : __vite__cjsImport3_react;
+import { useNavigate } from "/node_modules/.vite/deps/react-router-dom.js?v=b50a5041";
+import { Helmet } from "/node_modules/.vite/deps/react-helmet.js?v=b50a5041";
+import { motion } from "/node_modules/.vite/deps/framer-motion.js?v=b50a5041";
+import { ArrowLeft, Wallet, ReceiptText } from "/node_modules/.vite/deps/lucide-react.js?v=b50a5041";
+import { Button } from "/src/components/ui/button.jsx";
+import { Card, CardContent } from "/src/components/ui/card.jsx";
+import { useToast } from "/src/components/ui/use-toast.js";
+const Financeiro = () => {
+  _s();
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const cards = [
+    {
+      title: "Baixa",
+      description: "Registrar baixas financeiras rapidamente.",
+      icon: Wallet,
+      implemented: false
+    },
+    {
+      title: "Bordero de Baixa",
+      description: "Organize e consolide baixas em borderos.",
+      icon: ReceiptText,
+      implemented: false
+    }
+  ];
+  const handleCardClick = (implemented) => {
+    if (!implemented) {
+      toast({
+        title: "Em breve!",
+        description: "Estamos trabalhando para liberar este recurso."
+      });
+    }
+  };
+  return /* @__PURE__ */ jsxDEV(
+    motion.div,
+    {
+      initial: { opacity: 0, y: 20 },
+      animate: { opacity: 1, y: 0 },
+      className: "space-y-8",
+      children: [
+        /* @__PURE__ */ jsxDEV(Helmet, { children: [
+          /* @__PURE__ */ jsxDEV("title", { children: "Financeiro - SysFina" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+            lineNumber: 65,
+            columnNumber: 9
+          }, this),
+          /* @__PURE__ */ jsxDEV("meta", { name: "description", content: "Central de ações financeiras." }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+            lineNumber: 66,
+            columnNumber: 9
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+          lineNumber: 64,
+          columnNumber: 7
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "flex items-center justify-between", children: /* @__PURE__ */ jsxDEV("div", { className: "flex items-center gap-4", children: [
+          /* @__PURE__ */ jsxDEV(Button, { variant: "outline", size: "icon", className: "h-10 w-10", onClick: () => navigate(-1), children: [
+            /* @__PURE__ */ jsxDEV(ArrowLeft, { className: "h-5 w-5" }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+              lineNumber: 72,
+              columnNumber: 13
+            }, this),
+            /* @__PURE__ */ jsxDEV("span", { className: "sr-only", children: "Voltar" }, void 0, false, {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+              lineNumber: 73,
+              columnNumber: 13
+            }, this)
+          ] }, void 0, true, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+            lineNumber: 71,
+            columnNumber: 11
+          }, this),
+          /* @__PURE__ */ jsxDEV("h1", { className: "text-3xl font-bold gradient-text", children: "Financeiro" }, void 0, false, {
+            fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+            lineNumber: 75,
+            columnNumber: 11
+          }, this)
+        ] }, void 0, true, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+          lineNumber: 70,
+          columnNumber: 9
+        }, this) }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+          lineNumber: 69,
+          columnNumber: 7
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: cards.map((card) => {
+          const Icon = card.icon;
+          return /* @__PURE__ */ jsxDEV(
+            Card,
+            {
+              className: `glass-card cursor-pointer transition-colors ${card.implemented ? "hover:border-blue-500" : "hover:border-white/10"}`,
+              onClick: () => handleCardClick(card.implemented),
+              children: /* @__PURE__ */ jsxDEV(CardContent, { className: "p-6 flex flex-col gap-4", children: [
+                /* @__PURE__ */ jsxDEV("div", { className: "flex items-center gap-3", children: [
+                  /* @__PURE__ */ jsxDEV("div", { className: "p-3 rounded-lg bg-white/10 text-gray-300", children: /* @__PURE__ */ jsxDEV(Icon, { className: "w-6 h-6" }, void 0, false, {
+                    fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+                    lineNumber: 91,
+                    columnNumber: 21
+                  }, this) }, void 0, false, {
+                    fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+                    lineNumber: 90,
+                    columnNumber: 19
+                  }, this),
+                  /* @__PURE__ */ jsxDEV("div", { children: [
+                    /* @__PURE__ */ jsxDEV("h2", { className: "text-xl font-semibold text-white", children: card.title }, void 0, false, {
+                      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+                      lineNumber: 94,
+                      columnNumber: 21
+                    }, this),
+                    /* @__PURE__ */ jsxDEV("p", { className: "text-sm text-gray-400", children: card.description }, void 0, false, {
+                      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+                      lineNumber: 95,
+                      columnNumber: 21
+                    }, this)
+                  ] }, void 0, true, {
+                    fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+                    lineNumber: 93,
+                    columnNumber: 19
+                  }, this)
+                ] }, void 0, true, {
+                  fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+                  lineNumber: 89,
+                  columnNumber: 17
+                }, this),
+                !card.implemented && /* @__PURE__ */ jsxDEV("span", { className: "text-xs font-medium text-gray-400 uppercase tracking-wide", children: "Em desenvolvimento" }, void 0, false, {
+                  fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+                  lineNumber: 99,
+                  columnNumber: 17
+                }, this)
+              ] }, void 0, true, {
+                fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+                lineNumber: 88,
+                columnNumber: 15
+              }, this)
+            },
+            card.title,
+            false,
+            {
+              fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+              lineNumber: 83,
+              columnNumber: 13
+            },
+            this
+          );
+        }) }, void 0, false, {
+          fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+          lineNumber: 79,
+          columnNumber: 7
+        }, this)
+      ]
+    },
+    void 0,
+    true,
+    {
+      fileName: "D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx",
+      lineNumber: 59,
+      columnNumber: 5
+    },
+    this
+  );
+};
+_s(Financeiro, "DpKBWZw+BqIquRvaRc8JmfbTZgY=", false, function() {
+  return [useNavigate, useToast];
+});
+_c = Financeiro;
+export default Financeiro;
+var _c;
+$RefreshReg$(_c, "Financeiro");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports)
+        return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("D:/Users/defia/Documents/Desenvolvimento/DefFinance-v1/src/pages/Financeiro.jsx", currentExports, nextExports);
+      if (invalidateMessage)
+        import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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QUFBQTtBQUFBO0FBQUEsMkJBQTZEO0FBQUEsb0JBQzdELHVCQUFDLE9BQUUsV0FBVSx5QkFBeUJRLGVBQUtQLGVBQTNDO0FBQUE7QUFBQTtBQUFBO0FBQUEsMkJBQXVEO0FBQUEsdUJBRnpEO0FBQUE7QUFBQTtBQUFBO0FBQUEseUJBR0E7QUFBQSxxQkFQRjtBQUFBO0FBQUE7QUFBQTtBQUFBLHVCQVFBO0FBQUEsZ0JBQ0MsQ0FBQ08sS0FBS0wsZUFDTCx1QkFBQyxVQUFLLFdBQVUsNkRBQTJELGtDQUEzRTtBQUFBO0FBQUE7QUFBQTtBQUFBLHVCQUVBO0FBQUEsbUJBYko7QUFBQTtBQUFBO0FBQUE7QUFBQSxxQkFlQTtBQUFBO0FBQUEsWUFuQktLLEtBQUtSO0FBQUFBLFlBRFo7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxVQXFCQTtBQUFBLFFBRUosQ0FBQyxLQTNCSDtBQUFBO0FBQUE7QUFBQTtBQUFBLGVBNEJBO0FBQUE7QUFBQTtBQUFBLElBaERGO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxFQWlEQTtBQUVKO0FBQUVKLEdBaEZJRCxZQUFVO0FBQUEsVUFDR1YsYUFDQ1MsUUFBUTtBQUFBO0FBQUFnQixLQUZ0QmY7QUFrRk4sZUFBZUE7QUFBVyxJQUFBZTtBQUFBQyxhQUFBRCxJQUFBIiwibmFtZXMiOlsiUmVhY3QiLCJ1c2VOYXZpZ2F0ZSIsIkhlbG1ldCIsIm1vdGlvbiIsIkFycm93TGVmdCIsIldhbGxldCIsIlJlY2VpcHRUZXh0IiwiQnV0dG9uIiwiQ2FyZCIsIkNhcmRDb250ZW50IiwidXNlVG9hc3QiLCJGaW5hbmNlaXJvIiwiX3MiLCJuYXZpZ2F0ZSIsInRvYXN0IiwiY2FyZHMiLCJ0aXRsZSIsImRlc2NyaXB0aW9uIiwiaWNvbiIsImltcGxlbWVudGVkIiwiaGFuZGxlQ2FyZENsaWNrIiwib3BhY2l0eSIsInkiLCJtYXAiLCJjYXJkIiwiSWNvbiIsIl9jIiwiJFJlZnJlc2hSZWckIl0sInNvdXJjZXMiOlsiRmluYW5jZWlyby5qc3giXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IFJlYWN0IGZyb20gJ3JlYWN0JztcbmltcG9ydCB7IHVzZU5hdmlnYXRlIH0gZnJvbSAncmVhY3Qtcm91dGVyLWRvbSc7XG5pbXBvcnQgeyBIZWxtZXQgfSBmcm9tICdyZWFjdC1oZWxtZXQnO1xuaW1wb3J0IHsgbW90aW9uIH0gZnJvbSAnZnJhbWVyLW1vdGlvbic7XG5pbXBvcnQgeyBBcnJvd0xlZnQsIFdhbGxldCwgUmVjZWlwdFRleHQgfSBmcm9tICdsdWNpZGUtcmVhY3QnO1xuXG5pbXBvcnQgeyBCdXR0b24gfSBmcm9tICdAL2NvbXBvbmVudHMvdWkvYnV0dG9uJztcbmltcG9ydCB7IENhcmQsIENhcmRDb250ZW50IH0gZnJvbSAnQC9jb21wb25lbnRzL3VpL2NhcmQnO1xuaW1wb3J0IHsgdXNlVG9hc3QgfSBmcm9tICdAL2NvbXBvbmVudHMvdWkvdXNlLXRvYXN0JztcblxuY29uc3QgRmluYW5jZWlybyA9ICgpID0+IHtcbiAgY29uc3QgbmF2aWdhdGUgPSB1c2VOYXZpZ2F0ZSgpO1xuICBjb25zdCB7IHRvYXN0IH0gPSB1c2VUb2FzdCgpO1xuXG4gIGNvbnN0IGNhcmRzID0gW1xuICAgIHtcbiAgICAgIHRpdGxlOiAnQmFpeGEnLFxuICAgICAgZGVzY3JpcHRpb246ICdSZWdpc3RyYXIgYmFpeGFzIGZpbmFuY2VpcmFzIHJhcGlkYW1lbnRlLicsXG4gICAgICBpY29uOiBXYWxsZXQsXG4gICAgICBpbXBsZW1lbnRlZDogZmFsc2UsXG4gICAgfSxcbiAgICB7XG4gICAgICB0aXRsZTogJ0JvcmRlcm8gZGUgQmFpeGEnLFxuICAgICAgZGVzY3JpcHRpb246ICdPcmdhbml6ZSBlIGNvbnNvbGlkZSBiYWl4YXMgZW0gYm9yZGVyb3MuJyxcbiAgICAgIGljb246IFJlY2VpcHRUZXh0LFxuICAgICAgaW1wbGVtZW50ZWQ6IGZhbHNlLFxuICAgIH0sXG4gIF07XG5cbiAgY29uc3QgaGFuZGxlQ2FyZENsaWNrID0gKGltcGxlbWVudGVkKSA9PiB7XG4gICAgaWYgKCFpbXBsZW1lbnRlZCkge1xuICAgICAgdG9hc3Qoe1xuICAgICAgICB0aXRsZTogJ0VtIGJyZXZlIScsXG4gICAgICAgIGRlc2NyaXB0aW9uOiAnRXN0YW1vcyB0cmFiYWxoYW5kbyBwYXJhIGxpYmVyYXIgZXN0ZSByZWN1cnNvLicsXG4gICAgICB9KTtcbiAgICB9XG4gIH07XG5cbiAgcmV0dXJuIChcbiAgICA8bW90aW9uLmRpdlxuICAgICAgaW5pdGlhbD17eyBvcGFjaXR5OiAwLCB5OiAyMCB9fVxuICAgICAgYW5pbWF0ZT17eyBvcGFjaXR5OiAxLCB5OiAwIH19XG4gICAgICBjbGFzc05hbWU9XCJzcGFjZS15LThcIlxuICAgID5cbiAgICAgIDxIZWxtZXQ+XG4gICAgICAgIDx0aXRsZT5GaW5hbmNlaXJvIC0gU3lzRmluYTwvdGl0bGU+XG4gICAgICAgIDxtZXRhIG5hbWU9XCJkZXNjcmlwdGlvblwiIGNvbnRlbnQ9XCJDZW50cmFsIGRlIGHDp8O1ZXMgZmluYW5jZWlyYXMuXCIgLz5cbiAgICAgIDwvSGVsbWV0PlxuXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIGp1c3RpZnktYmV0d2VlblwiPlxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZsZXggaXRlbXMtY2VudGVyIGdhcC00XCI+XG4gICAgICAgICAgPEJ1dHRvbiB2YXJpYW50PVwib3V0bGluZVwiIHNpemU9XCJpY29uXCIgY2xhc3NOYW1lPVwiaC0xMCB3LTEwXCIgb25DbGljaz17KCkgPT4gbmF2aWdhdGUoLTEpfT5cbiAgICAgICAgICAgIDxBcnJvd0xlZnQgY2xhc3NOYW1lPVwiaC01IHctNVwiIC8+XG4gICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJzci1vbmx5XCI+Vm9sdGFyPC9zcGFuPlxuICAgICAgICAgIDwvQnV0dG9uPlxuICAgICAgICAgIDxoMSBjbGFzc05hbWU9XCJ0ZXh0LTN4bCBmb250LWJvbGQgZ3JhZGllbnQtdGV4dFwiPkZpbmFuY2Vpcm88L2gxPlxuICAgICAgICA8L2Rpdj5cbiAgICAgIDwvZGl2PlxuXG4gICAgICA8ZGl2IGNsYXNzTmFtZT1cImdyaWQgZ3JpZC1jb2xzLTEgbWQ6Z3JpZC1jb2xzLTIgZ2FwLTZcIj5cbiAgICAgICAge2NhcmRzLm1hcCgoY2FyZCkgPT4ge1xuICAgICAgICAgIGNvbnN0IEljb24gPSBjYXJkLmljb247XG4gICAgICAgICAgcmV0dXJuIChcbiAgICAgICAgICAgIDxDYXJkXG4gICAgICAgICAgICAgIGtleT17Y2FyZC50aXRsZX1cbiAgICAgICAgICAgICAgY2xhc3NOYW1lPXtgZ2xhc3MtY2FyZCBjdXJzb3ItcG9pbnRlciB0cmFuc2l0aW9uLWNvbG9ycyAke2NhcmQuaW1wbGVtZW50ZWQgPyAnaG92ZXI6Ym9yZGVyLWJsdWUtNTAwJyA6ICdob3Zlcjpib3JkZXItd2hpdGUvMTAnfWB9XG4gICAgICAgICAgICAgIG9uQ2xpY2s9eygpID0+IGhhbmRsZUNhcmRDbGljayhjYXJkLmltcGxlbWVudGVkKX1cbiAgICAgICAgICAgID5cbiAgICAgICAgICAgICAgPENhcmRDb250ZW50IGNsYXNzTmFtZT1cInAtNiBmbGV4IGZsZXgtY29sIGdhcC00XCI+XG4gICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJmbGV4IGl0ZW1zLWNlbnRlciBnYXAtM1wiPlxuICAgICAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJwLTMgcm91bmRlZC1sZyBiZy13aGl0ZS8xMCB0ZXh0LWdyYXktMzAwXCI+XG4gICAgICAgICAgICAgICAgICAgIDxJY29uIGNsYXNzTmFtZT1cInctNiBoLTZcIiAvPlxuICAgICAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgICAgICA8ZGl2PlxuICAgICAgICAgICAgICAgICAgICA8aDIgY2xhc3NOYW1lPVwidGV4dC14bCBmb250LXNlbWlib2xkIHRleHQtd2hpdGVcIj57Y2FyZC50aXRsZX08L2gyPlxuICAgICAgICAgICAgICAgICAgICA8cCBjbGFzc05hbWU9XCJ0ZXh0LXNtIHRleHQtZ3JheS00MDBcIj57Y2FyZC5kZXNjcmlwdGlvbn08L3A+XG4gICAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgICAgICB7IWNhcmQuaW1wbGVtZW50ZWQgJiYgKFxuICAgICAgICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwidGV4dC14cyBmb250LW1lZGl1bSB0ZXh0LWdyYXktNDAwIHVwcGVyY2FzZSB0cmFja2luZy13aWRlXCI+XG4gICAgICAgICAgICAgICAgICAgIEVtIGRlc2Vudm9sdmltZW50b1xuICAgICAgICAgICAgICAgICAgPC9zcGFuPlxuICAgICAgICAgICAgICAgICl9XG4gICAgICAgICAgICAgIDwvQ2FyZENvbnRlbnQ+XG4gICAgICAgICAgICA8L0NhcmQ+XG4gICAgICAgICAgKTtcbiAgICAgICAgfSl9XG4gICAgICA8L2Rpdj5cbiAgICA8L21vdGlvbi5kaXY+XG4gICk7XG59O1xuXG5leHBvcnQgZGVmYXVsdCBGaW5hbmNlaXJvO1xyXG4iXSwiZmlsZSI6IkQ6L1VzZXJzL2RlZmlhL0RvY3VtZW50cy9EZXNlbnZvbHZpbWVudG8vRGVmRmluYW5jZS12MS9zcmMvcGFnZXMvRmluYW5jZWlyby5qc3gifQ==
