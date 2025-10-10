@@ -15,6 +15,7 @@ import React from 'react';
     import FluxoCaixaDetalhado from '@/pages/FluxoCaixaDetalhado';
     import DreGerencial from '@/pages/DreGerencial';
     import RelatorioContas from '@/pages/RelatorioContas';
+    import RelatorioFechamento from '@/pages/RelatorioFechamento';
     
     const PrivateRoute = ({ children }) => {
       const { user, loading } = useAuth();
@@ -52,6 +53,7 @@ import React from 'react';
                 <Route path="/cadastros" element={<PrivateRoute><Cadastros /></PrivateRoute>} />
                 <Route path="/relatorios/fluxo-caixa-detalhado" element={<PrivateRoute><FluxoCaixaDetalhado /></PrivateRoute>} />
                 <Route path="/relatorios/dre-gerencial" element={<PrivateRoute><DreGerencial /></PrivateRoute>} />
+                <Route path="/relatorios/fechamento" element={<PrivateRoute><RelatorioFechamento /></PrivateRoute>} />
                 <Route path="/relatorios/contas" element={<PrivateRoute><RelatorioContas /></PrivateRoute>} />
               </Routes>
             </main>

@@ -49,9 +49,9 @@ import React from 'react';
             {
                 title: "Acompanhamento de Fechamento",
                 icon: FileClock,
-                description: "Acompanhe o status do fechamento mensal.",
-                action: () => handleNavigation('#', false),
-                implemented: false,
+                description: "Acompanhe o saldo mensal com entradas e saidas abertas.",
+                action: () => handleNavigation('/relatorios/fechamento'),
+                implemented: true,
             }
         ];
     
