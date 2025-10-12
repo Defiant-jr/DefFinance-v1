@@ -76,7 +76,7 @@
 
 ###	Importação de Dados
 -	crie um botão para realizar a importação dos dados das planilhas do google drive via API do Goole.
--   chave api: AIzaSyBbMzMvBs53gqLuu9nvsjV8lVmjgHt-1qw
+-   chave api: defina via variável de ambiente segura (`GOOGLE_API_KEY`)
 -   Pagamentos:https://docs.google.com/spreadsheets/d/1VxtIv4kMab66yHC0iVp7uCIJxOg42ZacvY9ehlKrWYA/edit?usp=sharing
         Colunas: Fornecedor, Parcela, Vencimento, Valor, Unidade e Data da Baixa.
 -   Recebimentos: https://docs.google.com/spreadsheets/d/1vDw0K8w3qHxYgPo-t9bapMOZ4Q2zlOsWUGaz12cDQRY/edit?usp=sharing

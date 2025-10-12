@@ -29,7 +29,7 @@ DefFinance é um dashboard financeiro completo para pequenas e médias empresas 
 ## Arquitetura
 - **Frontend**: React 18 + Vite, roteamento com `react-router-dom`, gerenciamento de estado contextual (auth) e UI construída sobre Tailwind CSS com componentes Radix UI/shadcn. Gráficos alimentados por Recharts, animações com Framer Motion e formulários com componentes reutilizáveis (`button`, `input`, `select`, `calendar`, etc.).
 - **Backend de entrega**: servidor Express (`server/app.js`) que expõe `GET /health`, serve os arquivos estáticos do build (produção) ou delega para Vite em modo middleware (desenvolvimento). Compressão habilitada em produção.
-- **Serviços auxiliares**: camada em `src/services/googleSheetsService.js` para consumo direto da Google Sheets API, persistindo últimos dados no `localStorage` como fallback.
+- **Serviços auxiliares**: camada em `src/services/googleSheetsService.js` que aciona o endpoint interno `/api/google-sheets/import`, persistindo os últimos dados no `localStorage` como fallback local.
 - **Supabase**: cliente centralizado em `src/lib/customSupabaseClient.js` compartilhado entre contextos e páginas. O fluxo de importação utiliza Supabase Functions (Edge) e tabelas como `lancamentos` para armazenar movimentações.
 - **Ferramentas de build**: Vite personalizado (`vite.config.js`) com plugins internos (modo editor, restauração de rotas em iframes) e interceptação de logs/erros para integração com ambientes de edição visual.
 
@@ -39,7 +39,7 @@ DefFinance é um dashboard financeiro completo para pequenas e médias empresas 
 - **Supabase**: projeto com autenticação por email/senha habilitada, tabela `lancamentos` (campos como `tipo`, `status`, `data`, `valor`) e função Edge `import-google-sheets` disponível.
 - **Credenciais**: substituir valores de exemplo antes de publicar:
   - `src/lib/customSupabaseClient.js` → use variáveis `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` via `import.meta.env`.
-  - `src/services/googleSheetsService.js` → mova `GOOGLE_API_KEY` e `SPREADSHEET_IDS` para variáveis privadas.
+  - Configuração do Google Sheets via `GOOGLE_API_KEY`, `GOOGLE_SHEET_PAGAMENTOS_ID` e `GOOGLE_SHEET_RECEBIMENTOS_ID` (consumidos apenas pelo backend Express).
 - **Ferramentas opcionais**: Supabase CLI (para deploy de funções) e editor de planilhas que publique dados acessíveis pela API do Google.
 
 ## Instalação e execução
@@ -57,9 +57,9 @@ Crie um arquivo `.env` na raiz com os valores reais e ajuste os imports do Supab
 ```bash
 VITE_SUPABASE_URL=...
 VITE_SUPABASE_ANON_KEY=...
-VITE_GOOGLE_API_KEY=...
-VITE_SHEET_PAGAMENTOS_ID=...
-VITE_SHEET_RECEBIMENTOS_ID=...
+GOOGLE_API_KEY=...
+GOOGLE_SHEET_PAGAMENTOS_ID=...
+GOOGLE_SHEET_RECEBIMENTOS_ID=...
 ```
 > ⚠️ Os arquivos atuais usam chaves hardcoded apenas para desenvolvimento. Remova-as antes de distribuir ou publicar o projeto.
 
@@ -101,7 +101,8 @@ DefFinance-v1/
   - CRUD de lançamentos e outras entidades pela tabela `lancamentos` (ajuste nomes/colunas conforme schema do seu projeto Supabase).
   - Edge Function `import-google-sheets` é invocada pelo Dashboard (`supabase.functions.invoke`) e deve retornar `{ message: string }` em caso de sucesso.
 - **Google Sheets API v4**:
-  - Serviço `importGoogleSheetsData` faz fetch direto como fallback/local para preencher `localStorage` com as últimas planilhas.
+  - Endpoint `/api/google-sheets/import` no backend Express realiza as chamadas à API oficial usando as variáveis de ambiente privadas e devolve os dados consolidados ao frontend.
+  - Serviço `importGoogleSheetsData` consome esse endpoint e armazena os resultados recentes no `localStorage` como fallback offline.
   - Espera planilhas com cabeçalhos (linha 1) e colunas padronizadas: fornecedor/parcela/vencimento/valor (pagamentos) e cliente/vencimento/valor (recebimentos).
 - **Bibliotecas principais**: Radix UI, lucide-react (ícones), Framer Motion, Recharts, Tailwind Merge, React Day Picker, date-fns, html2canvas, jspdf/jspdf-autotable, class-variance-authority.
 

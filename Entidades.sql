@@ -110,7 +110,16 @@
 	go
 
 	-- Insert Padrao
-	insert tb00USU values ('UADM01','ADMINISTRADOR DO SISTEMA GERENTE','UADM01','','','','','','N')
+	declare @DefaultAdminPassword char(10) = null; -- Defina uma senha segura antes de executar
+
+	if @DefaultAdminPassword is null
+	begin
+		raiserror('Configure @DefaultAdminPassword com uma senha segura antes de executar este script.', 16, 1);
+	end
+	else
+	begin
+		insert tb00USU values ('UADM01','ADMINISTRADOR DO SISTEMA GERENTE',@DefaultAdminPassword,'','','','','','N')
+	end
 
 	go
 
