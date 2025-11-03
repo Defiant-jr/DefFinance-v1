@@ -8,7 +8,8 @@
     "build": "node tools/generate-llms.js || true && vite build",
     "preview": "vite preview --host :: --port 3000",
     "start": "node server/index.js",
-    "test": "node --test server/**/*.test.js"
+    "test": "node --test server",
+    "test:watch": "node --test --watch server"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.2.1",

@@ -7,86 +7,39 @@
     (
 	cpRecCod    	char(06)	not null,       		-- Numero do AR (KEY)
 	cpRecCli   		char(05)	not null,	    	    -- Codigo do Cliente (FK)
-	cpRecRep   		char(05)	not null,		        -- Representante (FK)
 	cpRecEmp 		char(02) 	not null,   	    	-- Empresa (FK)
 	cpRecBco    	char(03)	not null default(''),	-- Banco do AR, Gravado pela Cobranca ou Pela Baixa no Caixa (FK)
-	cpRecPrr    	char(02)	not null default(''),	-- Convenio (FK)
 	cpRecMcx    	char(06)	not null default(''),	-- Movimento de Caixa que Baixou o AR (FK)
 	cpRecDup   		char(10)	not null default(''),	-- Numero da Duplicata
 	cpRecNf   		char(08)	not null default(''),	-- Numero da Nota Fiscal 
-	cpRecExtNf		char(01)	not null default(''),	-- Extensao da Nota Fiscal
 	cpRecNsNum  	char(20)	not null default(''),	-- Nosso Numero
 	cpRecValor   	money    	not null,		        -- Valor do Doc(R) (Com Descontos, Exceto cpRecDescPed,cpRecDescFre,cpRecDescLog)
 	cpRecVlReal    	money    	not null,		        -- Valor Real do Doc(R) (Sem Descontos, Cheio, Original)
 	cpRecValRec   	money    	not null default(0 ),	-- Valor Recebido (Devera ser o Valor do Doc(R) = cpRecValor)
-	cpRecValRecR   	money    	not null default(0 ),	-- Valor Real Recebido (com Mora ou Descontos: cpRecDescPed,cpRecDescLog,cpRecDescFre)
-	cpRecVlMora    	money    	not null default(0 ),	-- Valor da Mora diaria (Existe um Percentual no Parametro do Sistema - cpParMora)
-	cpRecSaldo     	money    	not null,		        -- Valor a ser recebido do titulo (no recebimento por conta, sera abatido aos poucos)
 	cpRecDtDoc     	char(08)	not null,		        -- Data do Doc(R)
-	cpRecDtEmis   	char(08)	not null,		        -- Data da Emissao
 	cpRecDtVenc   	char(08)	not null,		        -- Data de Vencimento
 	cpRecDtRec    	char(08)	not null default(''),	-- Data do Recebimento (Data do Caixa)		
-	cpRecDtRecR    	char(08)	not null default(''),	-- Data Real do Recebimento (Data que Realmente o Titulo foi Recebido)
-	cpRecMAComp		char(06)	not null,	        	-- Mes/Ano de Competencia na Geracao do AR
-	cpRecObs      	char(40)	not null default(''),	-- Observacao da Baixa
+	cpRecMAComp		char(06)	not null,	        	-- Mes/Ano de Competencia na Geracao do Doc(R)
 	cpRecDescr		char(40)	not null,	        	-- Descricao do Doc(R)
 	cpRecObs1   	char(80)	not null default(''),	-- Observacao de Doc(R) (Linha 01)
 	cpRecObs2   	char(80)	not null default(''),	-- Observacao de Doc(R) (Linha 02)
 	cpRecObs3     	char(80)	not null default(''), 	-- Observacao de Doc(R) (Linha 03)
-	cpRecTipCob   	char(01)	not null default('1'),	-- Tipo de Cobranca (*)  
-	cpRecMeioCob   	char(01)	not null default('3'),	-- Meio de Cobranca (*)
-	cpRecStaBx		char(01)	not null default(''),	-- Status da Baixa (*)
-	cpRecOri 		char(01)	not null,	          	-- Origem da Gravacao (*)
-	cpRecStImpDup   char(01)	not null default('0'),	-- Status da Impresao da Duplicata (*)
-	cpRecStImpBlo  	char(01)	not null default('0'),	-- Status da Imp. do Bloqueto (*)
-	cpRecStImpRec   char(01)	not null default('0'),	-- Status da Impressao do Doc(R) (*)
-	cpRecStImpCob   char(01)	not null default('0'),	-- Status da Impresao da Cobranca Direta (*)
-	cpRecVerDup 	int		    not null default(0 ),	-- Versao da Duplicata
 	cpRecData   	char(08)	not null default(''),	-- Data da Criacao
 	cpRecHora   	char(05)	not null default(''),	-- Hora da Criacao
-	cpRecDtBx		char(08)	not null default(''),	-- Data Real da Baixa no Sistema
-	cpRecHrBx		char(05)	not null default(''),	-- Hora Real da Baixa no Sistema
-	cpRecMaCompBx	char(06)	not null default(''),	-- Mes Ano de Competencia da Baixa do A.R.
-	cpRecValRetReal	money		not null default(0 ),	-- Valor Real Retornado (Titulo Debitado em Conta)
-	cpRecNumSisAnt	char(06)	not null default(''), 	-- MIGRACAO - Numero Chave do Sistema Origem
-	cpRecNumBcoAnt 	char(10)	not null default(''),	-- MIGRACAO - Numero Bancario para Retorno e Baixa
+	cpRecMaCompBx	char(06)	not null default(''),	-- Mes Ano de Competencia da Baixa do D0c(R)
 	cpRecDtLimDesc	char(08)	not null default(''),	-- Data Limite p/ Conceder o Desconto Financeiro
 	cpRecValAbat	money		not null default(0 ),	-- Valor Abatimento 
-	cpRecMcxAntes	char(06)	not null default(''),	-- Movimento de Caixa Anterior (Usado Quando � Recebido um Baixa por Perda) 
-	cpRecStaAbat	char(01)	not null default('0'),	-- Status do Abatimento *
-	cpRecRecBorFin	char(07)	not null default(''),	-- Numero do Border� Financeiro
-	cpRecDtBorJur	char(08)	not null default(''),	-- Data da Confec��o do Border� Financeiro
-	cpRecHrBorJur	char(05)	not null default(''),	-- Hora da Confec��o do Border� Financeiro
-	cpRecValAbatRec	money		not null default(0 ),	-- Valor de Abatimento no Recebimento do T�tulo
-	cpRecValDescRec	money		not null default(0 ),	-- Valor de Desconto no Recebimento do T�tulo
-	cpRecValJurRecb	money		not null default(0 ),	-- Valor de Juros do Recebimento do T�tulo
+	cpRecRecBorFin	char(07)	not null default(''),	-- Numero do Bordero Financeiro
+	cpRecValAbatRec	money		not null default(0 ),	-- Valor de Abatimento no Recebimento do Titulo
+	cpRecValDescRec	money		not null default(0 ),	-- Valor de Desconto no Recebimento do Titulo
+	cpRecValJurRecb	money		not null default(0 ),	-- Valor de Juros do Recebimento do Titulo
 	cpRecBdt 		char(07)	not null default(''),	-- Bordero de Desconto (FK-tbBdt)
-	cpRecStImp		char(01)	not null default('0'),	-- Status da Impress�o (0-N�o foi Impress�/1-Foi Impresso)
-	cpRecMcxOri		char(06)	not null default(''),	-- Movimento de Caixa que Originou este A.R. (Financeiro)
-	)	
-	go
+	cpRecMcxOri		char(06)	not null default('')	-- Movimento de Caixa que Originou este Doc(R) (Financeiro)
+	);	
 
-	-- Chave Primaria (KEY)
-	create unique nonclustered index idxRec01
-		on tbRec (cpRecCod)
-/* 
-	Descricao:	Contas a Receber
-	---------	Campos (*)
-			   cpRecTipoped  => (Ver tbPed.cpPedTipoped)
-			   cpRecTipCob   => 1-Carteira,2-Simples,3-Descontado,4-Juridica,5-Retornada,6-Protestada
-			   cpRecMeioCob  => 1-Bloqueto,2-Cobranca Direta,3-Carteira (ou Duplicata)
-                           cpRecOri      => 0-Movimentacao,1-Faturamento,2-????,3-Sinistro,4-A.R. Financeiro,9-Migrado
-			   cpRecStaBx    => 0-Normal,1-Devolucao,2-S.Remessa,3-Bonificacao,4-Perda,5-Fat.Indevido, 
-					    6-Recebimento de Perda,9-Cancelado,A-Bx.Com Divergencia,B-A.R. Financeiro
-			   cpRecStImpDup
-                           cpRecStImpBlo 
-                           cpRecStImpRec 
-  			   cpRecStImpCob => 0-Nao Impresso, 1-Impresso. 				
-			   cpRecStaGerCom=> 1-N�o Gerar Comiss�o, 2-Gerado No Faturamento, 3-Gerar na Baixa do T�tulo ,4-Gerar A.R. Liberado, 5-Gerar A.R. e Liberar pela Bx.Caixa
-			   cpRecStaGerCmS=> 1-N�o Gerar Comiss�o, 2-Gerado No Faturamento, 3-Gerar na Baixa do T�tulo ,4-Gerar A.R. Liberado, 5-Gerar A.R. e Liberar pela Bx.Caixa
-			   cpRecRtc	 => Rateio de Comiss�o, Caso Na Ocasi�o da Digita��o do Pedido Existia Rateio Cadastrado no Cliente
-			   cpRecStaAbat  => 0-Em Aberto, 1-Utilizado, 2-Transferido (cpRecArReceb = A.R. que Recebeu o Desconto)	
-*/
+alter table tbRec
+add constraint tbRec_pkey primary key (cpRecCod);
+
 /* ----------------------------------------------------------------------------------------------------------------------------	*/
 /* 
 	PAG - Movimentacao do Contas a Pagar
@@ -105,23 +58,16 @@
 	cpPagVlReal		money		not null,		        -- Valor Original (Sem Descontos, Cheio, Original)
 	cpPagValor      money       not null,		        -- Valor Atual (Com Descontos)
 	cpPagValpag     money		not null default(0 ),	-- Valor Atual na Baixa 
-	cpPagValpagR    money		not null default(0 ),	-- Valor Real Pago
 	cpPagDtDoc    	char(08)	not null,		        -- Data do DOC(P)
 	cpPagDtVenc     char(08)	not null,		        -- Data do vencimento
 	cpPagMAComp 	char(06) 	not null,		        -- Mes/Ano de Competencia
 	cpPagDtpag      char(08)	not null default(''),	-- Data do Pagamento (Data do Caixa)
-	cpPagDtpagR     char(08)	not null default(''),	-- Data Real do Pagamento (Data que Realmente o Titulo foi Pago)
 	cpPagDescr     	char(40)	not null,		        -- Descricao
 	cpPagObs1   	char(80)	not null default(''),	-- Observacao de DOC(P) (linha 1)
 	cpPagObs2   	char(80)	not null default(''),	-- Observacao de DOC(P) (linha 2)
 	cpPagObs3  		char(80)	not null default(''),   -- Observacao de DOC(P) (linha 3)
-	cpPagDmf 		char(01) 	not null default('N'),  -- Despesa Mensal Fixa (S/N)
 	cpPagObs        char(40)	not null default(''),	-- Observacao na Baixa
 	cpPagStImpRec   char(01)	not null default('0'),  -- Status da Impressao do DOC(P)
-	cpPagOri 		char(01) 	not null,		        -- Origem do DOC(P)
-	cpPagStaBx		char(01)	not null default(''),	-- Status da Baixa
-	cpPagVersao 	int		    not null default( 0),   -- Numero de Vezes que DOC(P) foi impresso
-	cpPagStatus 	smallint	not null default( 1),   -- Status da Conta
 	cpPagData 	    char(08) 	not null default(''),	-- Data da Criacao
 	cpPagHora 		char(05) 	not null default(''),	-- Hora da Criacao
 	cpPagEmp 		char(02) 	not null default(''),	-- Codigo da Empresa
@@ -129,7 +75,6 @@
 	cpPagHrBx		char(05)	not null default(''),	-- Hora Real da Baixa
 	cpPagMACompBx	char(06)	not null default(''),	-- Mes/Ano de Competencia da Baixa
 	cpPagBpg 	    char(06) 	not null default(''),	-- Bordero de Baixa (FK)
-	cpPagBpgValPago money		not null default(0 ),	-- Valor Pago no Bordero (Atualizado no Bordero de Pagamentos)
 	cpPagUsuCri 	char(14) 	not null default(''),   -- Usuario que Criou o DOC(P)
 	cpPagTpCta		char(01)	not null default('1'),  -- Tipo (1-Diversos)
 	cpPagDtPrvPagto char(08)	not null default(''),	-- Data Prevista para Pagamento
@@ -142,19 +87,5 @@
 alter table tbPag
 add constraint tbpag_pkey primary key (cpPagCod);
 
-/*
-	Campos (*): cpPagStatus:   0-Bloqueado, 1-Liberado, 2-Cancelado.
-	-----------	cpPagStImpRec,
-			    cpPagStImpPrg: 0-Nao Impresso, 1-Impresso.
-			    cpPagOri:      0-Cadastro, 1-NF de Compra, 2-Frete de NF de Compra, 3-Outras Desp. NF de Compra,
-                               4-Complemento de NF de Compra, 5-Comissao Sobre Vendas, 6-Despesas Fixas, 7-Frete sobre Vendas, 8-Acerto de Contas - Caixa, 
-				               9-Migra��o, A-Financeiro do Caixa
-			    cpPagStatus:   0-Bloqueado, 1-Autorizado, 2-Cancelado.
-                cpPagStaBx:    0-Normal,1-A.R. Financeiro, 9-Cancelado pela Contabilidade
-			    cpPagDvu:      01-Fabrica,02-Biosintex,03-Cosmecenter,04-Regional Rio,05-Regional SP,06-Regional SP Int,
-                               07-Regional Sul,08-Regional Norte,09-Regional Nordeste 
-
-	Descricao:	Contas a Pagar.
-	----------		
-*/
 /* ----------------------------------------------------------------------------------------------------------------------------	*/
+
