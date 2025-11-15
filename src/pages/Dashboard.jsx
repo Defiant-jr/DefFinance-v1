@@ -6,10 +6,12 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-    import { useToast } from '@/components/ui/use-toast';
-    import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-    import { supabase } from '@/lib/customSupabaseClient';
-    import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { Input } from '@/components/ui/input';
+import { useToast } from '@/components/ui/use-toast';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { supabase } from '@/lib/customSupabaseClient';
+import { useAuth } from '@/contexts/SupabaseAuthContext';
+import { useEmCashValue } from '@/hooks/useEmCashValue';
     
     const Dashboard = () => {
       const navigate = useNavigate();
@@ -20,6 +22,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
       const [importLoading, setImportLoading] = useState(false);
       const [chartData, setChartData] = useState([]);
       const [monthsSpan, setMonthsSpan] = useState(6);
+      const [emCashValue, setEmCashValue] = useEmCashValue();
+      const [emCashDraft, setEmCashDraft] = useState(0);
+    
+      useEffect(() => {
+        setEmCashDraft(emCashValue);
+      }, [emCashValue]);
     
       useEffect(() => {
         loadDataFromSupabase();
@@ -36,7 +44,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
         setLoading(false);
       };
     
-      const generateChartData = (financialData, span = monthsSpan) => {
+      const generateChartData = (financialData, span = monthsSpan, cashValue = 0) => {
         const months = [];
         const currentDate = new Date();
         
@@ -53,7 +61,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
             })
             .reduce((sum, conta) => sum + conta.valor, 0);
           
-          const monthReceber = financialData.lancamentos
+          let monthReceber = financialData.lancamentos
             .filter(conta => {
               if (conta.tipo !== 'Entrada' || conta.status !== 'A Vencer') return false;
               const vencimento = new Date(conta.data + 'T00:00:00');
@@ -61,6 +69,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
                      vencimento.getUTCFullYear() === date.getFullYear();
             })
             .reduce((sum, conta) => sum + conta.valor, 0);
+
+          if (i === 0) {
+            monthReceber += cashValue;
+          }
           
           months.push({
             month: monthName,
@@ -73,8 +85,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
       };
     
       useEffect(() => {
-        generateChartData({ lancamentos: data.lancamentos }, monthsSpan);
-      }, [data.lancamentos, monthsSpan]);
+        generateChartData({ lancamentos: data.lancamentos }, monthsSpan, emCashValue);
+      }, [data.lancamentos, monthsSpan, emCashValue]);
     
       const handleImportData = async () => {
         setImportLoading(true);
@@ -117,6 +129,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
         return (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       };
     
+      const parseCurrencyInput = (value) => {
+        const digits = (value || '').replace(/\D/g, '');
+        if (!digits) return 0;
+        return Number.parseInt(digits, 10) / 100;
+      };
+    
+      const handleEmCashInputChange = (event) => {
+        setEmCashDraft(parseCurrencyInput(event.target.value));
+      };
+    
+      const handleEmCashInputKeyDown = (event) => {
+        if (event.key === 'Enter' && emCashIsDirty) {
+          event.preventDefault();
+          handleConfirmEmCash();
+        }
+      };
+    
+      const handleConfirmEmCash = () => {
+        setEmCashValue(emCashDraft);
+        toast({
+          title: 'Saldo em Cash atualizado',
+          description: `Novo valor confirmado: ${formatCurrency(emCashDraft)}`
+        });
+      };
+    
+      const emCashIsDirty = Math.round(emCashDraft * 100) !== Math.round(emCashValue * 100);
+    
       const hoje = new Date();
       hoje.setHours(0, 0, 0, 0);
       const hojeStr = hoje.toISOString().split('T')[0];
@@ -124,7 +163,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
       const receberAberto = data.lancamentos.filter(c => c.tipo === 'Entrada' && c.status !== 'Pago' && c.data >= hojeStr).reduce((sum, c) => sum + c.valor, 0);
       const receberAtrasado = data.lancamentos.filter(c => c.tipo === 'Entrada' && c.status !== 'Pago' && c.data < hojeStr).reduce((sum, c) => sum + c.valor, 0);
       const recebido = data.lancamentos.filter(c => c.tipo === 'Entrada' && c.status === 'Pago').reduce((sum, c) => sum + c.valor, 0);
+      const emCashApplied = emCashValue > 0;
+      const receberAtrasadoComCash = receberAtrasado + (emCashApplied ? emCashValue : 0);
       const totalReceberPendente = receberAberto + receberAtrasado;
+      const totalReceberPendenteComCash = receberAberto + receberAtrasadoComCash;
     
       const pagarAberto = data.lancamentos.filter(c => c.tipo === 'Saida' && c.status !== 'Pago' && c.data >= hojeStr).reduce((sum, c) => sum + c.valor, 0);
       const pagarAtrasado = data.lancamentos.filter(c => c.tipo === 'Saida' && c.status !== 'Pago' && c.data < hojeStr).reduce((sum, c) => sum + c.valor, 0);
@@ -134,17 +176,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
       const entradasAVencer = data.lancamentos.filter(c => c.tipo === 'Entrada' && c.status === 'A Vencer').reduce((sum, c) => sum + c.valor, 0);
       const saidasAVencer = data.lancamentos.filter(c => c.tipo === 'Saida' && c.status === 'A Vencer').reduce((sum, c) => sum + c.valor, 0);
       const resultadoOperacional = entradasAVencer - saidasAVencer;
+      const resultadoOperacionalComCash = resultadoOperacional + (emCashApplied ? emCashValue : 0);
     
       const summaryCards = [
         {
           title: 'Total a Receber',
-          value: formatCurrency(totalReceberPendente),
+          value: formatCurrency(totalReceberPendenteComCash),
           icon: TrendingUp,
           color: 'from-green-500 to-green-600',
           bgColor: 'bg-green-500/10',
           details: [
             { label: 'Em Aberto', value: formatCurrency(receberAberto) },
-            { label: 'Em Atraso', value: formatCurrency(receberAtrasado), color: 'text-red-400' },
+            { label: 'Em Atraso', value: formatCurrency(receberAtrasadoComCash), color: 'text-red-400' },
+            ...(emCashApplied ? [{ label: 'Saldo em Cash', value: formatCurrency(emCashValue), color: 'text-green-300' }] : []),
             { label: 'Recebido', value: formatCurrency(recebido), color: 'text-green-400' }
           ]
         },
@@ -162,11 +206,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
         },
         {
           title: 'Resultado Operacional (Previsto)',
-          value: formatCurrency(resultadoOperacional),
+          value: formatCurrency(resultadoOperacionalComCash),
           icon: DollarSign,
-          color: resultadoOperacional >= 0 ? 'from-blue-500 to-blue-600' : 'from-orange-500 to-orange-600',
-          bgColor: resultadoOperacional >= 0 ? 'bg-blue-500/10' : 'bg-orange-500/10',
+          color: resultadoOperacionalComCash >= 0 ? 'from-blue-500 to-blue-600' : 'from-orange-500 to-orange-600',
+          bgColor: resultadoOperacionalComCash >= 0 ? 'bg-blue-500/10' : 'bg-orange-500/10',
           showSpanSelector: true,
+          details: emCashApplied ? [
+            { label: 'Previsto sem Cash', value: formatCurrency(resultadoOperacional), color: 'text-gray-300' },
+            { label: 'Saldo em Cash', value: formatCurrency(emCashValue), color: 'text-green-300' },
+          ] : undefined
         }
       ];
       
@@ -231,6 +279,52 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
                         );
                     })}
                 </div>
+            </Card>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <Card className="glass-card">
+              <CardHeader className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                <div>
+                  <CardTitle className="text-white">Saldo em Cash</CardTitle>
+                  <p className="text-sm text-gray-400">
+                    Este valor será somado aos lançamentos em atraso e impacta diretamente o fluxo de caixa.
+                  </p>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs uppercase tracking-wide text-gray-400">Valor atual</span>
+                  <p className="text-2xl font-semibold text-white">{formatCurrency(emCashValue)}</p>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <label htmlFor="emCashInput" className="text-sm text-gray-300">Atualizar valor</label>
+                <div className="flex flex-col gap-3 lg:flex-row">
+                  <Input
+                    id="emCashInput"
+                    type="text"
+                    inputMode="decimal"
+                    value={formatCurrency(emCashDraft)}
+                    onChange={handleEmCashInputChange}
+                    onKeyDown={handleEmCashInputKeyDown}
+                    className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 font-semibold tracking-wide"
+                    placeholder="R$ 0,00"
+                  />
+                  <Button
+                    onClick={handleConfirmEmCash}
+                    disabled={!emCashIsDirty}
+                    className="lg:w-48"
+                  >
+                    Confirmar valor
+                  </Button>
+                </div>
+                <p className="text-xs text-gray-400">
+                  Ajuste manual usado para demonstrar o caixa imediato disponível. Clique em confirmar para aplicar.
+                </p>
+              </CardContent>
             </Card>
           </motion.div>
     

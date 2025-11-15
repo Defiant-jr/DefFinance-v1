@@ -16,10 +16,11 @@ import React, { useState, useEffect, useMemo } from 'react';
       Legend,
       ResponsiveContainer
     } from 'recharts';
-    import { supabase } from '@/lib/customSupabaseClient';
-    import { useToast } from '@/components/ui/use-toast';
-    import { startOfMonth, endOfMonth, format, eachDayOfInterval } from 'date-fns';
-    import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/customSupabaseClient';
+import { useToast } from '@/components/ui/use-toast';
+import { startOfMonth, endOfMonth, format, eachDayOfInterval } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { useEmCashValue } from '@/hooks/useEmCashValue';
 
     const FluxoCaixa = () => {
       const navigate = useNavigate();
@@ -30,6 +31,7 @@ import React, { useState, useEffect, useMemo } from 'react';
       const [unidadeFiltro, setUnidadeFiltro] = useState('todas');
       const [viewType, setViewType] = useState('sintetico');
       const [expandedRows, setExpandedRows] = useState({});
+      const [emCashValue] = useEmCashValue();
 
       useEffect(() => {
         loadData();
@@ -88,13 +90,28 @@ import React, { useState, useEffect, useMemo } from 'react';
           return vencimento < firstDayOfMonth;
         });
 
+        const atrasadosReceber = atrasadosLancamentos.filter(i => i.tipo === 'Entrada');
+        const atrasadosPagar = atrasadosLancamentos.filter(i => i.tipo === 'Saida');
+
+        const totalAtrasadoReceber = atrasadosReceber.reduce((acc, i) => acc + i.valor, 0) + emCashValue;
+        const totalAtrasadoPagar = atrasadosPagar.reduce((acc, i) => acc + i.valor, 0);
+
+        const receberDetails = [...atrasadosReceber];
+        if (emCashValue !== 0) {
+          receberDetails.push({
+            id: 'em-cash-adjustment',
+            cliente_fornecedor: 'Saldo em Cash',
+            valor: emCashValue
+          });
+        }
+
         const dia00 = {
           dia: '00',
-          receber: atrasadosLancamentos.filter(i => i.tipo === 'Entrada').reduce((acc, i) => acc + i.valor, 0),
-          pagar: atrasadosLancamentos.filter(i => i.tipo === 'Saida').reduce((acc, i) => acc + i.valor, 0),
+          receber: totalAtrasadoReceber,
+          pagar: totalAtrasadoPagar,
           details: {
-            receber: atrasadosLancamentos.filter(i => i.tipo === 'Entrada'),
-            pagar: atrasadosLancamentos.filter(i => i.tipo === 'Saida')
+            receber: receberDetails,
+            pagar: atrasadosPagar
           }
         };
 
@@ -126,7 +143,7 @@ import React, { useState, useEffect, useMemo } from 'react';
           saldoAcumulado += saldoDia;
           return { ...dia, saldoDia, saldoAcumulado };
         });
-      }, [allData, currentDate, unidadeFiltro]);
+      }, [allData, currentDate, unidadeFiltro, emCashValue]);
 
       const chartData = monthData.map(d => ({
         name: d.dia,

@@ -6,12 +6,13 @@ import React, { useState, useEffect, useMemo } from 'react';
     import { ChevronLeft, ChevronRight, ArrowLeft, Filter, Printer, PlusSquare, MinusSquare } from 'lucide-react';
     import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
     import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-    import { supabase } from '@/lib/customSupabaseClient';
-    import { useToast } from '@/components/ui/use-toast';
-    import { startOfMonth, endOfMonth, format, eachDayOfInterval } from 'date-fns';
-    import jsPDF from 'jspdf';
-    import 'jspdf-autotable';
-    import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/customSupabaseClient';
+import { useToast } from '@/components/ui/use-toast';
+import { startOfMonth, endOfMonth, format, eachDayOfInterval } from 'date-fns';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { cn } from '@/lib/utils';
+import { useEmCashValue } from '@/hooks/useEmCashValue';
 
     const FluxoCaixaDetalhado = () => {
       const navigate = useNavigate();
@@ -22,6 +23,7 @@ import React, { useState, useEffect, useMemo } from 'react';
       const [unidadeFiltro, setUnidadeFiltro] = useState('todas');
       const [viewType, setViewType] = useState('sintetico');
       const [expandedRows, setExpandedRows] = useState({});
+      const [emCashValue] = useEmCashValue();
 
       useEffect(() => {
         loadData();
@@ -80,13 +82,25 @@ import React, { useState, useEffect, useMemo } from 'react';
           return vencimento < firstDayOfMonth;
         });
 
+        const atrasadosReceber = atrasadosLancamentos.filter(i => i.tipo === 'Entrada');
+        const atrasadosPagar = atrasadosLancamentos.filter(i => i.tipo === 'Saida');
+        const totalReceberAtrasado = atrasadosReceber.reduce((acc, i) => acc + i.valor, 0) + emCashValue;
+        const receberDetails = [...atrasadosReceber];
+        if (emCashValue !== 0) {
+          receberDetails.push({
+            id: 'em-cash-adjustment',
+            cliente_fornecedor: 'Saldo em Cash',
+            valor: emCashValue
+          });
+        }
+
         const dia00 = {
           dia: '00',
-          receber: atrasadosLancamentos.filter(i => i.tipo === 'Entrada').reduce((acc, i) => acc + i.valor, 0),
-          pagar: atrasadosLancamentos.filter(i => i.tipo === 'Saida').reduce((acc, i) => acc + i.valor, 0),
+          receber: totalReceberAtrasado,
+          pagar: atrasadosPagar.reduce((acc, i) => acc + i.valor, 0),
           details: {
-            receber: atrasadosLancamentos.filter(i => i.tipo === 'Entrada'),
-            pagar: atrasadosLancamentos.filter(i => i.tipo === 'Saida')
+            receber: receberDetails,
+            pagar: atrasadosPagar
           }
         };
 
@@ -118,7 +132,7 @@ import React, { useState, useEffect, useMemo } from 'react';
           saldoAcumulado += saldoDia;
           return { ...dia, saldoDia, saldoAcumulado };
         });
-      }, [allData, currentDate, unidadeFiltro]);
+      }, [allData, currentDate, unidadeFiltro, emCashValue]);
 
       const monthName = currentDate.toLocaleString('pt-BR', { month: 'long', timeZone: 'UTC' });
       const year = currentDate.getFullYear();

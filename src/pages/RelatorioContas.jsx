@@ -2,16 +2,17 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
     import { useNavigate } from 'react-router-dom';
     import { Helmet } from 'react-helmet';
     import { motion } from 'framer-motion';
-    import { ArrowLeft, FileDown, Printer, Filter, ArrowUp, ArrowDown } from 'lucide-react';
+import { ArrowLeft, FileDown, Printer, Filter, ArrowUp, ArrowDown, CheckCircle } from 'lucide-react';
     import { Button } from '@/components/ui/button';
     import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
     import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
     import { Input } from '@/components/ui/input';
     import { useToast } from '@/components/ui/use-toast';
     import { supabase } from '@/lib/customSupabaseClient';
-    import { format } from 'date-fns';
-    import jsPDF from 'jspdf';
-    import 'jspdf-autotable';
+import { format } from 'date-fns';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { useEmCashValue } from '@/hooks/useEmCashValue';
 
     const RelatorioContas = () => {
         const navigate = useNavigate();
@@ -27,6 +28,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
         });
         const [sortConfig, setSortConfig] = useState({ key: 'data', direction: 'ascending' });
         const reportRef = useRef();
+        const [emCashValue] = useEmCashValue();
 
         useEffect(() => {
             loadData();
@@ -44,12 +46,20 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
         };
 
         const getStatus = (conta) => {
+            if (conta?.__isCash) return 'Saldo em Cash';
             if (conta.status === 'Pago') return 'pago';
             const hoje = new Date();
             hoje.setHours(0, 0, 0, 0);
             const vencimento = new Date(conta.data + 'T00:00:00');
             return vencimento < hoje ? 'atrasado' : 'aberto';
         };
+
+        const emCashApplies = useMemo(() => {
+            if (emCashValue <= 0) return false;
+            const tipoOk = filters.tipo === 'todos' || filters.tipo === 'Entrada';
+            const statusOk = filters.status === 'todos' || filters.status === 'atrasado';
+            return tipoOk && statusOk;
+        }, [emCashValue, filters.tipo, filters.status]);
 
         const filteredAndSortedContas = useMemo(() => {
             let filtered = [...contas];
@@ -58,6 +68,20 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
             if (filters.unidade !== 'todas') filtered = filtered.filter(c => c.unidade === filters.unidade);
             if (filters.dataInicio) filtered = filtered.filter(c => new Date(c.data + 'T00:00:00') >= new Date(filters.dataInicio + 'T00:00:00'));
             if (filters.dataFim) filtered = filtered.filter(c => new Date(c.data + 'T00:00:00') <= new Date(filters.dataFim + 'T00:00:00'));
+
+            if (emCashApplies) {
+                filtered.push({
+                    id: 'em-cash',
+                    data: '',
+                    tipo: 'Entrada',
+                    cliente_fornecedor: 'Saldo em Cash',
+                    descricao: 'Ajuste manual confirmado no Dashboard',
+                    unidade: 'Todas',
+                    status: 'cash',
+                    valor: emCashValue,
+                    __isCash: true
+                });
+            }
 
             filtered.sort((a, b) => {
                 let aValue = a[sortConfig.key];
@@ -71,7 +95,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
                 return 0;
             });
             return filtered;
-        }, [contas, filters, sortConfig]);
+        }, [contas, filters, sortConfig, emCashApplies, emCashValue]);
 
         const requestSort = (key) => {
             let direction = 'ascending';
@@ -141,6 +165,22 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
                         <Input type="date" value={filters.dataFim} onChange={(e) => setFilters(f => ({ ...f, dataFim: e.target.value }))} />
                     </CardContent>
                 </Card>
+                {emCashApplies && (
+                    <Card className="glass-card border-green-500/40 bg-green-500/5">
+                        <CardHeader className="flex flex-row items-center gap-3">
+                            <div className="p-2 rounded-full bg-green-500/20 text-green-300">
+                                <CheckCircle className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <CardTitle className="text-sm font-medium text-green-200">Saldo em Cash aplicado</CardTitle>
+                                <p className="text-lg font-semibold text-white">{formatCurrency(emCashValue)}</p>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="text-sm text-gray-300">
+                            O valor confirmado no Dashboard está incluído nos totais e listagens de entradas atrasadas deste relatório.
+                        </CardContent>
+                    </Card>
+                )}
                 <Card className="glass-card">
                     <CardContent className="p-0">
                         <div className="overflow-x-auto">
