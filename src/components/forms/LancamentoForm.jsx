@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Calendar as CalendarIcon } from 'lucide-react';
@@ -17,21 +17,38 @@ import { supabase } from '@/lib/customSupabaseClient';
 
 const initialDate = new Date();
 
-const LancamentoForm = ({ onCancel, onSuccess }) => {
+const LancamentoForm = ({ onCancel, onSuccess, initialData = null }) => {
   const { toast } = useToast();
+  const isEditing = Boolean(initialData?.id);
 
-  const [date, setDate] = useState(initialDate);
-  const [tipo, setTipo] = useState('');
-  const [unidade, setUnidade] = useState('');
-  const [clienteFornecedor, setClienteFornecedor] = useState('');
-  const [descricao, setDescricao] = useState('');
-  const [valor, setValor] = useState('');
-  const [aluno, setAluno] = useState('');
-  const [parcela, setParcela] = useState('');
-  const [descPontual, setDescPontual] = useState('');
-  const [status, setStatus] = useState('');
-  const [obs, setObs] = useState('');
+  const parseDate = (value) => (value ? new Date(value + 'T00:00:00') : new Date());
+
+  const [date, setDate] = useState(() => parseDate(initialData?.data) ?? initialDate);
+  const [tipo, setTipo] = useState(initialData?.tipo || '');
+  const [unidade, setUnidade] = useState(initialData?.unidade || '');
+  const [clienteFornecedor, setClienteFornecedor] = useState(initialData?.cliente_fornecedor || '');
+  const [descricao, setDescricao] = useState(initialData?.descricao || '');
+  const [valor, setValor] = useState(initialData?.valor?.toString() || '');
+  const [aluno, setAluno] = useState(initialData?.aluno || '');
+  const [parcela, setParcela] = useState(initialData?.parcela || '');
+  const [descPontual, setDescPontual] = useState(initialData?.desc_pontual?.toString() || '');
+  const [status, setStatus] = useState(initialData?.status || '');
+  const [obs, setObs] = useState(initialData?.obs || '');
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setDate(parseDate(initialData?.data));
+    setTipo(initialData?.tipo || '');
+    setUnidade(initialData?.unidade || '');
+    setClienteFornecedor(initialData?.cliente_fornecedor || '');
+    setDescricao(initialData?.descricao || '');
+    setValor(initialData?.valor?.toString() || '');
+    setAluno(initialData?.aluno || '');
+    setParcela(initialData?.parcela || '');
+    setDescPontual(initialData?.desc_pontual?.toString() || '');
+    setStatus(initialData?.status || '');
+    setObs(initialData?.obs || '');
+  }, [initialData]);
 
   const resetForm = () => {
     setDate(new Date());
@@ -88,11 +105,19 @@ const LancamentoForm = ({ onCancel, onSuccess }) => {
       status,
       obs,
       aluno: aluno.trim() || null,
-      parcel: parcela.trim() || null,
+      parcela: parcela.trim() || null,
       desc_pontual: parsedDescPontual,
     };
 
-    const { error } = await supabase.from('lancamentos').insert([newEntry]);
+    let error;
+    if (isEditing) {
+      ({ error } = await supabase
+        .from('lancamentos')
+        .update(newEntry)
+        .eq('id', initialData.id));
+    } else {
+      ({ error } = await supabase.from('lancamentos').insert([newEntry]));
+    }
 
     setLoading(false);
 
@@ -106,11 +131,13 @@ const LancamentoForm = ({ onCancel, onSuccess }) => {
     }
 
     toast({
-      title: 'Sucesso!',
-      description: 'Lançamento salvo com sucesso.',
+      title: isEditing ? 'Atualizado!' : 'Sucesso!',
+      description: isEditing ? 'Lançamento atualizado com sucesso.' : 'Lançamento salvo com sucesso.',
     });
 
-    resetForm();
+    if (!isEditing) {
+      resetForm();
+    }
 
     if (typeof onSuccess === 'function') {
       onSuccess();

@@ -114,6 +114,10 @@ import { Calendar, Filter, Building, DollarSign, AlertTriangle, ArrowLeft, Check
           loadData();
         }
       };
+
+      const handleEditLancamento = (lancamento) => {
+        navigate('/lancamentos', { state: { lancamento } });
+      };
     
       return (
         <div className="space-y-8">
@@ -176,7 +180,14 @@ import { Calendar, Filter, Building, DollarSign, AlertTriangle, ArrowLeft, Check
                             <div className="flex items-center gap-4">
                               <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(status)}`}>{getStatusLabel(status)}</span>
                               <div className="text-lg font-bold text-red-400">{formatCurrency(conta.valor)}</div>
-                              <Settings className="w-4 h-4 text-gray-400" />
+                              <button
+                                type="button"
+                                onClick={() => handleEditLancamento(conta)}
+                                className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                                aria-label="Editar lançamento"
+                              >
+                                <Settings className="w-4 h-4" />
+                              </button>
                               {status !== 'pago' && (
                                 <Button
                                   size="sm"
