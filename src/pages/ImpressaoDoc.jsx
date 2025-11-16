@@ -190,21 +190,29 @@ const ImpressaoDoc = () => {
       currentY = drawRow(currentY, label, value) + 8;
     });
 
-    const signatureStart = Math.min(currentY + 40, pageHeight - 200);
-    const sections = [
+    const signatureSections = [
       'Assinatura - Responsável pela Impressão',
       'Assinatura - Liberação'
     ];
+    const minSpaceForSignatures = 140;
+    if (currentY > pageHeight - minSpaceForSignatures) {
+      doc.addPage();
+      currentY = 80;
+    }
+    const signatureY = pageHeight - 120;
+    const signatureGap = 40;
+    const signatureWidth = (sectionWidth - signatureGap) / signatureSections.length;
 
-    sections.forEach((label, index) => {
-      const sectionY = signatureStart + index * 120;
+    signatureSections.forEach((label, index) => {
+      const sectionX = marginX + index * (signatureWidth + signatureGap);
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
-      doc.text(label, marginX, sectionY);
-      doc.line(marginX, sectionY + 25, marginX + 260, sectionY + 25);
+      doc.text(label, sectionX, signatureY);
+      const lineEndX = sectionX + signatureWidth - 20;
+      doc.line(sectionX, signatureY + 25, lineEndX, signatureY + 25);
       doc.setFont('helvetica', 'normal');
-      doc.text('Data:', marginX + 280, sectionY);
-      doc.line(marginX + 320, sectionY + 25, marginX + 420, sectionY + 25);
+      doc.text('Data:', sectionX, signatureY + 45);
+      doc.line(sectionX + 40, signatureY + 45, sectionX + 140, signatureY + 45);
     });
 
     doc.save(`impressao-doc-${item.id}-${format(new Date(), 'yyyyMMdd-HHmm')}.pdf`);
