@@ -337,8 +337,9 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + index * 0.1 }}
+                  className="h-full"
                 >
-                  <Card className="glass-card hover:scale-105 transition-transform duration-300">
+                  <Card className="glass-card hover:scale-105 transition-transform duration-300 h-full flex flex-col">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                       <CardTitle className="text-sm font-medium text-gray-300">
                         {card.title}
@@ -347,7 +348,7 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
                         <Icon className="w-4 h-4 text-white" />
                       </div>
                     </CardHeader>
-                    <CardContent>
+                    <CardContent className="flex-1 flex flex-col">
                       <div className={`text-2xl font-bold bg-gradient-to-r ${card.color} bg-clip-text text-transparent`}>
                         {card.value}
                       </div>
@@ -361,9 +362,10 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
                           ))}
                         </div>
                       )}
+                      <div className="flex-1" />
                       {card.showSpanSelector && (
                         <div className="mt-4 space-y-2">
-                          <span className="text-sm text-gray-300">Período do gráfico</span>
+                          <span className="text-sm text-gray-300">Periodo do grafico</span>
                           <Select value={String(monthsSpan)} onValueChange={(value) => setMonthsSpan(Number(value))}>
                             <SelectTrigger className="w-full bg-white/10 border-white/20 text-white">
                               <SelectValue placeholder="Meses" />

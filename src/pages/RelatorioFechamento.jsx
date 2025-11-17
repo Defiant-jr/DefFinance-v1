@@ -223,23 +223,23 @@ const RelatorioFechamento = () => {
         </div>
       </div>
 
-      <Card className="bg-white text-slate-900 shadow-xl border border-gray-200">
+      <Card className="glass-card">
         <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-xl font-semibold text-slate-900">
+          <CardTitle className="flex items-center gap-2 text-xl font-semibold text-white">
             <BarChart2 className="h-5 w-5" />
             Configuracao do Relatorio
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="w-full md:w-1/3">
-            <label className="block text-sm font-medium text-slate-700 mb-2">Unidade</label>
+            <label className="block text-sm font-medium text-gray-300 mb-2">Unidade</label>
             <Select value={selectedUnit} onValueChange={setSelectedUnit}>
-              <SelectTrigger className="bg-white border-gray-300 text-slate-900">
+              <SelectTrigger className="bg-white/10 border-white/20 text-white">
                 <SelectValue placeholder="Selecione a unidade" />
               </SelectTrigger>
-              <SelectContent className="bg-white text-slate-900">
+              <SelectContent>
                 {unitOptions.map(({ value, label }) => (
-                  <SelectItem key={value} value={value} className="text-slate-900 focus:bg-blue-50">
+                  <SelectItem key={value} value={value}>
                     {label}
                   </SelectItem>
                 ))}
@@ -258,7 +258,7 @@ const RelatorioFechamento = () => {
               onClick={handleGeneratePdf}
               disabled={!reportGenerated || loading}
               variant="outline"
-              className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              className="border-blue-500 text-blue-300 hover:bg-blue-500/10"
             >
               <FileDown className="h-4 w-4 mr-2" />
               Gerar PDF
@@ -267,148 +267,158 @@ const RelatorioFechamento = () => {
         </CardContent>
       </Card>
 
-      <div className="bg-white text-slate-900 rounded-xl shadow-xl border border-gray-200 p-6 space-y-8">
-        {!reportGenerated && !loading && (
-          <div className="text-center text-slate-500">
-            Escolha uma unidade e clique em "Gerar Relatorio" para visualizar os dados do mes corrente.
-          </div>
-        )}
+      <Card className="glass-card">
+        <CardContent className="space-y-8">
+          {!reportGenerated && !loading && (
+            <div className="text-center text-gray-300">
+              Escolha uma unidade e clique em <span className="text-white font-semibold">"Gerar Relatorio"</span> para visualizar os dados do mes corrente.
+            </div>
+          )}
 
-        {loading && (
-          <div className="flex justify-center py-16">
-            <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-          </div>
-        )}
+          {loading && (
+            <div className="flex justify-center py-16">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+            </div>
+          )}
 
-        {reportGenerated && !loading && (
-          <div className="space-y-10">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-semibold">Resumo do Fechamento</h2>
-                <p className="text-sm text-slate-500">Periodo considerado ate o ultimo dia do mes corrente.</p>
+          {reportGenerated && !loading && (
+            <div className="space-y-10">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 text-gray-300">
+                <div>
+                  <h2 className="text-2xl font-semibold text-white">Resumo do Fechamento</h2>
+                  <p className="text-sm text-gray-400">Periodo considerado ate o ultimo dia do mes corrente.</p>
+                </div>
+                <div className="text-sm">
+                  <span className="font-medium text-white">Unidade: </span>
+                  {unitLabel}
+                  {generatedAt && (
+                    <span className="ml-4">
+                      <span className="font-medium text-white/80">Gerado em:</span> {format(generatedAt, 'dd/MM/yyyy HH:mm')}
+                    </span>
+                  )}
+                </div>
               </div>
-              <div className="text-sm text-slate-500">
-                <span className="font-medium text-slate-700">Unidade: </span>
-                {unitLabel}
-                {generatedAt && (
-                  <span className="ml-4">
-                    <span className="font-medium text-slate-700">Gerado em:</span> {format(generatedAt, 'dd/MM/yyyy HH:mm')}
-                  </span>
+
+              <section className="space-y-4">
+                <header>
+                  <h3 className="text-xl font-semibold text-white">Entradas em aberto e a vencer</h3>
+                  <p className="text-sm text-gray-400">Lancamentos ate o ultimo dia do mes corrente, desconsiderando valores ja pagos.</p>
+                </header>
+                {entries.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-white/20 p-6 text-center text-gray-400">
+                    Nenhuma entrada encontrada para os filtros selecionados.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm text-gray-200">
+                      <thead>
+                        <tr className="bg-white/5 text-left text-xs uppercase tracking-wide text-gray-400">
+                          <th className="px-4 py-3">Nome</th>
+                          <th className="px-4 py-3">Vencimento</th>
+                          <th className="px-4 py-3">Unidade</th>
+                          <th className="px-4 py-3 text-right">Valor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {entries.map((item) => (
+                          <tr key={item.id} className="border-b border-white/10 last:border-0">
+                            <td className="px-4 py-3">{item.cliente_fornecedor || '-'}</td>
+                            <td className="px-4 py-3">{formatDate(item.data)}</td>
+                            <td className="px-4 py-3">{item.unidade || '-'}</td>
+                            <td className="px-4 py-3 text-right font-medium text-green-300">{formatCurrency(item.valor)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colSpan={3} className="px-4 py-3 text-right font-semibold text-gray-300">Total de entradas</td>
+                          <td className="px-4 py-3 text-right font-semibold text-green-300">{formatCurrency(totalEntries)}</td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
                 )}
-              </div>
-            </div>
+              </section>
 
-            <section className="space-y-4">
-              <header>
-                <h3 className="text-xl font-semibold text-slate-800">Entradas em aberto e a vencer</h3>
-                <p className="text-sm text-slate-500">Lancamentos ate o ultimo dia do mes corrente, desconsiderando valores ja pagos.</p>
-              </header>
-              {entries.length === 0 ? (
-                <div className="rounded-lg border border-dashed border-slate-300 p-6 text-center text-slate-500">
-                  Nenhuma entrada encontrada para os filtros selecionados.
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm">
-                    <thead>
-                      <tr className="bg-slate-100 text-left text-xs uppercase tracking-wide text-slate-600">
-                        <th className="px-4 py-3">Nome</th>
-                        <th className="px-4 py-3">Vencimento</th>
-                        <th className="px-4 py-3">Unidade</th>
-                        <th className="px-4 py-3 text-right">Valor</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {entries.map((item) => (
-                        <tr key={item.id} className="border-b border-slate-100 last:border-0">
-                          <td className="px-4 py-3">{item.cliente_fornecedor || '-'}</td>
-                          <td className="px-4 py-3">{formatDate(item.data)}</td>
-                          <td className="px-4 py-3">{item.unidade || '-'}</td>
-                          <td className="px-4 py-3 text-right font-medium text-green-600">{formatCurrency(item.valor)}</td>
+              <section className="space-y-4">
+                <header>
+                  <h3 className="text-xl font-semibold text-white">Saidas em atraso e em aberto</h3>
+                  <p className="text-sm text-gray-400">Compras e despesas ate o ultimo dia do mes corrente ainda nao quitadas.</p>
+                </header>
+                {exits.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-white/20 p-6 text-center text-gray-400">
+                    Nenhuma saida encontrada para os filtros selecionados.
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm text-gray-200">
+                      <thead>
+                        <tr className="bg-white/5 text-left text-xs uppercase tracking-wide text-gray-400">
+                          <th className="px-4 py-3">Nome</th>
+                          <th className="px-4 py-3">Vencimento</th>
+                          <th className="px-4 py-3">Unidade</th>
+                          <th className="px-4 py-3 text-right">Valor</th>
                         </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <td colSpan={3} className="px-4 py-3 text-right font-semibold">Total de entradas</td>
-                        <td className="px-4 py-3 text-right font-semibold text-green-700">{formatCurrency(totalEntries)}</td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              )}
-            </section>
-
-            <section className="space-y-4">
-              <header>
-                <h3 className="text-xl font-semibold text-slate-800">Saidas em atraso e em aberto</h3>
-                <p className="text-sm text-slate-500">Compras e despesas ate o ultimo dia do mes corrente ainda nao quitadas.</p>
-              </header>
-              {exits.length === 0 ? (
-                <div className="rounded-lg border border-dashed border-slate-300 p-6 text-center text-slate-500">
-                  Nenhuma saida encontrada para os filtros selecionados.
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm">
-                    <thead>
-                      <tr className="bg-slate-100 text-left text-xs uppercase tracking-wide text-slate-600">
-                        <th className="px-4 py-3">Nome</th>
-                        <th className="px-4 py-3">Vencimento</th>
-                        <th className="px-4 py-3">Unidade</th>
-                        <th className="px-4 py-3 text-right">Valor</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {exits.map((item) => (
-                        <tr key={item.id} className="border-b border-slate-100 last:border-0">
-                          <td className="px-4 py-3">{item.cliente_fornecedor || '-'}</td>
-                          <td className="px-4 py-3">{formatDate(item.data)}</td>
-                          <td className="px-4 py-3">{item.unidade || '-'}</td>
-                          <td className="px-4 py-3 text-right font-medium text-red-600">{formatCurrency(item.valor)}</td>
+                      </thead>
+                      <tbody>
+                        {exits.map((item) => (
+                          <tr key={item.id} className="border-b border-white/10 last:border-0">
+                            <td className="px-4 py-3">{item.cliente_fornecedor || '-'}</td>
+                            <td className="px-4 py-3">{formatDate(item.data)}</td>
+                            <td className="px-4 py-3">{item.unidade || '-'}</td>
+                            <td className="px-4 py-3 text-right font-medium text-red-300">{formatCurrency(item.valor)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colSpan={3} className="px-4 py-3 text-right font-semibold text-gray-300">Total de saidas</td>
+                          <td className="px-4 py-3 text-right font-semibold text-red-300">{formatCurrency(totalExits)}</td>
                         </tr>
-                      ))}
-                    </tbody>
-                    <tfoot>
-                      <tr>
-                        <td colSpan={3} className="px-4 py-3 text-right font-semibold">Total de saidas</td>
-                        <td className="px-4 py-3 text-right font-semibold text-red-700">{formatCurrency(totalExits)}</td>
-                      </tr>
-                    </tfoot>
-                  </table>
-                </div>
-              )}
-            </section>
+                      </tfoot>
+                    </table>
+                  </div>
+                )}
+              </section>
 
-            <div className="flex flex-col gap-3 border-t border-slate-200 pt-4 text-lg font-semibold">
-              <div className="flex items-center justify-between text-slate-800">
-                <span>Total de entradas</span>
-                <span>{formatCurrency(totalEntries)}</span>
-              </div>
-              <div className="flex items-center justify-between text-slate-800">
-                <span>Total de saidas</span>
-                <span>{formatCurrency(totalExits)}</span>
-              </div>
-              <div className="flex items-center justify-between text-2xl">
-                <span>Saldo do Fechamento</span>
-                <span className={saldoFechamento >= 0 ? 'text-green-600' : 'text-red-600'}>
-                  {formatCurrency(saldoFechamento)}
-                </span>
-              </div>
-              <div className="flex items-center justify-between text-slate-800">
-                <span>Saldo em Cash considerado</span>
-                <span>{formatCurrency(emCashValue)}</span>
-              </div>
-              <div className="flex items-center justify-between text-2xl">
-                <span>Saldo Final com Cash</span>
-                <span className={saldoComCash >= 0 ? 'text-green-600' : 'text-red-600'}>
-                  {formatCurrency(saldoComCash)}
-                </span>
-              </div>
+              <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-gray-200">
+                  <h4 className="text-lg font-semibold text-white mb-4">Resumo dos Totais</h4>
+                  <dl className="space-y-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <dt className="text-gray-400 font-medium">Total de Entradas</dt>
+                      <dd className="text-green-300 font-semibold">{formatCurrency(totalEntries)}</dd>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <dt className="text-gray-400 font-medium">Total de Saidas</dt>
+                      <dd className="text-red-300 font-semibold">{formatCurrency(totalExits)}</dd>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <dt className="text-gray-400 font-medium">Saldo do Fechamento</dt>
+                      <dd className={`font-semibold ${saldoFechamento >= 0 ? 'text-green-300' : 'text-red-300'}`}>
+                        {formatCurrency(saldoFechamento)}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+                <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-gray-200">
+                  <h4 className="text-lg font-semibold text-white mb-4">Impacto do Cash</h4>
+                  <dl className="space-y-3 text-sm">
+                    <div className="flex items-center justify-between">
+                      <dt className="text-gray-400 font-medium">Saldo em Cash</dt>
+                      <dd className="text-blue-300 font-semibold">{formatCurrency(emCashValue)}</dd>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <dt className="text-gray-400 font-medium">Saldo Final com Cash</dt>
+                      <dd className="text-blue-200 font-semibold">{formatCurrency(saldoComCash)}</dd>
+                    </div>
+                  </dl>
+                </div>
+              </section>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </CardContent>
+      </Card>
     </motion.div>
   );
 };
