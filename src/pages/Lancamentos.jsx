@@ -1,5 +1,5 @@
 ﻿import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
@@ -9,6 +9,17 @@ import LancamentoForm from '@/components/forms/LancamentoForm';
 
 const Lancamentos = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const editingLancamento = location.state?.lancamento || null;
+  const isEditing = Boolean(editingLancamento);
+
+  const handleSuccess = () => {
+    if (isEditing) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
     <motion.div
@@ -27,13 +38,14 @@ const Lancamentos = () => {
             <ArrowLeft className="h-5 w-5" />
             <span className="sr-only">Voltar</span>
           </Button>
-          <h1 className="text-3xl font-bold gradient-text">Novo Lançamento</h1>
+          <h1 className="text-3xl font-bold gradient-text">{isEditing ? 'Editar Lançamento' : 'Novo Lançamento'}</h1>
         </div>
       </div>
 
       <LancamentoForm
+        initialData={editingLancamento}
         onCancel={() => navigate(-1)}
-        onSuccess={() => navigate('/')}
+        onSuccess={handleSuccess}
       />
     </motion.div>
   );

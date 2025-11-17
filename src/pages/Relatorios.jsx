@@ -57,8 +57,8 @@ import { BarChart3, PieChart, TrendingUp, ArrowLeft, FileClock, Printer } from '
                 title: "Impressão de DOC",
                 icon: Printer,
                 description: "Gere documentos DOC formatados para impressão.",
-                action: () => handleNavigation('#', false),
-                implemented: false,
+                action: () => handleNavigation('/relatorios/impressao-doc'),
+                implemented: true,
             }
         ];
     

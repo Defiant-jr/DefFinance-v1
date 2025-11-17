@@ -3,17 +3,19 @@ import React, { useState, useEffect, useMemo } from 'react';
     import { Helmet } from 'react-helmet';
     import { useNavigate } from 'react-router-dom';
 import { Calendar, Filter, User, DollarSign, AlertTriangle, ArrowLeft, CheckCircle, Settings } from 'lucide-react';
-    import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-    import { Button } from '@/components/ui/button';
-    import { Input } from '@/components/ui/input';
-    import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-    import { supabase } from '@/lib/customSupabaseClient';
-    import { useToast } from '@/components/ui/use-toast';
-    import { format as formatDateFns } from 'date-fns';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { supabase } from '@/lib/customSupabaseClient';
+import { useToast } from '@/components/ui/use-toast';
+import { format as formatDateFns } from 'date-fns';
+import { useEmCashValue } from '@/hooks/useEmCashValue';
     
     const ContasReceber = () => {
       const navigate = useNavigate();
       const { toast } = useToast();
+      const [emCashValue] = useEmCashValue();
       const [contas, setContas] = useState([]);
       const [loading, setLoading] = useState(false);
       const [filters, setFilters] = useState({
@@ -109,23 +111,36 @@ import { Calendar, Filter, User, DollarSign, AlertTriangle, ArrowLeft, CheckCirc
         return totals;
       };
     
-      const totalGeral = filteredContas.reduce((sum, conta) => sum + conta.valor, 0);
+      const totalGeralBase = filteredContas.reduce((sum, conta) => sum + conta.valor, 0);
       const totalAberto = filteredContas.filter(c => getStatus(c) === 'aberto');
       const totalAtrasado = filteredContas.filter(c => getStatus(c) === 'atrasado');
+      const totalAbertoValor = totalAberto.reduce((s, c) => s + c.valor, 0);
+      const totalAtrasadoValorBase = totalAtrasado.reduce((s, c) => s + c.valor, 0);
+      const emCashApplies = (filters.status === 'todos' || filters.status === 'atrasado') && emCashValue > 0;
+      const totalGeral = totalGeralBase + (emCashApplies ? emCashValue : 0);
+      const totalAtrasadoValor = totalAtrasadoValorBase + (emCashApplies ? emCashValue : 0);
     
       const totalAbertoPorUnidade = calculateTotalsByUnit(totalAberto);
       const totalAtrasadoPorUnidade = calculateTotalsByUnit(totalAtrasado);
+      const totalAtrasadoDetalhes = Object.entries(totalAtrasadoPorUnidade);
+      if (emCashApplies) {
+        totalAtrasadoDetalhes.push(['Saldo em Cash', emCashValue]);
+      }
     
-      const handleMarkAsPaid = async (id) => {
-        const today = formatDateFns(new Date(), 'yyyy-MM-dd');
-        const { error } = await supabase.from('lancamentos').update({ status: 'Pago', datapag: today }).eq('id', id);
-        if (error) {
-          toast({ title: 'Erro', description: 'Não foi possível atualizar o status.', variant: 'destructive' });
-        } else {
-          toast({ title: 'Sucesso!', description: 'Lançamento marcado como recebido.' });
-          loadData();
-        }
-      };
+  const handleMarkAsPaid = async (id) => {
+    const today = formatDateFns(new Date(), 'yyyy-MM-dd');
+    const { error } = await supabase.from('lancamentos').update({ status: 'Pago', datapag: today }).eq('id', id);
+    if (error) {
+      toast({ title: 'Erro', description: 'Não foi possível atualizar o status.', variant: 'destructive' });
+    } else {
+      toast({ title: 'Sucesso!', description: 'Lançamento marcado como recebido.' });
+      loadData();
+    }
+  };
+
+  const handleEditLancamento = (lancamento) => {
+    navigate('/lancamentos', { state: { lancamento } });
+  };
     
       return (
         <div className="space-y-8">
@@ -145,10 +160,72 @@ import { Calendar, Filter, User, DollarSign, AlertTriangle, ArrowLeft, CheckCirc
           </motion.div>
     
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="glass-card"><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium text-gray-300">Total Filtrado</CardTitle><DollarSign className="w-4 h-4 text-blue-400" /></CardHeader><CardContent><div className="text-2xl font-bold text-blue-400">{formatCurrency(totalGeral)}</div></CardContent></Card>
-            <Card className="glass-card"><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium text-gray-300">Em Aberto</CardTitle><Calendar className="w-4 h-4 text-yellow-400" /></CardHeader><CardContent><div className="text-2xl font-bold text-yellow-400">{formatCurrency(totalAberto.reduce((s, c) => s + c.valor, 0))}</div><div className="mt-2 space-y-1 text-xs text-gray-400">{Object.entries(totalAbertoPorUnidade).map(([unit, val]) => <div key={unit} className="flex justify-between"><span>{unit}:</span><span className="font-semibold">{formatCurrency(val)}</span></div>)}</div></CardContent></Card>
-            <Card className="glass-card"><CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2"><CardTitle className="text-sm font-medium text-gray-300">Atrasado</CardTitle><AlertTriangle className="w-4 h-4 text-red-400" /></CardHeader><CardContent><div className="text-2xl font-bold text-red-400">{formatCurrency(totalAtrasado.reduce((s, c) => s + c.valor, 0))}</div><div className="mt-2 space-y-1 text-xs text-gray-400">{Object.entries(totalAtrasadoPorUnidade).map(([unit, val]) => <div key={unit} className="flex justify-between"><span>{unit}:</span><span className="font-semibold">{formatCurrency(val)}</span></div>)}</div></CardContent></Card>
+            <Card className="glass-card">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-gray-300">Total Filtrado</CardTitle>
+                <DollarSign className="w-4 h-4 text-blue-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-blue-400">{formatCurrency(totalGeral)}</div>
+                {emCashApplies && (
+                  <p className="mt-1 text-xs text-gray-400">Inclui {formatCurrency(emCashValue)} de saldo em cash.</p>
+                )}
+              </CardContent>
+            </Card>
+            <Card className="glass-card">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-gray-300">Em Aberto</CardTitle>
+                <Calendar className="w-4 h-4 text-yellow-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-yellow-400">{formatCurrency(totalAbertoValor)}</div>
+                <div className="mt-2 space-y-1 text-xs text-gray-400">
+                  {Object.entries(totalAbertoPorUnidade).map(([unit, val]) => (
+                    <div key={unit} className="flex justify-between">
+                      <span>{unit}:</span>
+                      <span className="font-semibold">{formatCurrency(val)}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+            <Card className="glass-card">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-gray-300">Atrasado</CardTitle>
+                <AlertTriangle className="w-4 h-4 text-red-400" />
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-red-400">{formatCurrency(totalAtrasadoValor)}</div>
+                <div className="mt-2 space-y-1 text-xs text-gray-400">
+                  {totalAtrasadoDetalhes.map(([unit, val]) => (
+                    <div key={unit} className="flex justify-between">
+                      <span>{unit}:</span>
+                      <span className="font-semibold">{formatCurrency(val)}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </div>
+
+          {emCashApplies && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+              <Card className="glass-card border-green-500/40 bg-green-500/5">
+                <CardHeader className="flex flex-col gap-2">
+                  <CardTitle className="text-sm font-medium text-green-300 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    Saldo em Cash aplicado
+                  </CardTitle>
+                  <p className="text-2xl font-bold text-white">{formatCurrency(emCashValue)}</p>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-gray-300">
+                    Este valor foi confirmado no Dashboard e está sendo somado automaticamente em todos os cálculos de atrasados.
+                  </p>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
     
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
             <Card className="glass-card">
@@ -188,7 +265,14 @@ import { Calendar, Filter, User, DollarSign, AlertTriangle, ArrowLeft, CheckCirc
                             <div className="flex items-center gap-4">
                               <span className={`px-3 py-1 rounded-full text-xs font-medium border ${getStatusColor(status)}`}>{getStatusLabel(status)}</span>
                               <div className="text-lg font-bold text-green-400">{formatCurrency(conta.valor)}</div>
-                              <Settings className="w-4 h-4 text-gray-400" />
+                              <button
+                                type="button"
+                                onClick={() => handleEditLancamento(conta)}
+                                className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                                aria-label="Editar lançamento"
+                              >
+                                <Settings className="w-4 h-4" />
+                              </button>
                               {status !== 'pago' && (
                                 <Button
                                   size="sm"

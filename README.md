@@ -49,6 +49,7 @@ npm run dev          # inicia Vite em modo desenvolvimento (http://localhost:300
 npm run build        # gera build estático em ./dist
 npm run preview      # pré-visualiza build com servidor da Vite
 npm run start        # inicia servidor Express servindo ./dist (após build)
+npm run test:server  # sobe o servidor de teste (API sem frontend, porta 3100)
 npm run test         # executa testes de unidade do backend (Node test runner)
 ```
 

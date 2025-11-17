@@ -11,6 +11,7 @@ import { supabase } from '@/lib/customSupabaseClient';
 import { endOfMonth, format } from 'date-fns';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { useEmCashValue } from '@/hooks/useEmCashValue';
 
 const unitOptions = [
   { value: 'todas', label: 'Todas' },
@@ -34,6 +35,7 @@ const RelatorioFechamento = () => {
   const [loading, setLoading] = useState(false);
   const [reportGenerated, setReportGenerated] = useState(false);
   const [generatedAt, setGeneratedAt] = useState(null);
+  const [emCashValue] = useEmCashValue();
 
   const formatCurrency = (value) => {
     const amount = Number(value || 0);
@@ -59,6 +61,10 @@ const RelatorioFechamento = () => {
   );
 
   const saldoFechamento = useMemo(() => totalEntries - totalExits, [totalEntries, totalExits]);
+  const saldoComCash = useMemo(
+    () => saldoFechamento + Number(emCashValue || 0),
+    [saldoFechamento, emCashValue]
+  );
 
   const handleGenerateReport = async () => {
     setLoading(true);
@@ -186,11 +192,13 @@ const RelatorioFechamento = () => {
 
     cursorY += 32;
     doc.setFontSize(14);
-    doc.text(
-      `Saldo do Fechamento: ${formatCurrency(saldoFechamento)}`,
-      marginLeft,
-      cursorY
-    );
+    doc.text(`Saldo do Fechamento: ${formatCurrency(saldoFechamento)}`, marginLeft, cursorY);
+    cursorY += 18;
+    doc.setFontSize(12);
+    doc.text(`Saldo em Cash: ${formatCurrency(emCashValue)}`, marginLeft, cursorY);
+    cursorY += 18;
+    doc.setFontSize(14);
+    doc.text(`Saldo Final Considerando Cash: ${formatCurrency(saldoComCash)}`, marginLeft, cursorY);
 
     doc.save('relatorio_fechamento.pdf');
   };
@@ -385,6 +393,16 @@ const RelatorioFechamento = () => {
                 <span>Saldo do Fechamento</span>
                 <span className={saldoFechamento >= 0 ? 'text-green-600' : 'text-red-600'}>
                   {formatCurrency(saldoFechamento)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-slate-800">
+                <span>Saldo em Cash considerado</span>
+                <span>{formatCurrency(emCashValue)}</span>
+              </div>
+              <div className="flex items-center justify-between text-2xl">
+                <span>Saldo Final com Cash</span>
+                <span className={saldoComCash >= 0 ? 'text-green-600' : 'text-red-600'}>
+                  {formatCurrency(saldoComCash)}
                 </span>
               </div>
             </div>

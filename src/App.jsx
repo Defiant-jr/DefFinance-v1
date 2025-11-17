@@ -17,6 +17,7 @@ import React from 'react';
     import DreGerencial from '@/pages/DreGerencial';
     import RelatorioContas from '@/pages/RelatorioContas';
     import RelatorioFechamento from '@/pages/RelatorioFechamento';
+    import ImpressaoDoc from '@/pages/ImpressaoDoc';
     
     const PrivateRoute = ({ children }) => {
       const { user, loading } = useAuth();
@@ -57,6 +58,7 @@ import React from 'react';
                 <Route path="/relatorios/dre-gerencial" element={<PrivateRoute><DreGerencial /></PrivateRoute>} />
                 <Route path="/relatorios/fechamento" element={<PrivateRoute><RelatorioFechamento /></PrivateRoute>} />
                 <Route path="/relatorios/contas" element={<PrivateRoute><RelatorioContas /></PrivateRoute>} />
+                <Route path="/relatorios/impressao-doc" element={<PrivateRoute><ImpressaoDoc /></PrivateRoute>} />
               </Routes>
             </main>
             

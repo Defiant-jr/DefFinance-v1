@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
     import { useNavigate } from 'react-router-dom';
     import { Helmet } from 'react-helmet';
     import { motion } from 'framer-motion';
-    import { ArrowLeft, FileDown, Printer } from 'lucide-react';
+    import { ArrowLeft, FileDown } from 'lucide-react';
     import { Button } from '@/components/ui/button';
     import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
     import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -21,6 +21,8 @@ import React, { useState, useEffect, useRef } from 'react';
         const [reportData, setReportData] = useState(null);
         const [loading, setLoading] = useState(false);
         const reportRef = useRef();
+        const [reportGenerated, setReportGenerated] = useState(false);
+        const [generatedAt, setGeneratedAt] = useState(null);
 
         useEffect(() => {
             const fetchCompetencias = async () => {
@@ -54,6 +56,7 @@ import React, { useState, useEffect, useRef } from 'react';
             }
             setLoading(true);
             setReportData(null);
+            setReportGenerated(false);
 
             const [year, month] = selectedCompetencia.split('-');
             const firstDay = startOfMonth(new Date(year, month - 1));
@@ -87,6 +90,8 @@ import React, { useState, useEffect, useRef } from 'react';
                 resultado,
                 competencia: format(new Date(year, month - 1), 'MMMM/yyyy', { locale: ptBR })
             });
+            setReportGenerated(true);
+            setGeneratedAt(new Date());
         };
 
         const handleDownloadPdf = () => {
@@ -105,26 +110,6 @@ import React, { useState, useEffect, useRef } from 'react';
             });
         };
 
-        const handlePrint = () => {
-            const printContent = reportRef.current.innerHTML;
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(`
-                <html><head><title>Imprimir DRE</title><style>
-                body { background-color: #ffffff; color: #0f172a; font-family: sans-serif; margin: 20px; }
-                .dre-table { width: 100%; max-width: 800px; margin: 0 auto; border-collapse: collapse; font-size: 14px; }
-                .dre-table td { padding: 10px 12px; border-bottom: 1px solid #e2e8f0; }
-                .dre-table .header-row td { font-weight: bold; border-bottom: 2px solid #94a3b8; }
-                .dre-table .total-row td { font-weight: bold; border-top: 2px solid #94a3b8; border-bottom: none; }
-                .text-right { text-align: right; } .font-mono { font-family: monospace; }
-                .text-2xl { font-size: 1.5rem; } .font-bold { font-weight: bold; }
-                .text-center { text-align: center; } .mb-6 { margin-bottom: 1.5rem; }
-                .capitalize { text-transform: capitalize; }
-                </style></head><body>${printContent}</body></html>
-            `);
-            printWindow.document.close();
-            printWindow.focus();
-            setTimeout(() => { printWindow.print(); printWindow.close(); }, 500);
-        };
 
         return (
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
@@ -136,23 +121,39 @@ import React, { useState, useEffect, useRef } from 'react';
                     </div>
                 </div>
                 <Card className="glass-card">
-                    <CardHeader><CardTitle className="text-white">Gerar Relatório</CardTitle></CardHeader>
-                    <CardContent className="flex flex-col sm:flex-row items-center gap-4">
-                        <div className="w-full sm:w-auto sm:flex-grow">
+                    <CardHeader><CardTitle className="text-white">Configuração do Relatório</CardTitle></CardHeader>
+                    <CardContent className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                        <div className="w-full md:w-1/2">
                             <Select onValueChange={setSelectedCompetencia} value={selectedCompetencia}>
                                 <SelectTrigger><SelectValue placeholder="Selecione a competência" /></SelectTrigger>
                                 <SelectContent>{competencias.map(comp => <SelectItem key={comp} value={comp}>{format(new Date(comp + '-02'), 'MMMM/yyyy', { locale: ptBR })}</SelectItem>)}</SelectContent>
                             </Select>
                         </div>
-                        <Button onClick={handleGenerateReport} disabled={loading || !selectedCompetencia} className="w-full sm:w-auto">{loading ? 'Gerando...' : 'Gerar Relatório'}</Button>
-                        {reportData && (<>
-                            <Button variant="outline" onClick={handleDownloadPdf} className="w-full sm:w-auto"><FileDown className="mr-2 h-4 w-4" /> PDF</Button>
-                            <Button variant="outline" onClick={handlePrint} className="w-full sm:w-auto"><Printer className="mr-2 h-4 w-4" /> Imprimir</Button>
-                        </>)}
+                        <div className="w-full md:w-auto flex flex-col sm:flex-row gap-3 md:justify-end">
+                            <Button onClick={handleGenerateReport} disabled={loading || !selectedCompetencia} className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white">{loading ? 'Gerando...' : 'Gerar Relatório'}</Button>
+                            <Button variant="outline" onClick={handleDownloadPdf} disabled={!reportGenerated || loading} className="w-full sm:w-auto border-blue-600 text-blue-300 hover:bg-blue-500/10">
+                                <FileDown className="mr-2 h-4 w-4" /> Gerar PDF
+                            </Button>
+                        </div>
                     </CardContent>
                 </Card>
-                {reportData && (
+                {!reportGenerated && !loading && (
+                    <Card className="glass-card border-dashed border-white/20">
+                        <CardContent className="text-center text-gray-300 py-10">
+                            Escolha a competência desejada e clique em <span className="text-white font-semibold">"Gerar Relatório"</span> para visualizar o DRE.
+                        </CardContent>
+                    </Card>
+                )}
+                {loading && (
+                    <div className="flex justify-center py-16">
+                        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
+                    </div>
+                )}
+                {reportGenerated && reportData && !loading && (
                     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+                        <div className="text-sm text-gray-400 text-right mb-2">
+                            {generatedAt && (<span><span className="text-white font-medium">Gerado em:</span> {format(generatedAt, 'dd/MM/yyyy HH:mm')}</span>)}
+                        </div>
                         <div ref={reportRef} className="bg-white text-slate-800 p-6 rounded-lg">
                             <div className="text-center mb-6">
                                 <h2 className="text-2xl font-bold">Demonstrativo de Resultado do Exercício</h2>
@@ -179,3 +180,4 @@ import React, { useState, useEffect, useRef } from 'react';
     };
 
     export default DreGerencial;
+
