@@ -11,7 +11,7 @@ import { supabase } from '@/lib/customSupabaseClient';
 import { useToast } from '@/components/ui/use-toast';
 import { format as formatDateFns } from 'date-fns';
 import { useEmCashValue } from '@/hooks/useEmCashValue';
-    
+
     const ContasReceber = () => {
       const navigate = useNavigate();
       const { toast } = useToast();
@@ -74,7 +74,7 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
           const endDate = new Date(filters.dataFim + 'T00:00:00');
           filtered = filtered.filter(conta => new Date(conta.data + 'T00:00:00') <= endDate);
         }
-        return filtered.sort((a, b) => new Date(a.data) - new Date(b.data));
+        return filtered.sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
       }, [contas, filters]);
     
       const formatCurrency = (value) => (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });

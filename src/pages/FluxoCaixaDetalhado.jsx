@@ -310,7 +310,7 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
                                   exit={{ opacity: 0 }}
                                   className="bg-slate-900/50"
                                 >
-                                  <td colSpan="6" className="p-0">
+                                  <td colSpan={6} className="p-0">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 p-4">
                                       <div>
                                         <h4 className="font-semibold text-green-400 mb-2 border-b border-slate-700 pb-1">Entradas</h4>
@@ -338,7 +338,7 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
                             </React.Fragment>
                           )) : (
                             <tr>
-                              <td colSpan="6" className="text-center p-8 text-slate-400">
+                              <td colSpan={6} className="text-center p-8 text-slate-400">
                                 Nenhum dado para exibir neste mês.
                               </td>
                             </tr>

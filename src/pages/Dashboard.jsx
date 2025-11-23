@@ -39,7 +39,7 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
         if (error) {
           toast({ title: "Erro ao carregar dados", description: error.message, variant: "destructive" });
         } else {
-          setData({ lancamentos: lancamentos || [] });
+          setData({ lancamentos: lancamentos ?? [] });
         }
         setLoading(false);
       };

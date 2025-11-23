@@ -233,7 +233,7 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
                     
                       <tbody>
                         {loading ? (
-                          <tr><td colSpan="6" className="text-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div></td></tr>
+                          <tr><td colSpan={6} className="text-center p-8"><div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mx-auto"></div></td></tr>
                         ) : monthData.length > 0 ? monthData.map((dia) => (
                           <React.Fragment key={dia.dia}>
                             <motion.tr
@@ -264,7 +264,7 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
                                 exit={{ opacity: 0 }}
                                 className="bg-slate-900/50"
                               >
-                                <td colSpan="6" className="p-0">
+                                <td colSpan={6} className="p-0">
                                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 p-4">
                                     <div>
                                       <h4 className="font-semibold text-green-400 mb-2 border-b border-slate-700 pb-1">Entradas</h4>
@@ -292,7 +292,7 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
                           </React.Fragment>
                         )) : (
                           <tr>
-                            <td colSpan="6" className="text-center p-8 text-slate-400">
+                            <td colSpan={6} className="text-center p-8 text-slate-400">
                               Nenhum dado para exibir neste mês.
                             </td>
                           </tr>
@@ -320,7 +320,10 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
                         borderColor: 'rgba(255, 255, 255, 0.2)',
                       }}
                       labelStyle={{ color: '#fff' }}
-                      formatter={(value, name) => [formatCurrency(value), name.charAt(0).toUpperCase() + name.slice(1)]}
+                      formatter={(value, name) => {
+                        const label = String(name || '');
+                        return [formatCurrency(value), label.charAt(0).toUpperCase() + label.slice(1)];
+                      }}
                     />
                     <Legend wrapperStyle={{ color: '#fff' }} />
                     <Line type="monotone" dataKey="saldoAcumulado" name="Saldo Acumulado" stroke="#38bdf8" strokeWidth={2} dot={{ r: 4 }} activeDot={{ r: 8 }} />

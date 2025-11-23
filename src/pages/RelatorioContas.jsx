@@ -232,7 +232,7 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
                                         </tbody>
                                         <tfoot>
                                             <tr className="font-semibold text-white bg-white/5">
-                                                <td colSpan="6" className="px-6 py-3 text-right">Total</td>
+                                                <td colSpan={6} className="px-6 py-3 text-right">Total</td>
                                                 <td className="px-6 py-3 text-right font-mono">{formatCurrency(filteredAndSortedContas.reduce((acc, c) => acc + (c.tipo === 'Entrada' ? c.valor : -c.valor), 0))}</td>
                                             </tr>
                                         </tfoot>
@@ -247,4 +247,3 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
     };
 
     export default RelatorioContas;
-

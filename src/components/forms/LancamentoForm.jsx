@@ -17,7 +17,7 @@ import { supabase } from '@/lib/customSupabaseClient';
 
 const initialDate = new Date();
 
-const LancamentoForm = ({ onCancel, onSuccess, initialData = null }) => {
+const LancamentoForm = ({ onCancel = () => {}, onSuccess = () => {}, initialData = null }) => {
   const { toast } = useToast();
   const isEditing = Boolean(initialData?.id);
 

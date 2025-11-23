@@ -5,12 +5,11 @@
   "private": true,
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 3000",
-    "build": "node tools/generate-llms.js || true && vite build",
+    "prebuild": "node tools/generate-llms.js || true",
+    "build": "vite build",
     "preview": "vite preview --host 127.0.0.1 --port 3000",
-    "start": "node server/index.js",
-    "test": "node --test server",
-    "test:server": "node server/testServer.js",
-    "test:watch": "node --test --watch server"
+    "start": "NODE_ENV=production node server/index.js",
+    "test": "node --test \"server/*.test.js\""
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.2.1",
@@ -52,10 +51,7 @@
     "@babel/parser": "^7.27.0",
     "@babel/traverse": "^7.27.0",
     "@babel/types": "^7.27.0",
-    "@types/node": "^20.8.3",
-    "@types/react": "^18.2.15",
-    "@types/react-dom": "^18.2.7",
-    "@vitejs/plugin-react": "^4.0.3",
+    "@vitejs/plugin-react": "^4.7.0",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.57.1",
     "eslint-config-react-app": "^7.0.1",

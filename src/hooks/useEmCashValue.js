@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const STORAGE_KEY = 'defFinance:emCashValue';
 
 const parseValue = (raw) => {
-  const parsed = parseFloat(raw);
+  const parsed = Number.parseFloat(raw ?? '');
   return Number.isFinite(parsed) ? parsed : 0;
 };
 

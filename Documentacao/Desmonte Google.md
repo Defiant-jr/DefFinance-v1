@@ -12,7 +12,7 @@ O prcesso de integração passara somente a importar os dados da planilha de "Rr
 ### Original
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { corsHeaders } from './cors.ts';
+import { corsHeaders } from './cors.js';
 const SPREADSHEET_IDS = {
   pagamentos: '1VxtIv4kMab66yHC0iVp7uCIJxOg42ZacvY9ehlKrWYA',
   recebimentos: '1vDw0K8w3qHxYgPo-t9bapMOZ4Q2zlOsWUGaz12cDQRY'
@@ -165,7 +165,7 @@ Deno.serve(async (req)=>{
 ### Alterado
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { corsHeaders } from './cors.ts';
+import { corsHeaders } from './cors.js';
 const SPREADSHEET_IDS = {
   recebimentos: '1vDw0K8w3qHxYgPo-t9bapMOZ4Q2zlOsWUGaz12cDQRY'
 };

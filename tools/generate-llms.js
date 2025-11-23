@@ -82,7 +82,10 @@ function extractRoutes(appJsxPath) {
 }
 
 function findReactFiles(dir) {
-  return fs.readdirSync(dir).map(item => path.join(dir, item));
+  return fs
+    .readdirSync(dir)
+    .filter(item => item.toLowerCase().endsWith('.jsx'))
+    .map(item => path.join(dir, item));
 }
 
 function extractHelmetData(content, filePath, routes) {
@@ -103,7 +106,7 @@ function extractHelmetData(content, filePath, routes) {
   const description = cleanText(descMatch?.[1]);
   
   const fileName = path.basename(filePath, path.extname(filePath));
-  const url = routes.length && routes.has(fileName) 
+  const url = routes.size > 0 && routes.has(fileName) 
     ? routes.get(fileName) 
     : generateFallbackUrl(fileName);
   

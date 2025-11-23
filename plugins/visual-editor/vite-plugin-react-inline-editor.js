@@ -1,15 +1,17 @@
-import path from 'path';
-import { fileURLToPath } from 'url';
+// @ts-nocheck
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import fs from 'node:fs';
 import { parse } from '@babel/parser';
-import traverseBabel from '@babel/traverse';
 import generate from '@babel/generator';
+import traverse from '@babel/traverse';
 import * as t from '@babel/types';
-import fs from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const VITE_PROJECT_ROOT = path.resolve(__dirname, '../..');
 const EDITABLE_HTML_TAGS = ["a", "Button", "button", "p", "span", "h1", "h2", "h3", "h4", "h5", "h6", "label", "Label", "img"];
+const traverseFn = (traverse && traverse.default) ? traverse.default : traverse;
 
 function parseEditId(editId) {
   const parts = editId.split(':');
@@ -89,7 +91,7 @@ export default function inlineEditPlugin() {
     enforce: 'pre',
 
     transform(code, id) {
-      if (!/\.(jsx|tsx)$/.test(id) || !id.startsWith(VITE_PROJECT_ROOT) || id.includes('node_modules')) {
+      if (!/\.jsx$/.test(id) || !id.startsWith(VITE_PROJECT_ROOT) || id.includes('node_modules')) {
         return null;
       }
 
@@ -99,13 +101,13 @@ export default function inlineEditPlugin() {
       try {
         const babelAst = parse(code, {
           sourceType: 'module',
-          plugins: ['jsx', 'typescript'],
+          plugins: ['jsx'],
           errorRecovery: true
         });
 
         let attributesAdded = 0;
 
-        traverseBabel.default(babelAst, {
+        traverseFn(babelAst, {
           enter(path) {
             if (path.isJSXOpeningElement()) {
               const openingNode = path.node;
@@ -293,7 +295,7 @@ export default function inlineEditPlugin() {
 
             const babelAst = parse(originalContent, {
               sourceType: 'module',
-              plugins: ['jsx', 'typescript'],
+              plugins: ['jsx'],
               errorRecovery: true
             });
 
@@ -307,7 +309,7 @@ export default function inlineEditPlugin() {
                 }
               }
             };
-            traverseBabel.default(babelAst, visitor);
+            traverseFn(babelAst, visitor);
 
             if (!targetNodePath) {
               res.writeHead(404, { 'Content-Type': 'application/json' });

@@ -34,7 +34,7 @@ import { Calendar, Filter, Building, DollarSign, AlertTriangle, ArrowLeft, Check
         if (error) {
           toast({ title: 'Erro ao carregar dados', description: error.message, variant: 'destructive' });
         } else {
-          setContas(data || []);
+          setContas(data ?? []);
         }
         setLoading(false);
       };
@@ -66,7 +66,7 @@ import { Calendar, Filter, Building, DollarSign, AlertTriangle, ArrowLeft, Check
           const endDate = new Date(filters.dataFim + 'T00:00:00');
           filtered = filtered.filter(c => new Date(c.data + 'T00:00:00') <= endDate);
         }
-        return filtered.sort((a, b) => new Date(a.data) - new Date(b.data));
+        return filtered.sort((a, b) => new Date(a.data).getTime() - new Date(b.data).getTime());
       }, [contas, filters]);
     
       const formatCurrency = (value) => (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -89,8 +89,8 @@ import { Calendar, Filter, Building, DollarSign, AlertTriangle, ArrowLeft, Check
         }, {});
       }, [filteredContas]);
     
-      const calculateTotalsByUnit = (contas) => {
-        return contas.reduce((acc, conta) => {
+      const calculateTotalsByUnit = (itens) => {
+        return itens.reduce((acc, conta) => {
           const unit = conta.unidade || 'N/A';
           acc[unit] = (acc[unit] || 0) + conta.valor;
           return acc;

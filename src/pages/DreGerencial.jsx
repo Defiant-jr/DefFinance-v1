@@ -59,8 +59,10 @@ import React, { useState, useEffect, useRef } from 'react';
             setReportGenerated(false);
 
             const [year, month] = selectedCompetencia.split('-');
-            const firstDay = startOfMonth(new Date(year, month - 1));
-            const lastDay = endOfMonth(new Date(year, month - 1));
+            const yearNumber = Number(year);
+            const monthNumber = Number(month);
+            const firstDay = startOfMonth(new Date(yearNumber, monthNumber - 1));
+            const lastDay = endOfMonth(new Date(yearNumber, monthNumber - 1));
 
             const { data, error } = await supabase
                 .from('lancamentos')
@@ -88,7 +90,7 @@ import React, { useState, useEffect, useRef } from 'react';
                 lucroBruto,
                 despesas,
                 resultado,
-                competencia: format(new Date(year, month - 1), 'MMMM/yyyy', { locale: ptBR })
+                competencia: format(new Date(yearNumber, monthNumber - 1), 'MMMM/yyyy', { locale: ptBR })
             });
             setReportGenerated(true);
             setGeneratedAt(new Date());
@@ -180,4 +182,3 @@ import React, { useState, useEffect, useRef } from 'react';
     };
 
     export default DreGerencial;
-

@@ -1,7 +1,8 @@
+// @ts-nocheck
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { fileURLToPath } from 'url';
-import { EDIT_MODE_STYLES } from './visual-editor-config';
+import { EDIT_MODE_STYLES } from './visual-editor-config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = resolve(__filename, '..');
