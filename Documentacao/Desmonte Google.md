@@ -55,6 +55,7 @@ Deno.serve(async (req)=>{
     if (!recebimentosResponse.ok) throw new Error(`Erro ao buscar recebimentos: ${await recebimentosResponse.text()}`);
     const recebimentosData = await recebimentosResponse.json();
     const lancamentos = [];
+    const clientesMap = new Map();
     if (pagamentosData.values && pagamentosData.values.length > 1) {
       const headers = pagamentosData.values[0].map((h)=>h.trim());
       const rows = pagamentosData.values.slice(1);
@@ -97,6 +98,7 @@ Deno.serve(async (req)=>{
         sacado: headers.indexOf('Sacado'),
         contato: headers.indexOf('Contato'),
         aluno: headers.indexOf('Aluno'),
+        cpfCnpj: headers.indexOf('CPF/CNPJ'),
         dataVencimento: headers.indexOf('Data de Vencimento'),
         dataBaixa: headers.indexOf('Data da Baixa'),
         categoria: headers.indexOf('Categoria'),
@@ -115,6 +117,15 @@ Deno.serve(async (req)=>{
         const dataBaixa = parseDate(row[colMap.dataBaixa]);
         const categoria = row[colMap.categoria] || '';
         const parcela = row[colMap.parcela] || '';
+        const cpfCnpj = colMap.cpfCnpj >= 0 ? (row[colMap.cpfCnpj] || '') : '';
+        if (cpfCnpj) {
+          clientesMap.set(cpfCnpj, {
+            CPF_CNPJ: cpfCnpj,
+            Tipo: 'Cliente',
+            Sacado: row[colMap.sacado] || 'N/A',
+            Aluno: row[colMap.aluno] || null
+          });
+        }
         lancamentos.push({
           data: dataVencimento,
           tipo: 'Entrada',
@@ -127,10 +138,27 @@ Deno.serve(async (req)=>{
           datapag: dataBaixa,
           contato: row[colMap.contato] || null,
           aluno: row[colMap.aluno] || null,
+          CPF_CNPJ: cpfCnpj || null,
           valor_aberto: parseCurrency(row[colMap.emAbertoVencido]),
-          parcela: parcela,
+          parcela: parcela || null,
           desc_pontual: parseCurrency(row[colMap.valorComDescPont])
         });
+      }
+    }
+    if (clientesMap.size > 0) {
+      const cpfList = Array.from(clientesMap.keys());
+      const { data: clientesExistentes, error: clientesError } = await supabaseAdmin
+        .from('clientes_fornecedores')
+        .select('CPF_CNPJ')
+        .in('CPF_CNPJ', cpfList);
+      if (clientesError) throw clientesError;
+      const existentes = new Set((clientesExistentes || []).map((c)=>c.CPF_CNPJ));
+      const novosClientes = Array.from(clientesMap.values()).filter(
+        (cliente)=>!existentes.has(cliente.CPF_CNPJ)
+      );
+      if (novosClientes.length > 0) {
+        const { error: insertClientesError } = await supabaseAdmin.from('clientes_fornecedores').insert(novosClientes);
+        if (insertClientesError) throw insertClientesError;
       }
     }
     const { error: deleteError } = await supabaseAdmin.from('lancamentos').delete().neq('id', 0);
@@ -204,6 +232,7 @@ Deno.serve(async (req)=>{
     }
     const recebimentosData = await recebimentosResponse.json();
     const lancamentos = [];
+    const clientesMap = new Map();
     if (recebimentosData.values && recebimentosData.values.length > 1) {
       const headers = recebimentosData.values[0].map((h)=>h.trim());
       const rows = recebimentosData.values.slice(1);
@@ -229,6 +258,15 @@ Deno.serve(async (req)=>{
         const dataBaixa = parseDate(row[colMap.dataBaixa]);
         const categoria = row[colMap.categoria] || '';
         const parcela = row[colMap.parcela] || '';
+        const cpfCnpj = colMap.cpfCnpj >= 0 ? (row[colMap.cpfCnpj] || '') : '';
+        if (cpfCnpj) {
+          clientesMap.set(cpfCnpj, {
+            CPF_CNPJ: cpfCnpj,
+            Tipo: 'Cliente',
+            Sacado: row[colMap.sacado] || 'N/A',
+            Aluno: row[colMap.aluno] || null
+          });
+        }
         lancamentos.push({
           data: dataVencimento,
           tipo: 'Entrada',
@@ -241,6 +279,7 @@ Deno.serve(async (req)=>{
           datapag: dataBaixa,
           contato: row[colMap.contato] || null,
           aluno: row[colMap.aluno] || null,
+          CPF_CNPJ: cpfCnpj || null,
           valor_aberto: parseCurrency(row[colMap.emAbertoVencido]),
           parcela: parcela || null,
           desc_pontual: parseCurrency(row[colMap.valorComDescPont])
@@ -248,6 +287,22 @@ Deno.serve(async (req)=>{
       }
     }
     // 🧹 Apaga apenas os registros onde tipo = 'Entrada'
+    if (clientesMap.size > 0) {
+      const cpfList = Array.from(clientesMap.keys());
+      const { data: clientesExistentes, error: clientesError } = await supabaseAdmin
+        .from('clientes_fornecedores')
+        .select('CPF_CNPJ')
+        .in('CPF_CNPJ', cpfList);
+      if (clientesError) throw clientesError;
+      const existentes = new Set((clientesExistentes || []).map((c)=>c.CPF_CNPJ));
+      const novosClientes = Array.from(clientesMap.values()).filter(
+        (cliente)=>!existentes.has(cliente.CPF_CNPJ)
+      );
+      if (novosClientes.length > 0) {
+        const { error: insertClientesError } = await supabaseAdmin.from('clientes_fornecedores').insert(novosClientes);
+        if (insertClientesError) throw insertClientesError;
+      }
+    }
     const { error: deleteError } = await supabaseAdmin.from('lancamentos').delete().eq('tipo', 'Entrada');
     if (deleteError) throw deleteError;
     // 📥 Insere os novos lançamentos (apenas tipo Entrada)

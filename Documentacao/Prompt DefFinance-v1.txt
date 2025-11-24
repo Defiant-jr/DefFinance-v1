@@ -98,7 +98,8 @@
 	-	ValorAberto			->	Em aberto (Vencido)
 	-	Parcela				->	Parcela
 	-	Desc. Pontua.		->	Valor com Desc. Pont.
-	
+	-   CPF_CNPJ            ->  CPF/CNPJ
+    
 -   A correspondencia da Tabela "lancamentos" com a planilha de Pagamentos é conforme abaixo (Supabase<->planilha):
     -   Data                ->  Vencimento
     -   Tipo                ->  Valor Fixo "Saida"
