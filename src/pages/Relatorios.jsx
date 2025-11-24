@@ -3,7 +3,7 @@ import React from 'react';
     import { useNavigate } from 'react-router-dom';
     import { Helmet } from 'react-helmet';
     import { motion } from 'framer-motion';
-import { BarChart3, PieChart, TrendingUp, ArrowLeft, FileClock, Printer, CalendarRange } from 'lucide-react';
+import { BarChart3, PieChart, TrendingUp, ArrowLeft, FileClock, Printer, CalendarRange, FileSignature } from 'lucide-react';
     
     import { Button } from '@/components/ui/button';
     import { Card, CardContent } from '@/components/ui/card';
@@ -65,6 +65,13 @@ import { BarChart3, PieChart, TrendingUp, ArrowLeft, FileClock, Printer, Calenda
                 icon: CalendarRange,
                 description: "Calendário mensal com despesas diárias e total de entradas por dia.",
                 action: () => handleNavigation('/relatorios/mapa-mensal'),
+                implemented: true,
+            },
+            {
+                title: "Emissão de Duplicata",
+                icon: FileSignature,
+                description: "Gere e acompanhe duplicatas emitidas para clientes.",
+                action: () => handleNavigation('/relatorios/emissao-duplicata'),
                 implemented: true,
             }
         ];

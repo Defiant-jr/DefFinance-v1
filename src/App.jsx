@@ -12,6 +12,7 @@ import ImpressaoDoc from '@/pages/ImpressaoDoc';
 import Lancamentos from '@/pages/Lancamentos';
 import Login from '@/pages/Login';
 import MapaMensal from '@/pages/MapaMensal';
+import EmissaoDuplicata from '@/pages/EmissaoDuplicata';
 import RelatorioContas from '@/pages/RelatorioContas';
 import RelatorioFechamento from '@/pages/RelatorioFechamento';
 import Relatorios from '@/pages/Relatorios';
@@ -150,6 +151,14 @@ function App() {
 							element={
 								<PrivateRoute>
 									<ImpressaoDoc />
+								</PrivateRoute>
+							}
+						/>
+						<Route
+							path="/relatorios/emissao-duplicata"
+							element={
+								<PrivateRoute>
+									<EmissaoDuplicata />
 								</PrivateRoute>
 							}
 						/>
