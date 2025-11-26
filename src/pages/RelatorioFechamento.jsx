@@ -157,7 +157,7 @@ const RelatorioFechamento = () => {
     doc.text(`Unidade: ${unitLabel}`, marginLeft, cursorY);
 
     const buildTable = (title, items, options = {}) => {
-      const { fontSize = 4, cellPadding = 3 } = options;
+      const { fontSize = 8, cellPadding = 3 } = options;
       cursorY += 24;
       doc.setFontSize(13);
       doc.text(title, marginLeft, cursorY);
@@ -185,7 +185,7 @@ const RelatorioFechamento = () => {
     };
 
     if (entries.length) {
-      buildTable('Entradas em aberto e a vencer', entries, { fontSize: 4, cellPadding: 3 });
+      buildTable('Entradas em aberto e a vencer', entries, { fontSize: 8, cellPadding: 3 });
       cursorY += 18;
       doc.text(`Total de entradas: ${formatCurrency(totalEntries)}`, marginLeft, cursorY);
     } else {
@@ -195,7 +195,7 @@ const RelatorioFechamento = () => {
 
     if (exits.length) {
       cursorY += 32;
-      buildTable('Saidas em atraso e em aberto', exits, { fontSize: 4, cellPadding: 3 });
+      buildTable('Saidas em atraso e em aberto', exits, { fontSize: 8, cellPadding: 3 });
       cursorY += 18;
       doc.text(`Total de saidas: ${formatCurrency(totalExits)}`, marginLeft, cursorY);
     } else {
