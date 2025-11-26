@@ -13,6 +13,7 @@ import Lancamentos from '@/pages/Lancamentos';
 import Login from '@/pages/Login';
 import MapaMensal from '@/pages/MapaMensal';
 import EmissaoDuplicata from '@/pages/EmissaoDuplicata';
+import Integracao from '@/pages/Integracao';
 import RelatorioContas from '@/pages/RelatorioContas';
 import RelatorioFechamento from '@/pages/RelatorioFechamento';
 import Relatorios from '@/pages/Relatorios';
@@ -167,6 +168,14 @@ function App() {
 							element={
 								<PrivateRoute>
 									<MapaMensal />
+								</PrivateRoute>
+							}
+						/>
+						<Route
+							path="/integracao"
+							element={
+								<PrivateRoute>
+									<Integracao />
 								</PrivateRoute>
 							}
 						/>

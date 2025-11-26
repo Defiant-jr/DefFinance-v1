@@ -19,7 +19,6 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
       const { user, signOut } = useAuth();
       const [data, setData] = useState({ lancamentos: [] });
       const [loading, setLoading] = useState(false);
-      const [importLoading, setImportLoading] = useState(false);
       const [chartData, setChartData] = useState([]);
       const [monthsSpan, setMonthsSpan] = useState(6);
       const [emCashValue, setEmCashValue] = useEmCashValue();
@@ -87,43 +86,6 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
       useEffect(() => {
         generateChartData({ lancamentos: data.lancamentos }, monthsSpan, emCashValue);
       }, [data.lancamentos, monthsSpan, emCashValue]);
-    
-      const handleImportData = async () => {
-        setImportLoading(true);
-        try {
-          toast({ title: "Iniciando importaÃ§Ã£o...", description: "Buscando dados das planilhas.", variant: "default" });
-          
-          const { data: functionData, error: functionError } = await supabase.functions.invoke('import-google-sheets', {
-            body: {},
-          });
-
-          if (functionError) throw functionError;
-    
-          toast({
-            title: "Sucesso!",
-            description: functionData.message || "Dados importados e sincronizados!",
-          });
-    
-          await loadDataFromSupabase();
-    
-        } catch (error) {
-          console.error("Erro na importaÃ§Ã£o: ", error);
-          let description = "Ocorreu um erro durante a importaÃ§Ã£o.";
-          if (error.message.includes("non-2xx")) {
-            description = "A funÃ§Ã£o de importaÃ§Ã£o falhou no servidor. Verifique os logs da funÃ§Ã£o no Supabase.";
-          } else if (error.message) {
-            description = error.message;
-          }
-          
-          toast({
-            title: "Erro na importaÃ§Ã£o",
-            description: description,
-            variant: "destructive",
-          });
-        } finally {
-          setImportLoading(false);
-        }
-      };
     
       const formatCurrency = (value) => {
         return (value || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -226,9 +188,9 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
         { label: "Financeiro", path: "/financeiro", icon: PlusCircle },
         { label: "Cadastro", path: "/cadastros", icon: UserPlus },
         { label: "Relat\u00f3rios", path: "/relatorios", icon: FileText },
-        { label: "Integra\u00e7\u00e3o", action: handleImportData, icon: Download, loadingLabel: "Integrando..." },
+        { label: "Integra\u00e7\u00e3o", path: "/integracao", icon: Download },
       ];
-    
+
       return (
         <div className="space-y-8">
           <Helmet>
@@ -264,7 +226,7 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
                     {navButtons.map((item, index) => {
                         const Icon = item.icon;
                         const action = item.path ? () => navigate(item.path) : item.action;
-                        const isDisabled = item.label === "Integra\u00e7\u00e3o" && importLoading;
+                        const isDisabled = item.disabled;
                         return (
                             <Button 
                                 key={index} 
@@ -425,3 +387,8 @@ import { useEmCashValue } from '@/hooks/useEmCashValue';
     };
     
     export default Dashboard;
+
+
+
+
+

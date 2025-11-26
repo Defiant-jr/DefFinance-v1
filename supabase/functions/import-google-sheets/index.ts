@@ -45,7 +45,7 @@ Deno.serve(async (req: Request) => {
 
     const recebimentosData = await recebimentosResponse.json();
     const lancamentos: Record<string, unknown>[] = [];
-    const clientesData = new Map<string, { sacado: string; aluno: string | null }>();
+    const clientesData = new Map<string, { sacado: string }>();
 
     if (recebimentosData.values && recebimentosData.values.length > 1) {
       const headers: string[] = recebimentosData.values[0].map((h: string) => h.trim());
@@ -93,7 +93,6 @@ Deno.serve(async (req: Request) => {
         if (cpfCnpj) {
           clientesData.set(cpfCnpj, {
             sacado: row[colMap.sacado] || 'N/A',
-            aluno: row[colMap.aluno] || null,
           });
         }
 
@@ -133,7 +132,6 @@ Deno.serve(async (req: Request) => {
       const { error: upsertError } = await supabase.rpc('upsert_cliente_fornecedor', {
         p_cpf_cnpj: cpf,
         p_sacado: dadosCliente.sacado || 'N/A',
-        p_aluno: dadosCliente.aluno || null,
       });
       if (upsertError) throw upsertError;
       clientesProcessados += 1;

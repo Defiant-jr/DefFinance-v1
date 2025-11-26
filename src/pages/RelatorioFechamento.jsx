@@ -110,7 +110,19 @@ const RelatorioFechamento = () => {
             ...item,
             valor: Number(item.valor || 0),
           }))
-          .sort((a, b) => new Date(`${a.data}T00:00:00`).getTime() - new Date(`${b.data}T00:00:00`).getTime());
+          .sort((a, b) => {
+            const unidadeA = (a.unidade || '').toLowerCase();
+            const unidadeB = (b.unidade || '').toLowerCase();
+            if (unidadeA !== unidadeB) {
+              return unidadeA.localeCompare(unidadeB, 'pt-BR');
+            }
+            const nameA = (a.cliente_fornecedor || '').toLowerCase();
+            const nameB = (b.cliente_fornecedor || '').toLowerCase();
+            if (nameA !== nameB) {
+              return nameA.localeCompare(nameB, 'pt-BR');
+            }
+            return new Date(`${a.data}T00:00:00`).getTime() - new Date(`${b.data}T00:00:00`).getTime();
+          });
 
       setEntries(sanitize(rawEntries));
       setExits(sanitize(rawExits));
@@ -146,7 +158,6 @@ const RelatorioFechamento = () => {
 
     const buildTable = (title, items, options = {}) => {
       const { fontSize = 4, cellPadding = 3 } = options;
-      const limitedItems = items.slice(0, 6);
       cursorY += 24;
       doc.setFontSize(13);
       doc.text(title, marginLeft, cursorY);
@@ -156,7 +167,7 @@ const RelatorioFechamento = () => {
       doc.autoTable({
         startY: tableStartY,
         head: [['Nome', 'Vencimento', 'Unidade', 'Valor']],
-        body: limitedItems.map((item) => [
+        body: items.map((item) => [
           item.cliente_fornecedor || '-',
           formatDate(item.data),
           item.unidade || '-',
