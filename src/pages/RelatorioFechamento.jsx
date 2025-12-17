@@ -48,15 +48,44 @@ const RelatorioFechamento = () => {
     return Number.isNaN(parsed.getTime()) ? '-' : format(parsed, 'dd/MM/yyyy');
   };
 
+  const normalizeDate = (value) => {
+    if (!value) return null;
+    const parsed = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(parsed.getTime())) return null;
+    parsed.setHours(0, 0, 0, 0);
+    return parsed;
+  };
+
+  const resolveValor = (item) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dueDate = normalizeDate(item.data);
+
+    const toNumberOrNull = (value) => {
+      if (value === null || value === undefined || value === '') return null;
+      const num = Number(value);
+      return Number.isFinite(num) ? num : null;
+    };
+
+    const descPontual = toNumberOrNull(item.desc_pontual);
+    const valorAberto = toNumberOrNull(item.valor_aberto);
+    const valorOriginal = toNumberOrNull(item.valor) ?? 0;
+
+    const preferDescPontual = dueDate && dueDate.getTime() >= today.getTime();
+    const preferred = preferDescPontual ? descPontual : valorAberto;
+
+    return preferred ?? valorOriginal;
+  };
+
   const unitLabel = unitOptions.find((option) => option.value === selectedUnit)?.label ?? 'Todas';
 
   const totalEntries = useMemo(
-    () => entries.reduce((sum, item) => sum + Number(item.valor || 0), 0),
+    () => entries.reduce((sum, item) => sum + Number(item.valor_calculado || 0), 0),
     [entries]
   );
 
   const totalExits = useMemo(
-    () => exits.reduce((sum, item) => sum + Number(item.valor || 0), 0),
+    () => exits.reduce((sum, item) => sum + Number(item.valor_calculado || 0), 0),
     [exits]
   );
 
@@ -76,14 +105,14 @@ const RelatorioFechamento = () => {
 
       let entriesQuery = supabase
         .from('lancamentos')
-        .select('id, cliente_fornecedor, data, unidade, valor, tipo, status')
+        .select('id, cliente_fornecedor, data, unidade, valor, tipo, status, desc_pontual, valor_aberto')
         .eq('tipo', 'Entrada')
         .lte('data', endOfCurrentMonthIso)
         .or('status.is.null,status.neq.Pago');
 
       let exitsQuery = supabase
         .from('lancamentos')
-        .select('id, cliente_fornecedor, data, unidade, valor, tipo, status')
+        .select('id, cliente_fornecedor, data, unidade, valor, tipo, status, desc_pontual, valor_aberto')
         .eq('tipo', 'Saida')
         .lte('data', endOfCurrentMonthIso)
         .or('status.is.null,status.neq.Pago');
@@ -103,12 +132,12 @@ const RelatorioFechamento = () => {
       if (entriesError) throw entriesError;
       if (exitsError) throw exitsError;
 
-      const sanitize = (list) =>
+      const sanitize = (list, isEntrada) =>
         (list || [])
           .filter((item) => item.status !== 'Pago')
           .map((item) => ({
             ...item,
-            valor: Number(item.valor || 0),
+            valor_calculado: isEntrada ? resolveValor(item) : Number(item.valor || 0),
           }))
           .sort((a, b) => {
             const unidadeA = (a.unidade || '').toLowerCase();
@@ -124,8 +153,8 @@ const RelatorioFechamento = () => {
             return new Date(`${a.data}T00:00:00`).getTime() - new Date(`${b.data}T00:00:00`).getTime();
           });
 
-      setEntries(sanitize(rawEntries));
-      setExits(sanitize(rawExits));
+      setEntries(sanitize(rawEntries, true));
+      setExits(sanitize(rawExits, false));
       setGeneratedAt(new Date());
       setReportGenerated(true);
     } catch (error) {
@@ -171,7 +200,7 @@ const RelatorioFechamento = () => {
           item.cliente_fornecedor || '-',
           formatDate(item.data),
           item.unidade || '-',
-          formatCurrency(item.valor),
+          formatCurrency(item.valor_calculado),
         ]),
         theme: 'grid',
         styles: { fontSize, cellPadding },
@@ -338,7 +367,7 @@ const RelatorioFechamento = () => {
                             <td className="px-4 py-3">{item.cliente_fornecedor || '-'}</td>
                             <td className="px-4 py-3">{formatDate(item.data)}</td>
                             <td className="px-4 py-3">{item.unidade || '-'}</td>
-                            <td className="px-4 py-3 text-right font-medium text-green-300">{formatCurrency(item.valor)}</td>
+                            <td className="px-4 py-3 text-right font-medium text-green-300">{formatCurrency(item.valor_calculado)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -379,7 +408,7 @@ const RelatorioFechamento = () => {
                             <td className="px-4 py-3">{item.cliente_fornecedor || '-'}</td>
                             <td className="px-4 py-3">{formatDate(item.data)}</td>
                             <td className="px-4 py-3">{item.unidade || '-'}</td>
-                            <td className="px-4 py-3 text-right font-medium text-red-300">{formatCurrency(item.valor)}</td>
+                            <td className="px-4 py-3 text-right font-medium text-red-300">{formatCurrency(item.valor_calculado)}</td>
                           </tr>
                         ))}
                       </tbody>
